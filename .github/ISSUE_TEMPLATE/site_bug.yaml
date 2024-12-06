@@ -1,0 +1,58 @@
+name: Site bug
+description: Something isn't working on developer.adobe.com or when building the website locally.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for taking the time to report this issue!
+        This bug report should only relate to the developer.adobe.com website itself or non-content issues such as rendering, 404 pages, or other unexpected behavior.
+        Issues that do not comply with our Code of Conduct or do not contain enough information may be closed at the maintainers' discretion.
+        SECURITY DISCLOSURE: If this is a security disclosure please follow the guidelines in CONTRIBUTING.md. This helps keep folks from accidentally releasing vulnerabilities before the maintainers get a chance to fix the issue.
+  - type: checkboxes
+    attributes:
+      label: Is there an existing issue for this?
+      description: Please search to see if an issue already exists for the bug you encountered.
+      options:
+        - label: I have searched the existing issues
+          required: true
+  - type: textarea
+    attributes:
+      label: Expected behavior
+      description: |
+        Tell us what you expected to happen.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Actual behavior
+      description: |
+        Tell us what happened. Include error messages and issues.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Steps to reproduce
+      description: |
+        Provide a set of clear steps to reproduce this bug.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Environment
+      description: |
+        Describe your environment such as platform, browser, and versions.
+        Provide all the details that will help us to reproduce the bug.
+      value: |
+        - Browser:
+        - OS:
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Sample code
+      description: Sample Code that illustrates the problem
+  - type: textarea
+    attributes:
+      label: Logs
+      description: Logs taken while reproducing problem

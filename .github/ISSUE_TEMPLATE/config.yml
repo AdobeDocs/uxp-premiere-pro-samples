@@ -1,0 +1,12 @@
+---
+blank_issues_enabled: false
+contact_links:
+  - name: Help Center
+    url: https://helpx.adobe.com/support.html
+    about: Find help with issues unrelated to documentation here.
+  - name: Community resources
+    url: https://developer.adobe.com/open
+    about: Find more resources here.
+  - name: Adobe Developer Support
+    url: https://developer.adobe.com/developer-support
+    about: Ask and answer questions.
