@@ -1,0 +1,399 @@
+/*************************************************************************
+ * ADOBE CONFIDENTIAL
+ * ___________________
+ *
+ * Copyright 2024 Adobe
+ * All Rights Reserved.
+ *
+ * NOTICE: Adobe permits you to use, modify, and distribute this file in
+ * accordance with the terms of the Adobe license agreement accompanying
+ * it. If you have received this file from a source other than Adobe,
+ * then your use, modification, or distribution of it requires the prior
+ * written permission of Adobe.
+ **************************************************************************/
+
+const { log } = require("./utils");
+
+async function getRootItem(project) {
+  const rootItem = await project.getRootItem();
+  return rootItem;
+}
+
+async function getProjectItems(project) {
+  const rootItem = await getRootItem(project);
+  const projectItems = await rootItem.getItems();
+  return projectItems;
+}
+
+async function getClipProjectItem(project) {
+  const rootItem = await getRootItem(project);
+  const projectItems = await rootItem.getItems();
+
+  let mediaItem;
+  for (let projectItem of projectItems) {
+    const clipProjectItem = ppro.ClipProjectItem.cast(projectItem);
+    if (
+      clipProjectItem &&
+      (await clipProjectItem.getContentType()) ===
+        ppro.Constants.ContentType.MEDIA
+    ) {
+      // Take the first media found.
+      mediaItem = clipProjectItem;
+      break;
+    }
+  }
+  if (!mediaItem) {
+    log("No media project item found.", "red");
+    return;
+  }
+  return ppro.ClipProjectItem.cast(mediaItem);
+}
+
+async function createBin(project) {
+  if (!project) {
+    log(`No project found.`, "red");
+    return;
+  }
+  const rootItem = await getRootItem(project);
+
+  let success = false;
+  try {
+    project.lockedAccess(() => {
+      success = project.executeTransaction((compoundAction) => {
+        const createBinAction = rootItem.createBinAction("Bin1", true);
+        compoundAction.addAction(createBinAction);
+      });
+    });
+  } catch (err) {
+    log(`Error: ${err}`, "red");
+    return false;
+  }
+
+  return success;
+}
+
+async function createSmartBin(project) {
+  if (!project) {
+    log(`No project found.`, "red");
+    return;
+  }
+  const rootItem = await getRootItem(project);
+
+  let success = false;
+  try {
+    project.lockedAccess(() => {
+      success = project.executeTransaction((compoundAction) => {
+        const createBinAction = rootItem.createSmartBinAction("Bin2", "Bin");
+        compoundAction.addAction(createBinAction);
+      });
+    });
+  } catch (err) {
+    log(`Error: ${err}`, "red");
+    return false;
+  }
+
+  return success;
+}
+
+async function renameBin(project) {
+  if (!project) {
+    log(`No project found.`, "red");
+    return;
+  }
+  const rootItem = await getRootItem(project);
+
+  //create a bin named Bin3
+
+  try {
+    project.lockedAccess(() => {
+      project.executeTransaction((compoundAction) => {
+        const createBinAction = rootItem.createBinAction("Bin3", true);
+        compoundAction.addAction(createBinAction);
+      });
+    });
+  } catch (err) {
+    log(`Error: ${err}`, "red");
+    return false;
+  }
+
+  const newItems = await rootItem.getItems();
+
+  const newBin = newItems.find((item) => item.name == "Bin3");
+
+  //rename Bin3 to Bin3_rename
+  let success = false;
+
+  try {
+    project.lockedAccess(() => {
+      success = project.executeTransaction((compoundAction) => {
+        const renameBinAction =
+          ppro.FolderItem.cast(newBin).createRenameBinAction("Bin3_rename");
+        compoundAction.addAction(renameBinAction);
+      });
+    });
+  } catch (err) {
+    log(`Error: ${err}`, "red");
+    return false;
+  }
+
+  return success;
+}
+
+async function removeItem(project) {
+  const rootItem = await getRootItem(project);
+
+  //create a bin named Bin4
+  try {
+    project.lockedAccess(() => {
+      project.executeTransaction((compoundAction) => {
+        const createBinAction = rootItem.createBinAction("Bin4", true);
+        compoundAction.addAction(createBinAction);
+      });
+    });
+  } catch (err) {
+    log(`Error: ${err}`, "red");
+    return false;
+  }
+  const newItems = await rootItem.getItems();
+
+  const newBin = newItems.find((item) => item.name == "Bin4");
+
+  //setTimeout is not mandatory here, wrapping inside setTimeout to make removeItem feature visisble on project panel.
+  setTimeout(async () => {
+    let success = false;
+    try {
+      project.lockedAccess(() => {
+        success = project.executeTransaction((compoundAction) => {
+          const createRemoveItemAction = rootItem.createRemoveItemAction(
+            ppro.FolderItem.cast(newBin)
+          );
+          compoundAction.addAction(createRemoveItemAction);
+        });
+      });
+    } catch (err) {
+      log(`Error: ${err}`, "red");
+      return false;
+    }
+
+    if (success) {
+      log("Successfully removed the item form project panel");
+    }
+  }, "1000");
+}
+
+async function moveItem(project) {
+  const rootItem = await getRootItem(project);
+  try {
+    project.lockedAccess(() => {
+      project.executeTransaction((compoundAction) => {
+        const createBinAction = rootItem.createBinAction("Bin5", true);
+        compoundAction.addAction(createBinAction);
+      });
+    });
+  } catch (err) {
+    log(`Error: ${err}`, "red");
+    return false;
+  }
+
+  try {
+    project.lockedAccess(() => {
+      project.executeTransaction((compoundAction) => {
+        const createBinAction = rootItem.createBinAction("Bin6", true);
+        compoundAction.addAction(createBinAction);
+      });
+    });
+  } catch (err) {
+    log(`Error: ${err}`, "red");
+    return false;
+  }
+
+  const newItems = await rootItem.getItems();
+
+  const newBin1 = newItems.find((item) => item.name == "Bin5");
+  const newBin2 = newItems.find((item) => item.name == "Bin6");
+
+  //setTimeout is not mandatory here, wrapping inside setTimeout to make moveitem feature visisble on project panel.
+  setTimeout(async () => {
+    let success = false;
+    try {
+      project.lockedAccess(() => {
+        success = project.executeTransaction((compoundAction) => {
+          const createMoveItemAction = rootItem.createMoveItemAction(
+            ppro.FolderItem.cast(newBin1),
+            ppro.FolderItem.cast(newBin2)
+          );
+          compoundAction.addAction(createMoveItemAction);
+        });
+      });
+    } catch (err) {
+      log(`Error: ${err}`, "red");
+      return false;
+    }
+
+    if (success) {
+      log("Successfully moved the item to another bin");
+    }
+  }, "1000");
+}
+
+async function setInOutPoint(project) {
+  if (!project) {
+    log(`No project found.`, "red");
+    return;
+  }
+  const inPoint = ppro.TickTime.createWithSeconds(2);
+  const outPoint = ppro.TickTime.createWithSeconds(4);
+  const clipProjectItem = await getClipProjectItem(project);
+
+  let success = false;
+  try {
+    project.lockedAccess(() => {
+      success = project.executeTransaction((compoundAction) => {
+        let action = clipProjectItem.createSetInOutPointsAction(
+          inPoint,
+          outPoint
+        );
+        compoundAction.addAction(action);
+      }, "createSetInOutPointsAction");
+    });
+  } catch (err) {
+    log(`Error: ${err}`, "red");
+    return false;
+  }
+
+  return success;
+}
+
+async function clearInOutPoint(project) {
+  if (!project) {
+    log(`No project found.`, "red");
+    return;
+  }
+  const clipProjectItem = await getClipProjectItem(project);
+
+  let success = false;
+  try {
+    project.lockedAccess(() => {
+      success = project.executeTransaction((compoundAction) => {
+        let action = clipProjectItem.createClearInOutPointsAction();
+        compoundAction.addAction(action);
+      }, "createClearInOutPointsAction");
+    });
+  } catch (err) {
+    log(`Error: ${err}`, "red");
+    return false;
+  }
+
+  return success;
+}
+
+async function setScaleToFrameSize(project) {
+  if (!project) {
+    log(`No project found.`, "red");
+    return;
+  }
+  const clipProjectItem = await getClipProjectItem(project);
+
+  let success = false;
+  try {
+    project.lockedAccess(() => {
+      success = project.executeTransaction((compoundAction) => {
+        let action = clipProjectItem.createSetScaleToFrameSizeAction();
+        compoundAction.addAction(action);
+      }, "createSetScaleToFrameSizeAction");
+    });
+  } catch (err) {
+    log(`Error: ${err}`, "red");
+    return false;
+  }
+
+  return success;
+}
+async function refreshMedia(project) {
+  const clipProjectItem = await getClipProjectItem(project);
+  const success = await clipProjectItem.refreshMedia();
+  return success;
+}
+
+async function setFootageInterpretation(project) {
+  if (!project) {
+    log(`No project found.`, "red");
+    return;
+  }
+  const clipProjectItem = await getClipProjectItem(project);
+  let interpretation = await clipProjectItem.getFootageInterpretation();
+  await interpretation.setFrameRate(20);
+  await interpretation.setPixelAspectRatio(1.5);
+  let createSetFootageInterpretationAction =
+    await clipProjectItem.createSetFootageInterpretationAction(interpretation);
+
+  let success = false;
+  try {
+    project.lockedAccess(() => {
+      success = project.executeTransaction((compoundAction) => {
+        compoundAction.addAction(createSetFootageInterpretationAction);
+      }, "createSetFootageInterpretationAction");
+    });
+  } catch (err) {
+    log(`Error: ${err}`, "red");
+    return false;
+  }
+
+  return success;
+}
+async function setOverrideFrameRate(project) {
+  const clipProjectItem = await getClipProjectItem(project);
+
+  let success = false;
+  try {
+    project.lockedAccess(() => {
+      success = project.executeTransaction((compoundAction) => {
+        let action = clipProjectItem.createSetOverrideFrameRateAction(0.5);
+        compoundAction.addAction(action);
+      }, "createSetOverrideFrameRateAction");
+    });
+  } catch (err) {
+    log(`Error: ${err}`, "red");
+    return false;
+  }
+
+  return success;
+}
+
+async function setOverridePixelAspectRatio(project) {
+  const clipProjectItem = await getClipProjectItem(project);
+
+  let success = false;
+  try {
+    project.lockedAccess(() => {
+      success = project.executeTransaction((compoundAction) => {
+        let action = clipProjectItem.createSetOverridePixelAspectRatioAction(
+          1,
+          2
+        );
+        compoundAction.addAction(action);
+      }, "createSetOverridePixelAspectRatioAction");
+    });
+  } catch (err) {
+    log(`Error: ${err}`, "red");
+    return false;
+  }
+
+  return success;
+}
+
+module.exports = {
+  getProjectItems,
+  createBin,
+  createSmartBin,
+  renameBin,
+  removeItem,
+  moveItem,
+  setInOutPoint,
+  clearInOutPoint,
+  setScaleToFrameSize,
+  refreshMedia,
+  setFootageInterpretation,
+  setOverrideFrameRate,
+  setOverridePixelAspectRatio,
+};

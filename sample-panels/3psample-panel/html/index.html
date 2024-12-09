@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="index.js"></script>
+  </head>
+  <style>
+    body {
+      color: white;
+      padding: 0 16px;
+      overflow-y: auto;
+      height: 100vh;
+    }
+
+    li:before {
+      content: "• ";
+      width: 3em;
+    }
+
+    #plugin-body {
+      color: var(--uxp-host-text-color-secondary, white);
+      margin-top: 5px;
+      border: 1px solid #808080;
+      border-radius: 4px;
+      padding: 16px;
+      overflow: scroll;
+      height: 220px;
+    }
+
+    sp-heading {
+      color: var(--uxp-host-text-color-secondary, white);
+    }
+
+    footer {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      margin-top: 300px;
+    }
+
+    footer > * {
+      margin-bottom: 10px;
+    }
+
+    sp-button {
+      height: 20px;
+      border-radius: 0.5em;
+      font-size: 1.1em;
+    }
+
+    #ae-component-name {
+      height: 20px;
+      border-radius: 0.5em;
+      font-size: 1.1em;
+      margin: 0;
+    }
+
+    h4 {
+      margin-top: 0.5em;
+      margin-bottom: 0.5em;
+    }
+
+    footer div {
+      width: 100%;
+      margin-bottom: 1em;
+    }
+
+    #project-items {
+      margin: 0;
+      height: 20px;
+      width: 50%;
+    }
+
+    .main-div {
+      position: relative;
+    }
+
+    .clear-btn {
+      display: none;
+      position: absolute;
+      top: 10px;
+      right: 6px;
+      cursor: pointer;
+    }
+
+    .main-div:hover .clear-btn {
+      display: inline;
+    }
+
+    .title-heading {
+      padding-top: 5px;
+      padding-bottom: 15px;
+    }
+
+    .fixed {
+      position: fixed;
+      top: 0;
+      width: calc(100% - 32px);
+      background-color: #222;
+      z-index: 1000;
+      margin-right: 20px;
+    }
+  </style>
+
+  <body>
+    <div class="fixed">
+      <h4>Console</h4>
+      <div class="main-div">
+        <sp-body id="plugin-body"> Ready <br /></sp-body>
+        <div class="clear-btn" title="Clear console">
+          <sp-icon name="ui:CrossSmall"></sp-icon>
+        </div>
+      </div>
+      <div class="title-heading">
+        <h5>
+          Active Project:
+          <span id="active-project-name">No Active Project</span>
+        </h5>
+        <h5>
+          Active Sequence:
+          <span id="active-sequence-name">No Active Sequence</span>
+        </h5>
+      </div>
+    </div>
+    <footer>
+      <div class="section">
+        <h4>Project</h4>
+        <sp-button id="open-project">Open Project</sp-button>
+        <sp-button id="active-project">Active Project</sp-button>
+        <sp-button id="active-sequence-project">Active Sequence</sp-button>
+        <sp-button id="open-from-id-project">Project From Id</sp-button>
+        <sp-button id="get-insertion-bin-project">Get Insertion Bin</sp-button>
+        <sp-button id="get-all-sequences-project">Get All Sequences</sp-button>
+        <sp-button id="open-sequence-project">Open Sequence</sp-button>
+        <sp-button id="pause-project">Pause Growing</sp-button>
+        <sp-button id="save-project">Save Project</sp-button>
+        <sp-button id="save-as-project">Save As Project</sp-button>
+        <sp-button id="get-supported-luminances-project"
+          >Get Supported Graphics White Luminances</sp-button
+        >
+        <sp-button id="get-luminance-project"
+          >Get Current Graphics White Luminance</sp-button
+        >
+        <sp-button id="close-project">Close Project</sp-button>
+      </div>
+      <div class="section">
+        <h4>Sequence</h4>
+        <sp-button id="get-sequence-from-id">Get Sequence From Id</sp-button>
+        <sp-button id="set-active-sequence">Set Last Sequence Active</sp-button>
+        <sp-button id="create-sequence">Create Sequence</sp-button>
+        <sp-button id="create-media-sequence"
+          >Create Sequence From Media</sp-button
+        >
+        <sp-button id="get-caption-track-count"
+          >Get Caption Track Count</sp-button
+        >
+        <sp-button id="get-video-track-sequence"
+          >Get First Video Track</sp-button
+        >
+        <sp-button id="get-selection-sequence"
+          >Get Sequence Selection</sp-button
+        >
+        <sp-button id="set-selection-sequence"
+          >Set Sequence Selection</sp-button
+        >
+        <sp-button id="create-sub-sequence">Create Subsequence</sp-button>
+      </div>
+      <div class="section">
+        <h4>Markers</h4>
+        <sp-button id="marker-comment">Add Comment Marker</sp-button>
+        <sp-button id="marker-chapter">Add Chapter Marker</sp-button>
+        <sp-button id="marker-weblink">Add Weblink Marker</sp-button>
+        <sp-button id="marker-flashcuepoint"
+          >Add Flash Cue Point Marker</sp-button
+        >
+        <sp-button id="marker-movemarker">Move Marker</sp-button>
+        <sp-button id="marker-removemarker">Remove Marker</sp-button>
+      </div>
+      <div class="section">
+        <h4>Project Panel Item Manipulation</h4>
+        <sp-button id="get-project-items"> Get Project Items</sp-button>
+        <sp-button id="create-bin"> Create Bin</sp-button>
+        <sp-button id="create-smart-bin"> Create Smart Bin</sp-button>
+        <sp-button id="rename-bin"> Rename Bin</sp-button>
+        <sp-button id="remove-item"> Remove Item</sp-button>
+        <sp-button id="move-item"> Move Item</sp-button>
+        <sp-button id="set-in-out-point"> Set In Out Point</sp-button>
+        <sp-button id="clear-in-out-point"> Clear In Out Point</sp-button>
+        <sp-button id="set-override-framerate">
+          Set Override FrameRate</sp-button
+        >
+        <sp-button id="set-override-pixel-aspect-ratio">
+          Set Override Pixel Aspect Ratio</sp-button
+        >
+        <sp-button id="set-scale-to-frame-size">
+          Set Scale To Frame Size</sp-button
+        >
+        <sp-button id="set-footage-interpretation">
+          Set Footage Interpretation</sp-button
+        >
+        <sp-button id="refresh-media"> Refresh Media</sp-button>
+      </div>
+      <div class="section">
+        <h4>Metadata</h4>
+        <sp-button id="get-project-metadata">Get Project MetaData</sp-button>
+        <sp-button id="get-xmp-metadata">Get XMP MetaData</sp-button>
+        <sp-button id="get-projectcolumns-metadata"
+          >Get Project Columns MetaData</sp-button
+        >
+        <sp-button id="get-projectpanel-metadata"
+          >Get Project Panel MetaData</sp-button
+        >
+        <sp-button id="set-project-metadata">Set Project Metadata</sp-button>
+        <sp-button id="set-xmp-metadata">Set XMP Metadata</sp-button>
+        <sp-button id="set-projectpanel-metadata"
+          >Set Project Panel MetaData</sp-button
+        >
+        <sp-button id="add-property-metadata-schema"
+          >Add Property To Project Metdata Schema</sp-button
+        >
+      </div>
+      <div class="section">
+        <h4>Source Monitor Controls</h4>
+        <sp-button id="open-projectItem">Open ProjectItem</sp-button>
+        <select id="project-items"></select>
+
+        <sp-button id="open-filePath">Open File Path</sp-button>
+        <sp-button id="play">Play</sp-button>
+        <sp-button id="get-pos">Get Position</sp-button>
+        <sp-button id="close-clip">Close Clip</sp-button>
+        <sp-button id="close-all-clips">Close All Clips</sp-button>
+      </div>
+      <div class="section">
+        <h4>Keyframe</h4>
+        <sp-button id="set-value">Set Value </sp-button>
+        <sp-button id="get-start-value">Get Start Value</sp-button>
+        <sp-button id="add-keyframe">Add Keyframe</sp-button>
+        <sp-button id="get-keyframes">Get Keyframes As Ticktime</sp-button>
+        <sp-button id="get-keyfram-time">Get Keyframes At Time</sp-button>
+        <sp-button id="set-interpolation"
+          >Set Interpolation At Keyframe</sp-button
+        >
+      </div>
+      <div class="section">
+        <h4>Effects & Transitions</h4>
+        <sp-button id="get-effect-names">Get Effect Names</sp-button>
+        <sp-button id="add-gamma-correction-effect"
+          >Add Gamma Correction Effect</sp-button
+        >
+        <sp-button id="remove-gamma-correction-effect"
+          >Remove The Last Effect</sp-button
+        >
+        <sp-button id="get-transition-names">Get Transition Names</sp-button>
+        <sp-button id="add-transition-start"
+          >Add Transition To The Start Of TrackItem</sp-button
+        >
+        <sp-button id="add-transition-end"
+          >Add Transition To The End Of TrackItem</sp-button
+        >
+        <sp-button id="remove-transition-start"
+          >Remove Transition To The Start</sp-button
+        >
+      </div>
+      <div class="section">
+        <h4>Properties</h4>
+        <sp-button id="get-sequence-property"
+          >Get Sample Sequence Property</sp-button
+        >
+        <sp-button id="set-sequence-property"
+          >Set New Sample Sequence Property</sp-button
+        >
+        <sp-button id="clear-sequence-property"
+          >Clear New Sample Sequence Property</sp-button
+        >
+      </div>
+      <div class="section">
+        <h4>Settings</h4>
+        <sp-button id="get-project-setting"
+          >Get Scratch Disk Path Setting</sp-button
+        >
+        <sp-button id="set-project-setting"
+          >Set Scratch Disk Path Setting To MyDocuments</sp-button
+        >
+      </div>
+      <div class="section">
+        <h4>Export Controls</h4>
+        <sp-button id="export-frame"> Export Current Frame As PNG </sp-button>
+        <sp-button id="export-sequence">
+          Export Sequence Using Preset
+        </sp-button>
+      </div>
+      <div class="section">
+        <h4>Import Controls</h4>
+        <sp-button id="import-ae-component">Import AE Composition</sp-button>
+        <input
+          type="text"
+          id="ae-component-name"
+          placeholder="AE Composition Name Here"
+        />
+        <sp-button id="import-files">Import Media Files From Disk</sp-button>
+        <sp-button id="import-all-ae-components"
+          >Import All AE Composition</sp-button
+        >
+        <sp-button id="import-sequences">Import Sequences From Disk</sp-button>
+      </div>
+    </footer>
+  </body>
+</html>
