@@ -1,0 +1,1 @@
+sp-button{background-color:#333;border:none;color:#ccc;cursor:pointer;margin:5px;padding:10px}sp-button:disabled{background-color:#666;color:#777;cursor:not-allowed}:root{--header-height:32px;--footer-height:62px;--container-margin:10px}
