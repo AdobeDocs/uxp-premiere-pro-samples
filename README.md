@@ -2,7 +2,7 @@
 
 Getting started developing a Universal Extensibility Platform - UXP panel for Adobe Premiere Pro.
 
-The Premiere Pro UXP APi is available here: <https://developer.adobe.com/premiere-pro/uxp/>
+The Premiere Pro UXP API is available here: <https://developer.adobe.com/premiere-pro/uxp/>
 
 ## Things you need to begin
 * Premiere Pro 25.2.0 BETA (Build 13) or later, available through Creative Cloud Desktop -CCD
