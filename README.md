@@ -2,6 +2,8 @@
 
 Getting started developing a Universal Extensibility Platform - UXP panel for Adobe Premiere Pro.
 
+The Premiere Pro UXP APi is available here: <https://developer.adobe.com/premiere-pro/uxp/>
+
 ## Things you need to begin
 * Premiere Pro 25.2.0 BETA (Build 13) or later, available through Creative Cloud Desktop -CCD
 * UXP Developer Tool-UDT,Version 2.1.0 (2.1.0.30) which is available for download through CCD
@@ -17,3 +19,13 @@ Getting started developing a Universal Extensibility Platform - UXP panel for Ad
 * Marvel at the magnificent UXP sample panel.
 
 ![UXP Sample Panel](payloads/UXP-sample-panel-loaded.png)
+
+## Adding TypeScript Definitions to VS Code
+
+Add typescript definitions to the .js file you are working in, so that you will see definitions
+
+copy the provided file; types.d.ts to the root of the html directory
+
+Add this line to the top of the index.js file
+
+`/// <reference path="./types.d.ts" />`
