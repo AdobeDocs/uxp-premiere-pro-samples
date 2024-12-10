@@ -1,6 +1,7 @@
 # ReadMe
 
 Getting started developing a Universal Extensibility Platform - UXP panel for Adobe Premiere Pro.
+
 ##Things you need to begin
 * Premiere Pro 25.2.0 BETA (Build 13) or later, available through Creative Cloud Desktop -CCD
 * UXP Developer Tool-UDT,Version 2.1.0 (2.1.0.30) which is available for download through CCD
