@@ -31,3 +31,5 @@ copy the provided file; types.d.ts to the root of the html directory
 Add this line to the top of the index.js file
 
 `/// <reference path="./types.d.ts" />`
+
+###### posted 10 DEC 2024 dmcsween
