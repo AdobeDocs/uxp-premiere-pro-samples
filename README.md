@@ -22,6 +22,8 @@ The Premiere Pro UXP API is available here: <https://developer.adobe.com/premier
 
 ## Adding TypeScript Definitions to VS Code
 
+![UXP typescript autocomplete](payloads/ts_def_demo.png)
+
 Add typescript definitions to the .js file you are working in, so that you will see definitions
 
 copy the provided file; types.d.ts to the root of the html directory
