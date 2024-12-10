@@ -5,11 +5,13 @@ Getting started developing a Universal Extensibility Platform - UXP panel for Ad
 The Premiere Pro UXP API is available here: <https://developer.adobe.com/premiere-pro/uxp/>
 
 ## Things you need to begin
+
 * Premiere Pro 25.2.0 BETA (Build 13) or later, available through Creative Cloud Desktop -CCD
 * UXP Developer Tool-UDT,Version 2.1.0 (2.1.0.30) which is available for download through CCD
 * Adobe third-party sample panel - **3psample-panel** directory available in this repo
 
 ## How to launch the test panel
+
 * Load UDT. On first launch it will be blank. Click the **Add Plugin** button
 * Navigate to the location where you downloaded the 3psample-panel
 * Select 3psample-panel/HTML/manifest.json, and click **Open**
