@@ -20,7 +20,7 @@ let matchnames;
 let videoComponentChain;
 const filterFactory = ppro.VideoFilterFactory;
 
-async function getVideoComponentChain() {
+export async function getVideoComponentChain() {
   const proj = await ppro.Project.getActiveProject();
   if (!proj) {
     log("No active project", "red");
@@ -54,11 +54,11 @@ async function getVideoComponentChain() {
 }
 
 //Gets all the effects matchNames.
-async function getEffectsName() {
+export async function getEffectsName() {
   return await filterFactory.getMatchNames();
 }
 
-async function addEffects(project) {
+export async function addEffects(project) {
   if (project) {
     const videoComponentChain = await getVideoComponentChain();
     if (!videoComponentChain) {
@@ -89,7 +89,7 @@ async function addEffects(project) {
     log(`No project found.`, "red");
   }
 }
-async function removeEffects(project) {
+export async function removeEffects(project) {
   if (project) {
     const videoComponentChain = await getVideoComponentChain();
     if (!videoComponentChain) {
@@ -126,6 +126,3 @@ async function removeEffects(project) {
     log(`No project found.`, "red");
   }
 }
-
-// module.exports = { addEffects, removeEffects, getEffectsName };
-export { addEffects, removeEffects, getEffectsName };
