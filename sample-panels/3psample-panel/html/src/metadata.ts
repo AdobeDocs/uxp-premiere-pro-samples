@@ -11,10 +11,13 @@
  * then your use, modification, or distribution of it requires the prior
  * written permission of Adobe.
  **************************************************************************/
-const { log } = require("/src/utils");
+
+import type { premierepro, Project } from "../types.d.ts";
+const ppro = require("premierepro") as premierepro;
+import { log } from "./utils";
 
 // Gets the project items, returns undefined if there are no project items
-async function getProjectItems(project) {
+export async function getProjectItems(project: Project) {
   if (!project) {
     log(`No project found.`, "red");
     return;
@@ -29,7 +32,7 @@ async function getProjectItems(project) {
 }
 
 // Returns Project metadata
-async function getProjectMetadata(project) {
+export async function getProjectMetadata(project: Project) {
   if (!project) {
     log(`No project found.`, "red");
     return;
@@ -40,7 +43,7 @@ async function getProjectMetadata(project) {
 }
 
 // Returns XMP metadata of projectitems.
-async function getXMPMetadata(project) {
+export async function getXMPMetadata(project: Project) {
   if (!project) {
     log(`No project found.`, "red");
     return;
@@ -51,7 +54,7 @@ async function getXMPMetadata(project) {
 }
 
 // Gets Project Column metadata
-async function getProjectColumnsMetadata(project) {
+export async function getProjectColumnsMetadata(project: Project) {
   if (!project) {
     log(`No project found.`, "red");
     return;
@@ -64,13 +67,13 @@ async function getProjectColumnsMetadata(project) {
 }
 
 // Gets Project Panel metadata
-async function getProjectPanelMetadata() {
+export async function getProjectPanelMetadata() {
   const metadata = await ppro.Metadata.getProjectPanelMetadata();
   return metadata;
 }
 
 // Sets xmp metadata of one project item to another
-async function setXMPMetadata(project) {
+export async function setXMPMetadata(project: Project) {
   if (!project) {
     log(`No project found.`, "red");
     return;
@@ -103,7 +106,7 @@ async function setXMPMetadata(project) {
 }
 
 // Sets project metadata
-async function setProjectMetadata(project) {
+export async function setProjectMetadata(project: Project) {
   if (!project) {
     log(`No project found.`, "red");
     return;
@@ -137,7 +140,7 @@ async function setProjectMetadata(project) {
 }
 
 // Sets project panel metadata
-async function setProjectPanelMetadata() {
+export async function setProjectPanelMetadata() {
   const metadata =
     "<?xml version='1.0'?><md.paths version='1.0'><metadata_path><internal>true</internal><namespace>http://ns.adobe.com/exif/1.0/</namespace><description>ColorSpace</description><entry_name>ColorSpace</entry_name><parent_id>http://ns.adobe.com/exif/1.0/</parent_id></metadata_path><metadata_path><internal>false</internal><namespace>http://amwa.tv/mxf/as/11/core/</namespace><description>audioTrackLayout</description><entry_name>audioTrackLayout</entry_name><parent_id>http://amwa.tv/mxf/as/11/core/</parent_id></metadata_path><metadata_path><internal>false</internal><namespace>http://ns.useplus.org/ldf/xmp/1.0/</namespace><description>ImageCreator</description><entry_name>ImageCreator</entry_name><parent_id>http://ns.useplus.org/ldf/xmp/1.0/</parent_id></metadata_path></md.paths>";
   const success = await ppro.Metadata.setProjectPanelMetadata(metadata);
@@ -145,7 +148,7 @@ async function setProjectPanelMetadata() {
 }
 
 // Adds property to project metadata schema
-async function addPropertiesToMetadataSchema() {
+export async function addPropertiesToMetadataSchema() {
   let success = await ppro.Metadata.addPropertyToProjectMetadataSchema(
     "name",
     "value",
@@ -153,14 +156,3 @@ async function addPropertiesToMetadataSchema() {
   );
   return success;
 }
-
-module.exports = {
-  addPropertiesToMetadataSchema,
-  setProjectPanelMetadata,
-  setProjectMetadata,
-  setXMPMetadata,
-  getProjectPanelMetadata,
-  getProjectMetadata,
-  getXMPMetadata,
-  getProjectColumnsMetadata,
-};

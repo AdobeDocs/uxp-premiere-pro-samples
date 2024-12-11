@@ -12,11 +12,15 @@
  * written permission of Adobe.
  **************************************************************************/
 
+import type { premierepro, Project, Sequence } from "../types.d.ts";
+const ppro = require("premierepro") as premierepro;
+import { log } from "./utils";
+
 /**
  * Get input project's scratch disk path in its settings
  * @return [string] Scratch Disk Path of current project
  */
-async function getScratchDiskSetting(project) {
+export async function getScratchDiskSetting(project: Project) {
   const projectSettings = ppro.ProjectSettings;
   const scratchDiskSettings = await projectSettings.getScratchDiskSettings(
     project
@@ -25,11 +29,12 @@ async function getScratchDiskSetting(project) {
     ppro.Constants.ScratchDiskFolderType.VIDEO_CAPTURE
   );
 }
+
 /**
  * Set scratch Disk path to MyDocuments
  * @return [bool] if set action succeed or not
  */
-async function setScratchDiskSettings(project) {
+export async function setScratchDiskSettings(project: Project) {
   const projectSettings = ppro.ProjectSettings;
   const scratchDiskSettings = await projectSettings.getScratchDiskSettings(
     project
@@ -58,8 +63,3 @@ async function setScratchDiskSettings(project) {
 
   return succeed;
 }
-
-module.exports = {
-  getScratchDiskSetting,
-  setScratchDiskSettings,
-};

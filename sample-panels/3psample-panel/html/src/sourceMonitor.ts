@@ -11,14 +11,17 @@
  * then your use, modification, or distribution of it requires the prior
  * written permission of Adobe.
  **************************************************************************/
-const { log } = require("/src/utils");
+
+import type { premierepro, Project, Sequence } from "../types.d.ts";
+const ppro = require("premierepro") as premierepro;
+import { log } from "./utils";
 
 /// Source Monitor html helper functions
 /**
  * add list of projectItems in current active project as options in select
  * html component
  */
-async function addProjectItemsOptions() {
+export async function addProjectItemsOptions() {
   let items = document.getElementById("project-items");
   // get projectItems from current active project
   const proj = await ppro.Project.getActiveProject();
@@ -53,7 +56,7 @@ function clearProjectItemOptions() {
 /**
  * refresh projectItems options
  */
-async function refreshProjectItemOptions() {
+export async function refreshProjectItemOptions() {
   clearProjectItemOptions();
   await addProjectItemsOptions();
 }
@@ -63,14 +66,14 @@ async function refreshProjectItemOptions() {
  * get projectItem opened at source monitor
  * @returns PPro projectItem / undefined if no projectItem opened
  */
-async function getProjectItemAtSourceMonitor() {
+export async function getProjectItemAtSourceMonitor() {
   return ppro.SourceMonitor.getProjectItem();
 }
 
 /**
  * open projectItem [clip] in the file user selected
  */
-async function openFilePath() {
+export async function openFilePath() {
   const file = await uxp.storage.localFileSystem.getFileForOpening();
   if (file && file.isFile && file.nativePath) {
     return ppro.SourceMonitor.openFilePath(file.nativePath);
@@ -82,7 +85,7 @@ async function openFilePath() {
  * @param selected Name of selected ProjectItem
  * @returns [Boolean] if open projectItem at source monitor succeed
  */
-async function openProjectItem(selected) {
+export async function openProjectItem(selected: string) {
   let success = false;
   const proj = await ppro.Project.getActiveProject();
   if (!proj) {
@@ -108,7 +111,7 @@ async function openProjectItem(selected) {
 /**
  * play clip at source monitor in original speed
  */
-async function play() {
+export async function play() {
   return ppro.SourceMonitor.play(1.0);
 }
 
@@ -116,33 +119,20 @@ async function play() {
  * get time cursor position at source monitor
  * @returns [Ticktime Object] current time of source monitor cursor
  */
-async function getPosition() {
+export async function getPosition() {
   return await ppro.SourceMonitor.getPosition();
 }
 
 /**
  * close current active clip at source monitor
  */
-async function closeClip() {
+export async function closeClip() {
   return ppro.SourceMonitor.closeClip();
 }
 
 /**
  * close all clips at source monitor
  */
-async function closeAllClips() {
+export async function closeAllClips() {
   return ppro.SourceMonitor.closeAllClips();
 }
-
-module.exports = {
-  getProjectItemAtSourceMonitor,
-  openFilePath,
-  openProjectItem,
-  play,
-  getPosition,
-  closeClip,
-  closeAllClips,
-  addProjectItemsOptions,
-  clearProjectItemOptions,
-  refreshProjectItemOptions,
-};

@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "target": "ESNext",
+    "useDefineForClassFields": true,
+    "module": "ESNext",
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "checkJs": true,
+    "isolatedModules": true,
+    "types": ["@adobe/cc-ext-uxp-types", "@types/node"],
+    "outDir": "../build-html",
+    "noImplicitAny": null
+  },
+  "include": ["./**/*.d.ts", "./**/*.ts", "./**/*.js", "package.json"]
+}

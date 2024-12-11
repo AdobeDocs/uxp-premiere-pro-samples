@@ -12,30 +12,31 @@
  * written permission of Adobe.
  **************************************************************************/
 
-const { log } = require("./utils");
+import { log } from "./utils";
+import type { premierepro } from "../types.d.ts";
+const ppro = require("premierepro") as premierepro;
 
 let matchnames;
 let videoComponentChain;
-const ppro = require("premierepro");
 const filterFactory = ppro.VideoFilterFactory;
 
 async function getVideoComponentChain() {
-  proj = await ppro.Project.getActiveProject();
+  const proj = await ppro.Project.getActiveProject();
   if (!proj) {
     log("No active project", "red");
     return;
   } else {
-    sequence = await proj.getActiveSequence();
+    const sequence = await proj.getActiveSequence();
     if (!sequence) {
       log("No sequence found", "red");
       return;
     } else {
-      videoTrack = await sequence.getVideoTrack(0);
+      const videoTrack = await sequence.getVideoTrack(0);
       if (!videoTrack) {
         log("No videoTrack found", "red");
         return;
       } else {
-        trackItems = await videoTrack.getTrackItems(
+        const trackItems = await videoTrack.getTrackItems(
           ppro.Constants.TrackItemType.CLIP,
           false
         );
@@ -53,11 +54,11 @@ async function getVideoComponentChain() {
 }
 
 //Gets all the effects matchNames.
-async function getEffectsName() {
+export async function getEffectsName() {
   return await filterFactory.getMatchNames();
 }
 
-async function addEffects(project) {
+export async function addEffects(project) {
   if (project) {
     const videoComponentChain = await getVideoComponentChain();
     if (!videoComponentChain) {
@@ -88,7 +89,7 @@ async function addEffects(project) {
     log(`No project found.`, "red");
   }
 }
-async function removeEffects(project) {
+export async function removeEffects(project) {
   if (project) {
     const videoComponentChain = await getVideoComponentChain();
     if (!videoComponentChain) {
@@ -125,8 +126,3 @@ async function removeEffects(project) {
     log(`No project found.`, "red");
   }
 }
-module.exports = {
-  getEffectsName,
-  addEffects,
-  removeEffects,
-};
