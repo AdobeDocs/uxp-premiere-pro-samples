@@ -12,14 +12,17 @@
  * written permission of Adobe.
  **************************************************************************/
 
-const { log } = require("/src/utils");
+import type { premierepro, Project, Sequence } from "../types.d.ts";
+const ppro = require("premierepro") as premierepro;
+import { log } from "./utils";
+
 const NEW_PROPERTY_NAME = "Sample";
 
 /**
  * Get input sequence's property object
  * @return [Property Object] PPro property object
  */
-async function getSequenceProperty(sequence) {
+export async function getSequenceProperty(sequence: Sequence) {
   return ppro.Properties.getProperties(sequence);
 }
 
@@ -27,7 +30,7 @@ async function getSequenceProperty(sequence) {
  * Get input sequence's sample property value if it is defined
  * @return [string] value of "Sample" property
  */
-async function getSequenceSampleProperty(sequence) {
+export async function getSequenceSampleProperty(sequence: Sequence) {
   try {
     const properties = await getSequenceProperty(sequence);
     let value = properties.getValue(NEW_PROPERTY_NAME);
@@ -42,7 +45,10 @@ async function getSequenceSampleProperty(sequence) {
  * Set a example new property to input sequencev
  * @return [Boolean] if operation succeed
  */
-async function setSampleSequenceProperty(sequence, project) {
+export async function setSampleSequenceProperty(
+  sequence: Sequence,
+  project: Project
+) {
   const properties = await getSequenceProperty(sequence);
   let newPropertyValue = 88;
 
@@ -72,7 +78,10 @@ async function setSampleSequenceProperty(sequence, project) {
  * Clear the added sequence property
  * @return [Bool] if operation succeed
  */
-async function clearSampleSequenceProperty(sequence, project) {
+export async function clearSampleSequenceProperty(
+  sequence: Sequence,
+  project: Project
+) {
   // check if property exist and log error message as needed
   let value = await getSequenceSampleProperty(sequence);
   let succeed;
@@ -94,9 +103,3 @@ async function clearSampleSequenceProperty(sequence, project) {
   }
   return succeed;
 }
-
-module.exports = {
-  getSequenceSampleProperty,
-  setSampleSequenceProperty,
-  clearSampleSequenceProperty,
-};

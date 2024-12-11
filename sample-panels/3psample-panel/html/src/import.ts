@@ -12,13 +12,21 @@
  * written permission of Adobe.
  **************************************************************************/
 
+import type {
+  FolderItem,
+  premierepro,
+  Project,
+  ProjectItem,
+} from "../types.d.ts";
+const ppro = require("premierepro") as premierepro;
+
 /**
  * Import files into project
  * @param project Input PPro project object
  * @param filePaths Array of string file paths to import
  * @returns [Boolean] if import successful
  */
-async function importFiles(project, filePaths) {
+export async function importFiles(project: Project, filePaths: string[]) {
   // import into current project if any
   return await project.importFiles(
     filePaths,
@@ -35,7 +43,11 @@ async function importFiles(project, filePaths) {
  * @param seqIds Array of string sequences id to be imported
  * @returns [Boolean] if import successful
  */
-async function importSequences(project, projectFilePath, seqIds) {
+export async function importSequences(
+  project: Project,
+  projectFilePath: string,
+  seqIds: string[]
+) {
   return project.importSequences(projectFilePath, seqIds);
 }
 
@@ -47,11 +59,11 @@ async function importSequences(project, projectFilePath, seqIds) {
  * @param rootItem Root item of project that contains ae composition to import
  * @returns [Boolean] if import successful
  */
-async function importAeComponent(
-  project,
-  projectFilePath,
-  aeCompName,
-  rootItem
+export async function importAeComponent(
+  project: Project,
+  projectFilePath: string,
+  aeCompName: string,
+  rootItem: ProjectItem
 ) {
   return project.importAEComps(projectFilePath, aeCompName, rootItem);
 }
@@ -63,13 +75,10 @@ async function importAeComponent(
  * @param rootItem Root item of project that contains ae composition to import
  * @returns [Boolean] if import successful
  */
-async function importAllAeComponents(project, projectFilePath, rootItem) {
+export async function importAllAeComponents(
+  project: Project,
+  projectFilePath: string,
+  rootItem: ProjectItem
+) {
   return project.importAllAEComps(projectFilePath, rootItem);
 }
-
-module.exports = {
-  importFiles,
-  importSequences,
-  importAeComponent,
-  importAllAeComponents,
-};

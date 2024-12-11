@@ -12,20 +12,22 @@
  * written permission of Adobe.
  **************************************************************************/
 
-const { log } = require("./utils");
+import type { premierepro, Project } from "../types.d.ts";
+const ppro = require("premierepro") as premierepro;
+import { log } from "./utils";
 
-async function getRootItem(project) {
+export async function getRootItem(project: Project) {
   const rootItem = await project.getRootItem();
   return rootItem;
 }
 
-async function getProjectItems(project) {
+export async function getProjectItems(project: Project) {
   const rootItem = await getRootItem(project);
   const projectItems = await rootItem.getItems();
   return projectItems;
 }
 
-async function getClipProjectItem(project) {
+export async function getClipProjectItem(project: Project) {
   const rootItem = await getRootItem(project);
   const projectItems = await rootItem.getItems();
 
@@ -49,7 +51,7 @@ async function getClipProjectItem(project) {
   return ppro.ClipProjectItem.cast(mediaItem);
 }
 
-async function createBin(project) {
+export async function createBin(project: Project) {
   if (!project) {
     log(`No project found.`, "red");
     return;
@@ -72,7 +74,7 @@ async function createBin(project) {
   return success;
 }
 
-async function createSmartBin(project) {
+export async function createSmartBin(project: Project) {
   if (!project) {
     log(`No project found.`, "red");
     return;
@@ -95,7 +97,7 @@ async function createSmartBin(project) {
   return success;
 }
 
-async function renameBin(project) {
+export async function renameBin(project: Project) {
   if (!project) {
     log(`No project found.`, "red");
     return;
@@ -139,7 +141,7 @@ async function renameBin(project) {
   return success;
 }
 
-async function removeItem(project) {
+export async function removeItem(project: Project) {
   const rootItem = await getRootItem(project);
 
   //create a bin named Bin4
@@ -181,7 +183,7 @@ async function removeItem(project) {
   }, "1000");
 }
 
-async function moveItem(project) {
+export async function moveItem(project: Project) {
   const rootItem = await getRootItem(project);
   try {
     project.lockedAccess(() => {
@@ -236,7 +238,7 @@ async function moveItem(project) {
   }, "1000");
 }
 
-async function setInOutPoint(project) {
+export async function setInOutPoint(project: Project) {
   if (!project) {
     log(`No project found.`, "red");
     return;
@@ -264,7 +266,7 @@ async function setInOutPoint(project) {
   return success;
 }
 
-async function clearInOutPoint(project) {
+export async function clearInOutPoint(project: Project) {
   if (!project) {
     log(`No project found.`, "red");
     return;
@@ -287,7 +289,7 @@ async function clearInOutPoint(project) {
   return success;
 }
 
-async function setScaleToFrameSize(project) {
+export async function setScaleToFrameSize(project: Project) {
   if (!project) {
     log(`No project found.`, "red");
     return;
@@ -309,13 +311,13 @@ async function setScaleToFrameSize(project) {
 
   return success;
 }
-async function refreshMedia(project) {
+export async function refreshMedia(project: Project) {
   const clipProjectItem = await getClipProjectItem(project);
   const success = await clipProjectItem.refreshMedia();
   return success;
 }
 
-async function setFootageInterpretation(project) {
+export async function setFootageInterpretation(project: Project) {
   if (!project) {
     log(`No project found.`, "red");
     return;
@@ -341,7 +343,7 @@ async function setFootageInterpretation(project) {
 
   return success;
 }
-async function setOverrideFrameRate(project) {
+export async function setOverrideFrameRate(project: Project) {
   const clipProjectItem = await getClipProjectItem(project);
 
   let success = false;
@@ -360,7 +362,7 @@ async function setOverrideFrameRate(project) {
   return success;
 }
 
-async function setOverridePixelAspectRatio(project) {
+export async function setOverridePixelAspectRatio(project: Project) {
   const clipProjectItem = await getClipProjectItem(project);
 
   let success = false;
@@ -381,19 +383,3 @@ async function setOverridePixelAspectRatio(project) {
 
   return success;
 }
-
-module.exports = {
-  getProjectItems,
-  createBin,
-  createSmartBin,
-  renameBin,
-  removeItem,
-  moveItem,
-  setInOutPoint,
-  clearInOutPoint,
-  setScaleToFrameSize,
-  refreshMedia,
-  setFootageInterpretation,
-  setOverrideFrameRate,
-  setOverridePixelAspectRatio,
-};

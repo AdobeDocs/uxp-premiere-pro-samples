@@ -12,14 +12,15 @@
  * written permission of Adobe.
  **************************************************************************/
 
-const { log } = require("./utils");
+import type { premierepro, Project, Sequence } from "../types.d.ts";
+const ppro = require("premierepro") as premierepro;
+import { log } from "./utils";
 
 let trackItems;
-const ppro = require("premierepro");
-const transitionFactory = ppro.TransitionFactory;
 let matchnames;
+const transitionFactory = ppro.TransitionFactory;
 
-async function getVideoTrackItems() {
+export async function getVideoTrackItems() {
   let proj = await ppro.Project.getActiveProject();
   if (!proj) {
     log(`No project found.`, "red");
@@ -50,11 +51,11 @@ async function getVideoTrackItems() {
 }
 
 //Gets all the transition matchNames.
-async function getTransitionNames() {
+export async function getTransitionNames() {
   return await transitionFactory.getVideoTransitionMatchNames();
 }
 
-async function addTransitionStart(project) {
+export async function addTransitionStart(project: Project) {
   if (!project) {
     log(`No project found.`, "red");
     return;
@@ -92,7 +93,7 @@ async function addTransitionStart(project) {
   return success;
 }
 
-async function addTransitionEnd(project) {
+export async function addTransitionEnd(project: Project) {
   if (!project) {
     log(`No project found.`, "red");
     return;
@@ -125,7 +126,7 @@ async function addTransitionEnd(project) {
   return success;
 }
 
-async function removeTransitionStart(project) {
+export async function removeTransitionStart(project: Project) {
   if (!project) {
     log(`No project found.`, "red");
     return;
@@ -153,10 +154,3 @@ async function removeTransitionStart(project) {
 
   return success;
 }
-
-module.exports = {
-  getTransitionNames,
-  addTransitionStart,
-  addTransitionEnd,
-  removeTransitionStart,
-};

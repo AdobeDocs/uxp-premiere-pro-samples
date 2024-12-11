@@ -12,10 +12,13 @@
  * written permission of Adobe.
  **************************************************************************/
 
-//Returning the sequence markers and clip markers objects from sequence and project root items respectivily
-const { log } = require("/src/utils");
+import type { premierepro, Project } from "../types.d.ts";
+const ppro = require("premierepro") as premierepro;
+import { log } from "./utils";
 
-async function getMarkerObjects(project) {
+//Returning the sequence markers and clip markers objects from sequence and project root items respectivily
+
+export async function getMarkerObjects(project: Project) {
   const rootItem = await project.getRootItem();
   const projectItems = await rootItem.getItems();
 
@@ -48,7 +51,7 @@ async function getMarkerObjects(project) {
   return { sequenceMarkers, clipMarkers };
 }
 
-async function createMarkerComment(project) {
+export async function createMarkerComment(project) {
   const { sequenceMarkers } = await getMarkerObjects(project);
 
   let success = false;
@@ -74,7 +77,7 @@ async function createMarkerComment(project) {
   return success;
 }
 
-async function createMarkerChapter(project) {
+export async function createMarkerChapter(project: Project) {
   const { sequenceMarkers } = await getMarkerObjects(project);
 
   let success = false;
@@ -99,7 +102,7 @@ async function createMarkerChapter(project) {
   return success;
 }
 
-async function createMarkerWeblink(project) {
+export async function createMarkerWeblink(project: Project) {
   const { sequenceMarkers } = await getMarkerObjects(project);
 
   let success = false;
@@ -124,7 +127,7 @@ async function createMarkerWeblink(project) {
   return success;
 }
 
-async function createMarkerFlashCuePoint(project) {
+export async function createMarkerFlashCuePoint(project: Project) {
   const { sequenceMarkers } = await getMarkerObjects(project);
 
   let success = false;
@@ -149,7 +152,7 @@ async function createMarkerFlashCuePoint(project) {
   return success;
 }
 
-async function moveMarker(project) {
+export async function moveMarker(project: Project) {
   const { sequenceMarkers } = await getMarkerObjects(project);
 
   let markerlist = await sequenceMarkers.getMarkers();
@@ -174,7 +177,7 @@ async function moveMarker(project) {
   return success;
 }
 
-async function removeMarker(project) {
+export async function removeMarker(project: Project) {
   const { sequenceMarkers } = await getMarkerObjects(project);
 
   let markerlist = await sequenceMarkers.getMarkers();
@@ -197,12 +200,3 @@ async function removeMarker(project) {
 
   return success;
 }
-
-module.exports = {
-  createMarkerComment,
-  createMarkerChapter,
-  createMarkerWeblink,
-  createMarkerFlashCuePoint,
-  moveMarker,
-  removeMarker,
-};

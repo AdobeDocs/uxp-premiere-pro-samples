@@ -12,9 +12,11 @@
  * written permission of Adobe.
  **************************************************************************/
 
-const { log } = require("/src/utils");
+import type { premierepro, Project, Sequence } from "../types.d.ts";
+const ppro = require("premierepro") as premierepro;
+import { log } from "./utils";
 
-async function getSequence(project, sequenceGuid) {
+export async function getSequence(project: Project, sequenceGuid: string) {
   if (project) {
     return await project.getSequence(sequenceGuid);
   } else {
@@ -22,7 +24,7 @@ async function getSequence(project, sequenceGuid) {
   }
 }
 
-async function setActiveSequence(project, sequence) {
+export async function setActiveSequence(project: Project, sequence: Sequence) {
   if (project) {
     return await project.setActiveSequence(sequence);
   } else {
@@ -30,7 +32,7 @@ async function setActiveSequence(project, sequence) {
   }
 }
 
-async function createSequence(project, sequenceName) {
+export async function createSequence(project: Project, sequenceName: string) {
   if (project) {
     return await project.createSequence(sequenceName);
   } else {
@@ -38,7 +40,10 @@ async function createSequence(project, sequenceName) {
   }
 }
 
-async function createSequenceFromMedia(project, sequenceName) {
+export async function createSequenceFromMedia(
+  project: Project,
+  sequenceName: string
+) {
   if (project) {
     const rootItem = await project.getRootItem();
     const projectItems = await rootItem.getItems();
@@ -67,7 +72,7 @@ async function createSequenceFromMedia(project, sequenceName) {
 }
 
 // getVideoTrackCount() and getAudioTrackCount() are also available
-async function getCaptionTrackCount(sequence) {
+export async function getCaptionTrackCount(sequence: Sequence) {
   if (sequence) {
     return await sequence.getCaptionTrackCount();
   } else {
@@ -76,7 +81,7 @@ async function getCaptionTrackCount(sequence) {
 }
 
 //getCaptionTrack and getAudioTrack are also available
-async function getVideoTrack(sequence, trackIndex) {
+export async function getVideoTrack(sequence: Sequence, trackIndex: number) {
   if (sequence) {
     const videoTrackCount = await sequence.getVideoTrackCount();
     if (trackIndex + 1 > videoTrackCount) {
@@ -90,7 +95,7 @@ async function getVideoTrack(sequence, trackIndex) {
   }
 }
 
-async function getSequenceSelection(sequence) {
+export async function getSequenceSelection(sequence: Sequence) {
   if (sequence) {
     return await sequence.getSelection();
   } else {
@@ -98,7 +103,7 @@ async function getSequenceSelection(sequence) {
   }
 }
 
-async function setSequenceSelection(sequence) {
+export async function setSequenceSelection(sequence: Sequence) {
   if (sequence) {
     let trackItemSelection = await sequence.getSelection();
 
@@ -119,7 +124,7 @@ async function setSequenceSelection(sequence) {
   }
 }
 
-async function createSubsequence(sequence) {
+export async function createSubsequence(sequence: Sequence) {
   if (sequence) {
     try {
       return await sequence.createSubsequence(true);
@@ -130,15 +135,3 @@ async function createSubsequence(sequence) {
     log("No sequence found.");
   }
 }
-
-module.exports = {
-  getSequence,
-  setActiveSequence,
-  createSequence,
-  createSequenceFromMedia,
-  getCaptionTrackCount,
-  getVideoTrack,
-  getSequenceSelection,
-  setSequenceSelection,
-  createSubsequence,
-};

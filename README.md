@@ -6,19 +6,27 @@ The Premiere Pro UXP API is available here: <https://developer.adobe.com/premier
 
 ## Things you need to begin
 
-* Premiere Pro 25.2.0 BETA (Build 13) or later, available through Creative Cloud Desktop -CCD
-* UXP Developer Tool-UDT,Version 2.1.0 (2.1.0.30) which is available for download through CCD
-* Adobe third-party sample panel - **3psample-panel** directory available in this repo
+- Premiere Pro 25.2.0 BETA (Build 13) or later, available through Creative Cloud Desktop -CCD
+- UXP Developer Tool-UDT,Version 2.1.0 (2.1.0.30) which is available for download through CCD
+- Adobe third-party sample panel - **3psample-panel** directory available in this repo
+
+## Build the test panel
+
+- Open your console / terminal / command prompt
+- cd into the sample-panels/3psample-panel/html directory
+- Install dependencies with "npm i"
+- Bulid the project with "npm run build"
+- Panel is now built in the "build-html" directory
 
 ## How to launch the test panel
 
-* Load UDT. On first launch it will be blank. Click the **Add Plugin** button
-* Navigate to the location where you downloaded the 3psample-panel
-* Select 3psample-panel/HTML/manifest.json, and click **Open**
+- Load UDT. On first launch it will be blank. Click the **Add Plugin** button
+- Navigate to the location where you downloaded the 3psample-panel
+- Select 3psample-panel/build-html/manifest.json, and click **Open**
 
 ![UXP Developer Tool UDT](payloads/UDT_load_panel.png)
 
-* Marvel at the magnificent UXP sample panel.
+- Marvel at the magnificent UXP sample panel.
 
 ![UXP Sample Panel](payloads/UXP-sample-panel-loaded.png)
 

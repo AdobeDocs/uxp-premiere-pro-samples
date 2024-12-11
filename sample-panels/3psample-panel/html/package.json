@@ -1,0 +1,14 @@
+{
+  "type": "commonjs",
+  "scripts": {
+    "build": "cp-cli  ../html ../build-html && tsc && fix-imports",
+    "fix-imports": "node ./scripts/fix-imports.js"
+  },
+  "dev-dependencies": {
+    "@adobe/cc-ext-uxp-types": "^7.3.1",
+    "@types/node": "^22.10.2",
+    "cp-cli": "^2.0.0",
+    "tslib": "^2.8.1",
+    "typescript": "^5.7.2"
+  }
+}

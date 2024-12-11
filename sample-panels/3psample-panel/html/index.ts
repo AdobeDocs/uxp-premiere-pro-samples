@@ -13,9 +13,8 @@
  **************************************************************************/
 /// <reference path="./types.d.ts" />
 //module imports
-const { log, clearLog, registerClick } = require("/src/utils");
-
-const {
+import { log, clearLog, registerClick } from "./src/utils";
+import {
   openProject,
   openInputProject,
   getActiveProject,
@@ -30,9 +29,9 @@ const {
   getSupportedGraphicsWhiteLuminances,
   getCurrentGraphicsWhiteLuminance,
   closeProject,
-} = require("./src/project");
+} from "./src/project";
 
-const {
+import {
   getSequence,
   setActiveSequence,
   createSequence,
@@ -42,17 +41,17 @@ const {
   getSequenceSelection,
   setSequenceSelection,
   createSubsequence,
-} = require("./src/sequence");
+} from "./src/sequence";
 
-const {
+import {
   createMarkerComment,
   createMarkerChapter,
   createMarkerWeblink,
   createMarkerFlashCuePoint,
   moveMarker,
   removeMarker,
-} = require("/src/markers");
-const {
+} from "./src/markers";
+import {
   getProjectItems,
   createBin,
   createSmartBin,
@@ -66,9 +65,9 @@ const {
   setFootageInterpretation,
   setOverrideFrameRate,
   setOverridePixelAspectRatio,
-} = require("/src/projectPanel");
+} from "./src/projectPanel";
 
-const {
+import {
   addPropertiesToMetadataSchema,
   setProjectPanelMetadata,
   setProjectMetadata,
@@ -77,9 +76,9 @@ const {
   getProjectMetadata,
   getXMPMetadata,
   getProjectColumnsMetadata,
-} = require("/src/metadata");
+} from "./src/metadata";
 
-const {
+import {
   getProjectItemAtSourceMonitor,
   openFilePath,
   openProjectItem,
@@ -87,51 +86,49 @@ const {
   getPosition,
   closeClip,
   closeAllClips,
-} = require("/src/sourceMonitor");
+} from "./src/sourceMonitor";
 
-const {
+import {
   setValue,
   getStartValue,
   addKeyframe,
   getKeyframes,
   getKeyframe,
   setInterpolation,
-} = require("/src/keyframe");
+} from "./src/keyframe";
 
-const { getEffectsName, addEffects, removeEffects } = require("/src/effects");
+import { getEffectsName, addEffects, removeEffects } from "./src/effects";
 
-const {
+import {
   getTransitionNames,
   addTransitionStart,
   addTransitionEnd,
   removeTransitionStart,
-} = require("/src/transition");
+} from "./src/transition";
 
-const {
+import {
   getSequenceSampleProperty,
   setSampleSequenceProperty,
   clearSampleSequenceProperty,
-} = require("/src/properties");
+} from "./src/properties";
 
-const {
-  getScratchDiskSetting,
-  setScratchDiskSettings,
-} = require("/src/settings");
+import { getScratchDiskSetting, setScratchDiskSettings } from "./src/settings";
 
-const { addProjSeqListeners } = require("/src/eventManager");
+import { addProjSeqListeners } from "./src/eventManager";
 
-const { exportSequenceFrame, exportSequence } = require("/src/export");
+import { exportSequenceFrame, exportSequence } from "./src/export";
 
-const {
+import {
   importFiles,
   importSequences,
   importAeComponent,
   importAllAeComponents,
-} = require("/src/import");
+} from "./src/import";
 
 //global objects.
-const ppro = require("premierepro");
-const uxp = require("uxp");
+import type { premierepro, Sequence } from "./types.d.ts";
+const ppro = require("premierepro") as premierepro;
+const uxp = require("uxp") as typeof import("uxp");
 
 //project button events
 async function openProjectClicked() {
@@ -1191,7 +1188,7 @@ async function importAeComponentClicked() {
   });
   if (file && file.isFile && file.nativePath) {
     // check if user have input for ae composition name for import
-    let aeCompName = document.getElementById("ae-component-name").value;
+    let aeCompName = document.getElementById("ae-component-name")!.value;
     if (!aeCompName) {
       log("Please put name of ae composition in entry");
       return;
@@ -1361,7 +1358,7 @@ window.addEventListener("load", async () => {
   registerClick("import-sequences", importSequencesClicked);
 
   document
-    .querySelector(".clear-btn")
+    .querySelector(".clear-btn")!
     .addEventListener("click", () => clearLog());
 
   // add project & seq open/close/activate event listeners. Details in eventManager.js
@@ -1370,7 +1367,7 @@ window.addEventListener("load", async () => {
 
 //Helper functions
 document
-  .querySelector(".clear-btn")
+  .querySelector(".clear-btn")!
   .addEventListener("click", () => clearLog());
 
 async function getProject() {

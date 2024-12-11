@@ -12,7 +12,7 @@
  * written permission of Adobe.
  **************************************************************************/
 
-const log = (msg, color) => {
+export const log = (msg: string, color?: string) => {
   const console = document.querySelector("#plugin-body");
   console.innerHTML += color
     ? `<span style='color:${color}'>${msg}</span><br />`
@@ -21,9 +21,10 @@ const log = (msg, color) => {
   console.scrollTop = console.scrollHeight;
 };
 
-const clearLog = () => (document.querySelector("#plugin-body").innerHTML = "");
+export const clearLog = () =>
+  (document.querySelector("#plugin-body").innerHTML = "");
 
-const registerClick = (id, cb) =>
+export const registerClick = (id: string, cb: Function) => {
+  //@ts-ignore
   document.querySelector(`#${id}`).addEventListener("click", cb);
-
-module.exports = { log, clearLog, registerClick };
+};
