@@ -1,6 +1,8 @@
 {
+  "type": "commonjs",
   "scripts": {
-    "build": "cp-cli  ../html ../build-html && tsc"
+    "build": "cp-cli  ../html ../build-html && tsc && fix-imports",
+    "fix-imports": "node ./scripts/fix-imports.js"
   },
   "dev-dependencies": {
     "@adobe/cc-ext-uxp-types": "^7.3.1",

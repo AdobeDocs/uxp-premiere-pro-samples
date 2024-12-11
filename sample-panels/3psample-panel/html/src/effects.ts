@@ -54,11 +54,11 @@ async function getVideoComponentChain() {
 }
 
 //Gets all the effects matchNames.
-export async function getEffectsName() {
+async function getEffectsName() {
   return await filterFactory.getMatchNames();
 }
 
-export async function addEffects(project) {
+async function addEffects(project) {
   if (project) {
     const videoComponentChain = await getVideoComponentChain();
     if (!videoComponentChain) {
@@ -89,7 +89,7 @@ export async function addEffects(project) {
     log(`No project found.`, "red");
   }
 }
-export async function removeEffects(project) {
+async function removeEffects(project) {
   if (project) {
     const videoComponentChain = await getVideoComponentChain();
     if (!videoComponentChain) {
@@ -126,3 +126,6 @@ export async function removeEffects(project) {
     log(`No project found.`, "red");
   }
 }
+
+// module.exports = { addEffects, removeEffects, getEffectsName };
+export { addEffects, removeEffects, getEffectsName };
