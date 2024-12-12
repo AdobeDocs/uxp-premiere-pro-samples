@@ -20,9 +20,18 @@ The Premiere Pro UXP API is available here: <https://developer.adobe.com/premier
 
 ## How to launch the test panel
 
-- Load UDT. On first launch it will be blank. Click the **Add Plugin** button
-- Navigate to the location where you downloaded the 3psample-panel
-- Select 3psample-panel/build-html/manifest.json, and click **Open**
+- Launch Premiere Pro BETA, and set a feature flag:
+  - open a new blank project
+  - Enter debug console via: Command + Function + F12
+  - Use hamburger menu to select debug database view
+  - In the search bar type: uxp
+  - Check the box for **dvauxphost.UseDvascriptingContext** to set it to true
+  - ![UXP feature flag](payloads/dvauxphost-true.png)
+  - Important: the debug console is _not_ a place to experiment.
+
+* Load UDT. On first launch it will be blank. Click the **Add Plugin** button
+* Navigate to the location where you downloaded the 3psample-panel
+* Select 3psample-panel/build-html/manifest.json, and click **Open**
 
 ![UXP Developer Tool UDT](payloads/UDT_load_panel.png)
 
