@@ -12,28 +12,35 @@
  * written permission of Adobe.
  **************************************************************************/
 
-const { log } = require("./utils");
+import type {
+  Action,
+  ComponentParam,
+  premierepro,
+  Project,
+} from "../types.d.ts";
+const ppro = require("premierepro") as premierepro;
+import { log } from "./utils";
 
 //Gets the componenetParam
-async function getComponentParam() {
-  let componentParam;
+export async function getComponentParam() {
+  let componentParam: ComponentParam;
   let component;
   const proj = await ppro.Project.getActiveProject();
   if (!proj) {
     log("No active project", "red");
     return;
   } else {
-    sequence = await proj.getActiveSequence();
+    const sequence = await proj.getActiveSequence();
     if (!sequence) {
       log("No sequence found", "red");
       return;
     } else {
-      videoTrack = await sequence.getVideoTrack(0);
+      const videoTrack = await sequence.getVideoTrack(0);
       if (!videoTrack) {
         log("No videoTrack found", "red");
         return;
       } else {
-        trackItems = await videoTrack.getTrackItems(
+        const trackItems = await videoTrack.getTrackItems(
           ppro.Constants.TrackItemType.CLIP,
           false
         );
@@ -41,7 +48,7 @@ async function getComponentParam() {
           log("No trackItems found", "red");
           return;
         } else {
-          componentChain = await trackItems[0].getComponentChain();
+          const componentChain = await trackItems[0].getComponentChain();
           try {
             await proj.lockedAccess(async () => {
               component = componentChain.getComponentAtIndex(1);
@@ -60,8 +67,13 @@ async function getComponentParam() {
     project: proj,
   };
 }
-async function changeTimeVarying(componentParam, project, value) {
-  let success;
+
+export async function changeTimeVarying(
+  componentParam: ComponentParam,
+  project: Project,
+  value: boolean
+) {
+  let success: boolean;
   try {
     project.lockedAccess(() => {
       let setTimeVaryingAction =
@@ -78,7 +90,7 @@ async function changeTimeVarying(componentParam, project, value) {
 }
 
 //Sets the value of the component parameter stream.
-async function setValue() {
+export async function setValue() {
   const { componentParam, project } = await getComponentParam();
   const keyframe = componentParam.createKeyframe(300);
 
@@ -106,7 +118,7 @@ async function setValue() {
 }
 
 //Gets the value of the component parameter stream.
-async function getStartValue() {
+export async function getStartValue() {
   const { componentParam, project } = await getComponentParam();
 
   let success = await changeTimeVarying(componentParam, project, false);
@@ -120,7 +132,7 @@ async function getStartValue() {
 }
 
 //Adds a keyframe to the component parameter stream.
-async function addKeyframe() {
+export async function addKeyframe() {
   const { componentParam, project } = await getComponentParam();
 
   let success = await changeTimeVarying(componentParam, project, true);
@@ -147,13 +159,13 @@ async function addKeyframe() {
 }
 
 //Gets all the keyframes of componentParam stream.
-async function getKeyframes() {
+export async function getKeyframes() {
   const { componentParam } = await getComponentParam();
   return await componentParam.getKeyframeListAsTickTimes();
 }
 
 //Gets all the keyframes of a componentParam at specific time.
-async function getKeyframe() {
+export async function getKeyframe() {
   const { componentParam } = await getComponentParam();
   try {
     let keyframePtr = await componentParam.getKeyframePtr(
@@ -186,7 +198,7 @@ async function getKeyframe() {
 // 7 kfInterpMode_TimeTransitionStart
 
 // 8 kfInterpMode_TimeTransitionEnd
-async function setInterpolation() {
+export async function setInterpolation() {
   const { componentParam, project } = await getComponentParam();
 
   let success = await changeTimeVarying(componentParam, project, true);
@@ -225,12 +237,3 @@ async function setInterpolation() {
 
   return success;
 }
-
-module.exports = {
-  setValue,
-  getStartValue,
-  addKeyframe,
-  getKeyframes,
-  getKeyframe,
-  setInterpolation,
-};

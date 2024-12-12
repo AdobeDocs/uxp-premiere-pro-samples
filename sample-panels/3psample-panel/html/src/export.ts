@@ -12,11 +12,15 @@
  * written permission of Adobe.
  **************************************************************************/
 
-const { log } = require("./utils");
+import type { premierepro, Sequence } from "../types.d.ts";
+const ppro = require("premierepro") as premierepro;
+const uxp = require("uxp") as typeof import("uxp");
+
+import { log } from "./utils";
 /**
  * Export current active sequence's current frame as PNG file
  */
-async function exportSequenceFrame(sequence) {
+export async function exportSequenceFrame(sequence: Sequence) {
   const folder = await uxp.storage.localFileSystem.getFolder();
   let folderDir = await folder.nativePath;
 
@@ -38,7 +42,7 @@ async function exportSequenceFrame(sequence) {
 /**
  * Export current active sequence as MEPG2 file
  */
-async function exportSequence(sequence) {
+export async function exportSequence(sequence: Sequence) {
   // let user select preset file
   let presetFile;
   log("Please select a preset file for export");
@@ -70,8 +74,3 @@ async function exportSequence(sequence) {
     presetFile // preset file
   );
 }
-
-module.exports = {
-  exportSequenceFrame,
-  exportSequence,
-};

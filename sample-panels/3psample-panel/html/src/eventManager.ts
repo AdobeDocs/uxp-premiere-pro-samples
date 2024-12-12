@@ -11,13 +11,15 @@
  * then your use, modification, or distribution of it requires the prior
  * written permission of Adobe.
  **************************************************************************/
-const { log } = require("/src/utils");
-const { getActiveProject, getActiveSequence } = require("/src/project");
-const {
+import type { premierepro } from "../types.d.ts";
+const ppro = require("premierepro") as premierepro;
+import { log } from "./utils";
+import { getActiveProject, getActiveSequence } from "./project";
+import {
   addProjectItemsOptions,
   clearProjectItemOptions,
   refreshProjectItemOptions,
-} = require("/src/sourceMonitor");
+} from "./sourceMonitor";
 
 /**
  * callback function for sequence close event
@@ -96,7 +98,7 @@ async function onProjectDirty() {
 /**
  * Add project and sequence event listeners
  */
-async function addProjSeqListeners() {
+export async function addProjSeqListeners() {
   // intialize active project and active sequence name, if any
   const project = await getActiveProject();
   if (project) {
@@ -132,7 +134,3 @@ async function addProjSeqListeners() {
     onSequenceActivated
   );
 }
-
-module.exports = {
-  addProjSeqListeners,
-};

@@ -11,9 +11,12 @@
  * then your use, modification, or distribution of it requires the prior
  * written permission of Adobe.
  **************************************************************************/
-const { log } = require("/src/utils");
+import type { premierepro, Project, Sequence } from "../types.d.ts";
+const ppro = require("premierepro") as premierepro;
+const uxp = require("uxp") as typeof import("uxp");
+import { log } from "./utils";
 
-async function openProject() {
+export async function openProject() {
   const file = await uxp.storage.localFileSystem.getFileForOpening({
     types: ["prproj"],
   });
@@ -26,15 +29,15 @@ async function openProject() {
   }
 }
 
-async function openInputProject(projectPath) {
+export async function openInputProject(projectPath: string) {
   return ppro.Project.open(projectPath);
 }
 
-async function getActiveProject() {
+export async function getActiveProject() {
   return await ppro.Project.getActiveProject();
 }
 
-async function getActiveSequence(project) {
+export async function getActiveSequence(project: Project) {
   if (project) {
     return await project.getActiveSequence();
   } else {
@@ -42,11 +45,11 @@ async function getActiveSequence(project) {
   }
 }
 
-async function getProjectFromId(projectId) {
+export async function getProjectFromId(projectId: string) {
   return ppro.Project.getProject(projectId);
 }
 
-async function getInsertionBin(project) {
+export async function getInsertionBin(project) {
   if (project) {
     return await project.getInsertionBin();
   } else {
@@ -54,7 +57,7 @@ async function getInsertionBin(project) {
   }
 }
 
-async function getAllSequences(project) {
+export async function getAllSequences(project: Project) {
   if (project) {
     return await project.getSequences();
   } else {
@@ -62,7 +65,10 @@ async function getAllSequences(project) {
   }
 }
 
-async function openSequence(project, proposedSequence) {
+export async function openSequence(
+  project: Project,
+  proposedSequence: Sequence
+) {
   if (project) {
     return await project.openSequence(proposedSequence);
   } else {
@@ -70,7 +76,7 @@ async function openSequence(project, proposedSequence) {
   }
 }
 
-async function pauseGrowing(pause, project) {
+export async function pauseGrowing(pause: boolean, project: Project) {
   if (project) {
     return await project.pauseGrowing(pause);
   } else {
@@ -78,7 +84,7 @@ async function pauseGrowing(pause, project) {
   }
 }
 
-async function saveProject(project) {
+export async function saveProject(project: Project) {
   if (project) {
     return await project.save();
   } else {
@@ -86,7 +92,7 @@ async function saveProject(project) {
   }
 }
 
-async function saveAsProject(project) {
+export async function saveAsProject(project: Project) {
   if (project) {
     const file = await uxp.storage.localFileSystem.getFileForSaving(
       `newProjectCopy`,
@@ -105,7 +111,7 @@ async function saveAsProject(project) {
   }
 }
 
-async function getColorSettings(project) {
+export async function getColorSettings(project: Project) {
   if (project) {
     const colorSettings = await project.getColorSettings();
     if (!colorSettings) {
@@ -118,7 +124,7 @@ async function getColorSettings(project) {
   }
 }
 
-async function getSupportedGraphicsWhiteLuminances(project) {
+export async function getSupportedGraphicsWhiteLuminances(project: Project) {
   if (project) {
     const colorSettings = await getColorSettings(project);
     return await colorSettings.getSupportedGraphicsWhiteLuminances(project);
@@ -127,7 +133,7 @@ async function getSupportedGraphicsWhiteLuminances(project) {
   }
 }
 
-async function getCurrentGraphicsWhiteLuminance(project) {
+export async function getCurrentGraphicsWhiteLuminance(project: Project) {
   if (project) {
     const colorSettings = await getColorSettings(project);
     return await colorSettings.getGraphicsWhiteLuminance();
@@ -136,27 +142,10 @@ async function getCurrentGraphicsWhiteLuminance(project) {
   }
 }
 
-async function closeProject(project) {
+export async function closeProject(project: Project) {
   if (project) {
     return project.close();
   } else {
     log("No project found.", "red");
   }
 }
-
-module.exports = {
-  openProject,
-  openInputProject,
-  getActiveProject,
-  getActiveSequence,
-  getProjectFromId,
-  getInsertionBin,
-  getAllSequences,
-  openSequence,
-  pauseGrowing,
-  getSupportedGraphicsWhiteLuminances,
-  getCurrentGraphicsWhiteLuminance,
-  saveProject,
-  saveAsProject,
-  closeProject,
-};
