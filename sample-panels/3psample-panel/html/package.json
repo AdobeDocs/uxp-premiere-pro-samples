@@ -4,9 +4,8 @@
     "clean": "rm -rf ../build-html",
     "copy": "cp-cli ../html ../build-html",
     "compile": "tsc",
-    "fix": "fix-imports",
     "fix-imports": "node ./scripts/fix-imports.js",
-    "build": "npm run clean && npm run copy && npm run compile && npm run fix"
+    "build": "npm run clean && npm run copy && npm run compile"
   },
   "devDependencies": {
     "@adobe/cc-ext-uxp-types": "^7.3.1",
