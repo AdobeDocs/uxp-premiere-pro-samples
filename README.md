@@ -39,7 +39,7 @@ The Premiere Pro UXP API is available here: <https://developer.adobe.com/premier
 
 ![UXP Sample Panel](payloads/UXP-sample-panel-loaded.png)
 
-## Adding TypeScript Definitions to VS Code
+## Adding TypeScript Definitions to Visual Studio Code
 
 ![UXP typescript autocomplete](payloads/ts_def_demo.png)
 
