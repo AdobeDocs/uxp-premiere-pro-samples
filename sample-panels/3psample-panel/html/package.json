@@ -1,10 +1,13 @@
 {
   "type": "commonjs",
   "scripts": {
-    "build": "cp-cli  ../html ../build-html && tsc && fix-imports",
-    "fix-imports": "node ./scripts/fix-imports.js"
+    "clean": "rm -rf ../build-html",
+    "copy": "cp-cli ../html ../build-html",
+    "compile": "tsc",
+    "fix-imports": "node ./scripts/fix-imports.js",
+    "build": "npm run clean && npm run copy && npm run compile"
   },
-  "dev-dependencies": {
+  "devDependencies": {
     "@adobe/cc-ext-uxp-types": "^7.3.1",
     "@types/node": "^22.10.2",
     "cp-cli": "^2.0.0",

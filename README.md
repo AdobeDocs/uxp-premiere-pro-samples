@@ -14,9 +14,12 @@ The Premiere Pro UXP API is available here: <https://developer.adobe.com/premier
 
 - Open your console / terminal / command prompt
 - cd into the sample-panels/3psample-panel/html directory
-- Install dependencies with "npm i"
-- Bulid the project with "npm run build"
+- Install dependencies with ```npm i```
+- Bulid the project with ```npm run build```
+- Then fix import with ```npm run fix-imports``` 
 - Panel is now built in the "build-html" directory
+
+*You will see errors after the build command. That doesn't mean the build failed - we are working actively on providing better type definition files to avoid triggering those errors. Please only run fix-imports command after build command for the same reason* 
 
 ## How to launch the test panel
 
