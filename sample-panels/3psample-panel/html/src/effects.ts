@@ -89,6 +89,48 @@ export async function addEffects(project) {
     log(`No project found.`, "red");
   }
 }
+
+export async function addMultipleEffects(project) {
+  if (project) {
+    const videoComponentChain = await getVideoComponentChain();
+    if (!videoComponentChain) {
+      return;
+    }
+    const newComponent1 = await filterFactory.createComponent(
+      "PR.ADBE Gamma Correction"
+    );
+
+    const newComponent2 = await filterFactory.createComponent(
+      "PR.ADBE Extract"
+    );
+
+    let success = false;
+    try {
+      project.lockedAccess(() => {
+        success = project.executeTransaction((compoundAction) => {
+          var action1 = videoComponentChain.createInsertComponentAction(
+            newComponent1,
+            2
+          );
+          var action2 = videoComponentChain.createInsertComponentAction(
+            newComponent2,
+            2
+          );
+          compoundAction.addAction(action1);
+          compoundAction.addAction(action2);
+        }, "Add Multiple Effects");
+      });
+    } catch (err) {
+      log(`Error: ${err}`, "red");
+      return false;
+    }
+
+    return success;
+  } else {
+    log(`No project found.`, "red");
+  }
+}
+
 export async function removeEffects(project) {
   if (project) {
     const videoComponentChain = await getVideoComponentChain();

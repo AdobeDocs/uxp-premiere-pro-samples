@@ -53,6 +53,7 @@ import {
 } from "./src/markers";
 import {
   getProjectItems,
+  getMediaFilePath,
   createBin,
   createSmartBin,
   renameBin,
@@ -97,7 +98,12 @@ import {
   setInterpolation,
 } from "./src/keyframe";
 
-import { getEffectsName, addEffects, removeEffects } from "./src/effects";
+import {
+  getEffectsName,
+  addEffects,
+  addMultipleEffects,
+  removeEffects,
+} from "./src/effects";
 
 import {
   getTransitionNames,
@@ -540,6 +546,18 @@ async function getProjectItemsClicked() {
   });
 }
 
+async function getMediaFilePathClicked() {
+  const project = await getProject();
+  if (!project) return;
+
+  const path = await getMediaFilePath(project);
+  if (path == null) {
+    log("No media project item available for getting path");
+  } else {
+    log(`Path of project item is ${path}`);
+  }
+}
+
 async function createBinClicked() {
   const project = await getProject();
   if (!project) return;
@@ -905,6 +923,13 @@ async function addEffectsClicked() {
 
   const success = await addEffects(project);
   log(success ? "Successfully added the effect" : "Failed to add the effect");
+}
+async function addMultipleEffectsClicked() {
+  const project = await getProject();
+  if (!project) return;
+
+  const success = await addMultipleEffects(project);
+  log(success ? "Successfully added the effects" : "Failed to add the effect");
 }
 async function removeEffectsClicked() {
   const project = await getProject();
@@ -1312,6 +1337,7 @@ window.addEventListener("load", async () => {
 
   //project panel item events registering
   registerClick("get-project-items", getProjectItemsClicked);
+  registerClick("get-media-path", getMediaFilePathClicked);
   registerClick("create-bin", createBinClicked);
   registerClick("create-smart-bin", createSmartBinClicked);
   registerClick("rename-bin", renameBinClicked);
@@ -1332,6 +1358,7 @@ window.addEventListener("load", async () => {
   //Effects & transitions
   registerClick("get-effect-names", getEffectsNameClicked);
   registerClick("add-gamma-correction-effect", addEffectsClicked);
+  registerClick("add-multiple-effects", addMultipleEffectsClicked);
   registerClick("remove-gamma-correction-effect", removeEffectsClicked);
   registerClick("get-transition-names", getTransitionNamesClicked);
   registerClick("add-transition-start", addTransitionStartClicked);
