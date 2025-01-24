@@ -53,6 +53,7 @@ import {
 } from "./src/markers";
 import {
   getProjectItems,
+  getSelectedProjectItems,
   getMediaFilePath,
   createBin,
   createSmartBin,
@@ -131,8 +132,13 @@ import {
   importAllAeComponents,
 } from "./src/import";
 
+import {
+  getPreferenceSetting,
+  setPreferenceSetting,
+} from "./src/appPreference";
+
 //global objects.
-import type { premierepro, Sequence } from "./types.d.ts";
+import type { premierepro, ProjectItem, Sequence } from "./types.d.ts";
 const ppro = require("premierepro") as premierepro;
 const uxp = require("uxp") as typeof import("uxp");
 
@@ -536,6 +542,23 @@ async function getProjectItemsClicked() {
   if (!project) return;
 
   const projectItems = await getProjectItems(project);
+  if (!projectItems.length) {
+    log("No project items found", "red");
+    return;
+  }
+  log("Project Item read is successfull");
+  projectItems.forEach((item, index) => {
+    log(`   ${index + 1}: ${item.name}`);
+  });
+}
+
+async function getSelectedProjectItemsClicked() {
+  const project = await getProject();
+  if (!project) return;
+
+  const projectItems: Array<ProjectItem> = await getSelectedProjectItems(
+    project
+  );
   if (!projectItems.length) {
     log("No project items found", "red");
     return;
@@ -1087,6 +1110,21 @@ async function setScratchDiskSettingsClicked() {
   );
 }
 
+//AppPreference button events
+async function getPreferenceSettingClicked() {
+  let currSetting = await getPreferenceSetting();
+  log(`Current Auto Peak Generation Setting is: ${currSetting}`);
+}
+
+async function setPreferenceSettingClicked() {
+  let success = await setPreferenceSetting();
+  log(
+    success
+      ? "Successfully updated auto peak generation preference"
+      : "Failed to update auto peak generation preference"
+  );
+}
+
 //Export control button events
 async function exportSequenceFrameClicked() {
   const project = await getProject();
@@ -1337,6 +1375,7 @@ window.addEventListener("load", async () => {
 
   //project panel item events registering
   registerClick("get-project-items", getProjectItemsClicked);
+  registerClick("get-selected-project-items", getSelectedProjectItemsClicked);
   registerClick("get-media-path", getMediaFilePathClicked);
   registerClick("create-bin", createBinClicked);
   registerClick("create-smart-bin", createSmartBinClicked);
@@ -1373,6 +1412,10 @@ window.addEventListener("load", async () => {
   // Settings
   registerClick("get-project-setting", getScratchDiskSettingClicked);
   registerClick("set-project-setting", setScratchDiskSettingsClicked);
+
+  // AppPreference
+  registerClick("get-autopeak-preference", getPreferenceSettingClicked);
+  registerClick("set-autopeak-setting", setPreferenceSettingClicked);
 
   // Export
   registerClick("export-frame", exportSequenceFrameClicked);

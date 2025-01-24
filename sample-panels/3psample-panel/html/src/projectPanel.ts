@@ -27,6 +27,12 @@ export async function getProjectItems(project: Project) {
   return projectItems;
 }
 
+export async function getSelectedProjectItems(project: Project) {
+  const projectSelection = await ppro.ProjectUtils.getSelection(project);
+  const projectItems = await projectSelection.getItems();
+  return projectItems;
+}
+
 export async function getClipProjectItem(project: Project) {
   const rootItem = await getRootItem(project);
   const projectItems: Array<ProjectItem> = await rootItem.getItems();
