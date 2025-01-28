@@ -53,6 +53,8 @@ import {
 } from "./src/markers";
 import {
   getProjectItems,
+  getSelectedProjectItems,
+  getMediaFilePath,
   createBin,
   createSmartBin,
   renameBin,
@@ -97,7 +99,12 @@ import {
   setInterpolation,
 } from "./src/keyframe";
 
-import { getEffectsName, addEffects, removeEffects } from "./src/effects";
+import {
+  getEffectsName,
+  addEffects,
+  addMultipleEffects,
+  removeEffects,
+} from "./src/effects";
 
 import {
   getTransitionNames,
@@ -125,8 +132,13 @@ import {
   importAllAeComponents,
 } from "./src/import";
 
+import {
+  getPreferenceSetting,
+  setPreferenceSetting,
+} from "./src/appPreference";
+
 //global objects.
-import type { premierepro, Sequence } from "./types.d.ts";
+import type { premierepro, ProjectItem, Sequence } from "./types.d.ts";
 const ppro = require("premierepro") as premierepro;
 const uxp = require("uxp") as typeof import("uxp");
 
@@ -540,6 +552,35 @@ async function getProjectItemsClicked() {
   });
 }
 
+async function getSelectedProjectItemsClicked() {
+  const project = await getProject();
+  if (!project) return;
+
+  const projectItems: Array<ProjectItem> = await getSelectedProjectItems(
+    project
+  );
+  if (!projectItems.length) {
+    log("No project items found", "red");
+    return;
+  }
+  log("Project Item read is successfull");
+  projectItems.forEach((item, index) => {
+    log(`   ${index + 1}: ${item.name}`);
+  });
+}
+
+async function getMediaFilePathClicked() {
+  const project = await getProject();
+  if (!project) return;
+
+  const path = await getMediaFilePath(project);
+  if (path == null) {
+    log("No media project item available for getting path");
+  } else {
+    log(`Path of project item is ${path}`);
+  }
+}
+
 async function createBinClicked() {
   const project = await getProject();
   if (!project) return;
@@ -906,6 +947,13 @@ async function addEffectsClicked() {
   const success = await addEffects(project);
   log(success ? "Successfully added the effect" : "Failed to add the effect");
 }
+async function addMultipleEffectsClicked() {
+  const project = await getProject();
+  if (!project) return;
+
+  const success = await addMultipleEffects(project);
+  log(success ? "Successfully added the effects" : "Failed to add the effect");
+}
 async function removeEffectsClicked() {
   const project = await getProject();
   if (!project) return;
@@ -1059,6 +1107,21 @@ async function setScratchDiskSettingsClicked() {
     success
       ? "Successfully updated scratch disk path to MyDocuments"
       : "Failed to update scratch disk path settings"
+  );
+}
+
+//AppPreference button events
+async function getPreferenceSettingClicked() {
+  let currSetting = await getPreferenceSetting();
+  log(`Current Auto Peak Generation Setting is: ${currSetting}`);
+}
+
+async function setPreferenceSettingClicked() {
+  let success = await setPreferenceSetting();
+  log(
+    success
+      ? "Successfully updated auto peak generation preference"
+      : "Failed to update auto peak generation preference"
   );
 }
 
@@ -1312,6 +1375,8 @@ window.addEventListener("load", async () => {
 
   //project panel item events registering
   registerClick("get-project-items", getProjectItemsClicked);
+  registerClick("get-selected-project-items", getSelectedProjectItemsClicked);
+  registerClick("get-media-path", getMediaFilePathClicked);
   registerClick("create-bin", createBinClicked);
   registerClick("create-smart-bin", createSmartBinClicked);
   registerClick("rename-bin", renameBinClicked);
@@ -1332,6 +1397,7 @@ window.addEventListener("load", async () => {
   //Effects & transitions
   registerClick("get-effect-names", getEffectsNameClicked);
   registerClick("add-gamma-correction-effect", addEffectsClicked);
+  registerClick("add-multiple-effects", addMultipleEffectsClicked);
   registerClick("remove-gamma-correction-effect", removeEffectsClicked);
   registerClick("get-transition-names", getTransitionNamesClicked);
   registerClick("add-transition-start", addTransitionStartClicked);
@@ -1346,6 +1412,10 @@ window.addEventListener("load", async () => {
   // Settings
   registerClick("get-project-setting", getScratchDiskSettingClicked);
   registerClick("set-project-setting", setScratchDiskSettingsClicked);
+
+  // AppPreference
+  registerClick("get-autopeak-preference", getPreferenceSettingClicked);
+  registerClick("set-autopeak-setting", setPreferenceSettingClicked);
 
   // Export
   registerClick("export-frame", exportSequenceFrameClicked);

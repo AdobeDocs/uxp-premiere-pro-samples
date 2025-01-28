@@ -12,7 +12,7 @@
  * written permission of Adobe.
  **************************************************************************/
 
-import type { premierepro, Project } from "../types.d.ts";
+import type { premierepro, Project, ProjectItem } from "../types.d.ts";
 const ppro = require("premierepro") as premierepro;
 import { log } from "./utils";
 
@@ -27,9 +27,15 @@ export async function getProjectItems(project: Project) {
   return projectItems;
 }
 
+export async function getSelectedProjectItems(project: Project) {
+  const projectSelection = await ppro.ProjectUtils.getSelection(project);
+  const projectItems = await projectSelection.getItems();
+  return projectItems;
+}
+
 export async function getClipProjectItem(project: Project) {
   const rootItem = await getRootItem(project);
-  const projectItems = await rootItem.getItems();
+  const projectItems: Array<ProjectItem> = await rootItem.getItems();
 
   let mediaItem;
   for (let projectItem of projectItems) {
@@ -42,6 +48,12 @@ export async function getClipProjectItem(project: Project) {
       // Take the first media found.
       mediaItem = clipProjectItem;
       break;
+    } else {
+      const folderProjectItem = ppro.FolderItem.cast(projectItem);
+      if (folderProjectItem) {
+        let items = await folderProjectItem.getItems();
+        projectItems.push(...items);
+      }
     }
   }
   if (!mediaItem) {
@@ -49,6 +61,14 @@ export async function getClipProjectItem(project: Project) {
     return;
   }
   return ppro.ClipProjectItem.cast(mediaItem);
+}
+
+export async function getMediaFilePath(project: Project) {
+  const clipProjectItem = await getClipProjectItem(project);
+  if (clipProjectItem) {
+    return clipProjectItem.getMediaFilePath();
+  }
+  return null;
 }
 
 export async function createBin(project: Project) {
