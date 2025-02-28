@@ -15,7 +15,7 @@ This tutorial will show you how to implement the OAuth workflow in a Premiere Pr
 - [A registered app on Dropbox](https://www.dropbox.com/developers/apps/create) with the following settings:
 
   1.  Chose "Scoped Access" for the API
-    -  Ensure that you enable the **account_info.read** scope after the app is created
+      -  Ensure that you enable the **account_info.read** scope after the app is created
   1.  Choose "Full Dropbox" for the access type
 
 ## Technology Used
