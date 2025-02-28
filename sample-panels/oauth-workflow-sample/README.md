@@ -2,7 +2,7 @@
 
 This tutorial will show you how to implement the OAuth workflow in a Premiere Pro UXP Plugin, using the Dropbox API as an example (current as of 26 Feb 2025).
 
-> [!INFO]
+> [!NOTE]
 > Auth workflows are necessarily complex, so this tutorial will be on the longer side and make use of some advanced concepts. Please read each section carefully, especially the Prerequisites and Configuration sections.
 
 ## Prerequisites
