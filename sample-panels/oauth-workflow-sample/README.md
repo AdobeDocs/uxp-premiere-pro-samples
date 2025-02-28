@@ -2,7 +2,7 @@
 
 This tutorial will show you how to implement the OAuth workflow in a Premiere Pro UXP Plugin, using the Dropbox API as an example (current as of 26 Feb 2025).
 
-> **info**
+> [!info]
 > Auth workflows are necessarily complex, so this tutorial will be on the longer side and make use of some advanced concepts. Please read each section carefully, especially the Prerequisites and Configuration sections.
 
 ## Prerequisites
@@ -15,12 +15,12 @@ This tutorial will show you how to implement the OAuth workflow in a Premiere Pr
 - [A registered app on Dropbox](https://www.dropbox.com/developers/apps/create) with the following settings:
 
   1.  Chose "Scoped Access" for the API
-    1.  Ensure that you enable the **account_info.read** scope after the app is created
+    -  Ensure that you enable the **account_info.read** scope after the app is created
   1.  Choose "Full Dropbox" for the access type
 
 ## Technology Used
 
-1. [Install required] [Node.js](https://nodejs.org/en/) and the [`npm` package manager](https://www.npmjs.com)
+1. *[Install required]* [Node.js](https://nodejs.org/en/) and the [`npm` package manager](https://www.npmjs.com)
 1. [OAuth](https://oauth.net/2/)
 1. [Dropbox API](https://www.dropbox.com/developers/documentation/http/overview)
 
@@ -38,7 +38,7 @@ The high-level workflow is as follows:
 1. The Premiere Pro UXP Plugin pings the server to get the session ID
 1. The server returns a unique ID for the user's Premiere Pro session
 1. The Premiere Pro UXP Plugin opens a tab in user's default browser with a URL pointing to an endpoint on the server
-  1. The user, via the web browser, authorizes both the server and the service to communicate
+  - The user, via the web browser, authorizes both the server and the service to communicate
 1. The server/service handshake handles the entire OAuth code grant workflow
 1. The server saves the access token paired with the session ID
 1. The Premiere Pro UXP Plugin asks the server if an access token has been defined for the session ID. If the token is available, the server sends the access token back
