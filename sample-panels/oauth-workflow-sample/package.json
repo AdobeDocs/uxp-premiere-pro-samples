@@ -1,0 +1,7 @@
+{
+  "name": "uxp-template-ppro-starter",
+  "version": "1.0.0",
+  "description": "Starter template for establishing OAuth authentication between a Premiere Pro UXP Panel and another service.",
+  "author": "Adobe Inc",
+  "license": "Apache-2.0"
+}
