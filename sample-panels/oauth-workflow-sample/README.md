@@ -38,7 +38,7 @@ The high-level workflow is as follows:
 1. The Premiere Pro UXP Plugin pings the server to get the session ID
 1. The server returns a unique ID for the user's Premiere Pro session
 1. The Premiere Pro UXP Plugin opens a tab in user's default browser with a URL pointing to an endpoint on the server
-  - The user, via the web browser, authorizes both the server and the service to communicate
+    - The user, via the web browser, authorizes both the server and the service to communicate
 1. The server/service handshake handles the entire OAuth code grant workflow
 1. The server saves the access token paired with the session ID
 1. The Premiere Pro UXP Plugin asks the server if an access token has been defined for the session ID. If the token is available, the server sends the access token back
