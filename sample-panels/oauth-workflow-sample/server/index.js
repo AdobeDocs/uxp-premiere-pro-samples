@@ -7,7 +7,6 @@ const bodyParser = require('body-parser');
 const dropboxApiKey = require('./public/config.js').dropboxApiKey;
 const dropboxApiSecret = require('./public/config.js').dropboxApiSecret;
 const publicUrl = require('./public/config.js').publicUrl;
-const fs = require('fs');
 const path = require('path');
 
 /* Declare host name and port */

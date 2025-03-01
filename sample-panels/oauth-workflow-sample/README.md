@@ -63,10 +63,11 @@ Enter the required credentials in `public/config.js`. You'll need:
 
 - Your Dropbox API key
 - Your Dropbox API secret
-- Your local Node.js server address (assumed to be **http://localhose:8000** in this sample)
+- Your local Node.js server address (assumed to be **http://localhost:8000** in this sample)
 
 > [!IMPORTANT]
-> In addition to your Dropbox API key and secret, your Dropbox application should be configured to with the following *Redirect URIs* for your
+> In addition to your Dropbox API key and secret, your Dropbox application should be configured to with the following *Redirect URIs* for your local server:
+> **http://localhost:8000/callback**
 
 
 ```js
@@ -91,7 +92,7 @@ Our server will make use of these settings in a later step.
 
 ### 3. Start the server
 
-After completing the configuration steps, start the server from the `server` folder:
+After completing the configuration steps, start the server from the `server` directory:
 
 ```
 $ npm start
@@ -101,4 +102,4 @@ Now you have a running server with an HTTPS endpoint and your Dropbox credential
 
 ### 4. Running the plugin
 
-Load up the plugin in Premiere Pro and click on **Connect OAuth** to get the plugin running.
+Using the *Adobe UXP Developer Tools* application, add *oauth-workflow-sample/manifest.json* and then load the listed plugin to launch it in Premiere Pro. Once loaded, click on **Connect OAuth** in Premiere Pro to start the OAuth authentication process.

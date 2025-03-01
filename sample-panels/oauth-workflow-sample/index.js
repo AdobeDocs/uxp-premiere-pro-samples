@@ -10,7 +10,7 @@
 
 const publicUrl = "http://localhost:8000";
 let accessToken;
-let userInfoDisplayString;
+let userInfoDisplayTextNode;
 
 async function connectOAuthService() {
   	// Retrieve he access token if it doesn't exist already
@@ -22,15 +22,6 @@ async function connectOAuthService() {
 
 		// opens the url in the default browser
 		require("uxp").shell.openExternal(`${publicUrl}/login?requestId=${rid}`);
-
-		// // --- REFERENCE FOR OPENING WEB PAGE ---- //
-		// const { shell }  = require("uxp");
-		// try {
-		// 	await shell.openExternal("https://www.adobe.com", "Opening browser for testing purpose."); 
-		// 	await shell.openExternal("mailto:/example.com/");
-		// } catch (e) {
-		// 	console.error(e);
-		// }
 
 		accessToken = await xhrRequest(`${publicUrl}/getCredentials?requestId=${rid}`, 'GET', {}, 'json')
 			.then(tokenResponse => {
@@ -51,16 +42,16 @@ async function fetchUserProfile() {
 						};
 	
 	const dropboxProfile = await xhrRequest(dropboxProfileUrl, 'POST', headerData);
-	let dropboxProfile_pasred = JSON.parse(dropboxProfile);
+	const dropboxProfile_pasred = JSON.parse(dropboxProfile);
 
 	// Update received user info display
-	if(userInfoDisplayString == null){
+	if(userInfoDisplayTextNode == null){
 		let userName = document.createTextNode(`Name: ${dropboxProfile_pasred.name.display_name}`);
-		userInfoDisplayString = document.getElementById('info').appendChild(userName);
+		userInfoDisplayTextNode = document.getElementById('info').appendChild(userName);
 		
 		document.getElementById("connect").innerText = "User info Received";
 	}else{
-		userInfoDisplayString.nodeValue = `How many times are you gonna click the button, ${dropboxProfile_pasred.name.given_name}?`;
+		userInfoDisplayTextNode.nodeValue = `How many times are you gonna click the button, ${dropboxProfile_pasred.name.given_name}?`;
 	}
 }
 
@@ -80,14 +71,22 @@ function xhrRequest(url, method, headerData = {}, responseType = '') {
 				reject(`Request had an error: ${req.status}`);
 			}
 		}
+
 		req.ontimeout = () => {
 			console.log("polling...");
 			resolve(xhrRequest(url, method, headerData, responseType));
 		}
+
 		req.onerror = (err) => {
 			console.log(err);
 			reject(err);
 		}
+
+		// report request status to console once received
+		req.onreadystatechange = function() {
+			console.log(`Request State Has Changed: ${req.status} : ${req.statusText}`);
+		};
+
 		req.open(method, url, true);
 
 		// Establish all provided headers
@@ -96,10 +95,6 @@ function xhrRequest(url, method, headerData = {}, responseType = '') {
 				req.setRequestHeader(key, value);
 			});
 
-			// report request status to console once received
-			req.onreadystatechange = function() {
-				console.log(`Request State Changed: ${req.status} : ${req.statusText}`);
-			};
 		}
 
 		// Only establish response type if one is explicitly provided
