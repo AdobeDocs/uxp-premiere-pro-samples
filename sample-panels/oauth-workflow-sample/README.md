@@ -66,7 +66,8 @@ Enter the required credentials in `public/config.js`. You'll need:
 - Your local Node.js server address (assumed to be **http://localhost:8000** in this sample)
 
 > [!IMPORTANT]
-> In addition to your Dropbox API key and secret, your Dropbox application should be configured to with the following *Redirect URIs* for your local server:
+> In addition to your Dropbox API key and secret, your Dropbox application should be configured to with the following *Redirect URI* for your local server:
+>
 > **http://localhost:8000/callback**
 
 
