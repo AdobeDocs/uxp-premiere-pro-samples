@@ -28,7 +28,7 @@ This tutorial will show you how to implement the OAuth workflow in a Premiere Pr
 
 There are three parts of this workflow:
 
-- Your Premier Pro UXP Plugin
+- Your Premiere Pro UXP Plugin
 - Your server endpoints (for this development example, we'll create a local Node.js server)
 - The service providers OAuth endpoints (for this example, the Dropbox API)
 
@@ -42,7 +42,7 @@ The high-level workflow is as follows:
 1. The server/service handshake handles the entire OAuth code grant workflow
 1. The server saves the access token paired with the session ID
 1. The Premiere Pro UXP Plugin asks the server if an access token has been defined for the session ID. If the token is available, the server sends the access token back
-1. The Premiere Pro UXP Plugin uses the access token to make API through the server to the service API
+1. The Premiere Pro UXP Plugin uses the access token to make API calls through the server to the service API
 
 ## Configuration
 
@@ -63,7 +63,11 @@ Enter the required credentials in `public/config.js`. You'll need:
 
 - Your Dropbox API key
 - Your Dropbox API secret
-- Your local Node.js server address, or your public URL (ex: `ngrok` URL)
+- Your local Node.js server address (assumed to be **http://localhose:8000** in this sample)
+
+> [!IMPORTANT]
+> In addition to your Dropbox API key and secret, your Dropbox application should be configured to with the following *Redirect URIs* for your
+
 
 ```js
 const dropboxApiKey = "YOUR-DROPBOX-API-KEY";
