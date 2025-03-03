@@ -15,7 +15,12 @@ let userInfoDisplayTextNode;
 async function connectOAuthService() {
   	// Retrieve he access token if it doesn't exist already
 	if (!accessToken) {
-		const rid = await xhrRequest(`${publicUrl}/getRequestId`, 'GET', {}, 'json')
+		const rid = await xhrRequest(
+								url =`${publicUrl}/getRequestId`, 
+								method = 'GET', 
+								headerData = {}, 
+								responseType = 'json'
+							)
 			.then(response => {
 				return response.id;
 			});

@@ -8,8 +8,6 @@ This tutorial will show you how to implement the OAuth workflow in a Premiere Pr
 ## Prerequisites
 
 - Basic knowledge of HTML, CSS, and JavaScript.
-- [Quick Start Tutorial](/develop/tutorials/quick-start/)
-- [Debugging Tutorial](/develop/tutorials/debugging/)
 - Familiarity with your OS's command line application
 - Familiarity with [OAuth](https://oauth.net/2/)
 - [A registered app on Dropbox](https://www.dropbox.com/developers/apps/create) with the following settings:
@@ -42,7 +40,7 @@ The high-level workflow is as follows:
 1. The server/service handshake handles the entire OAuth code grant workflow
 1. The server saves the access token paired with the session ID
 1. The Premiere Pro UXP Plugin asks the server if an access token has been defined for the session ID. If the token is available, the server sends the access token back
-1. The Premiere Pro UXP Plugin uses the access token to make API calls through the server to the service API
+1. The Premiere Pro UXP Plugin uses the access token to make service API calls through the server
 
 ## Configuration
 
@@ -66,7 +64,9 @@ Enter the required credentials in `public/config.js`. You'll need:
 - Your local Node.js server address (assumed to be **http://localhost:8000** in this sample)
 
 > [!IMPORTANT]
-> In addition to your Dropbox API key and secret, your Dropbox application should be configured with the following *Redirect URI* for your local server:
+> In addition to your Dropbox API key and secret, your Dropbox application should be configured camera
+
+with the following *Redirect URI* for your local server:
 >
 > **http://localhost:8000/callback**
 
