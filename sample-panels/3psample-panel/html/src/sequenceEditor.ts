@@ -106,6 +106,7 @@ export async function insertTrackItem(project: Project) {
  * For example, if input trackItem is located at V1, it will be cloned at V2.
  * If your input trackItem is located at V2, it will be cloned at V3.
  * If your input trackItem ends at 00:00:12:00, cloned item will end at 00:00:11:00.
+ * If you do not specify for if it's insert or not, default is overwrite.
  */
 export async function cloneSelectedTrackItem(project: Project) {
   let success = false;
@@ -127,7 +128,8 @@ export async function cloneSelectedTrackItem(project: Project) {
             timeOffset, // shift it 1s leftward
             1, // new trackItem video track index go up by 1 if apply
             1, // new trackItem audio track index go up by 1 if apply
-            true // insert, not overwrite
+            true, // alignToVideo
+            false // Insert, not overwrite
           );
           compoundAction.addAction(cloneItemAction);
         }, "TrackItem cloned");
