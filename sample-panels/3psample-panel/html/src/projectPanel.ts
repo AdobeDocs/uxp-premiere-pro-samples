@@ -403,3 +403,45 @@ export async function setOverridePixelAspectRatio(project: Project) {
 
   return success;
 }
+
+export async function attachProxy(project: Project, proxyFile: String) {
+  const clipProjectItem = await getClipProjectItem(project);
+  let success = false;
+  try {
+    success = await clipProjectItem.attachProxy(
+      proxyFile,
+      false // inHighRes, set this to false means we do not attach it as high solution footage
+    );
+  } catch (err) {
+    log(`Error: ${err}`, "red");
+    return false;
+  }
+  return success;
+}
+
+export async function changeMediaFilePath(project: Project, mediaFile: String) {
+  const clipProjectItem = await getClipProjectItem(project);
+  let success = false;
+  try {
+    success = await clipProjectItem.changeMediaFilePath(mediaFile);
+  } catch (err) {
+    log(`Error: ${err}`, "red");
+    return false;
+  }
+  return success;
+}
+
+export async function getProjectViewIds() {
+  return ppro.ProjectUtils.getProjectViewIds();
+}
+
+export async function getProjectFromViewId(viewId) {
+  return ppro.ProjectUtils.getProjectFromViewId(viewId);
+}
+
+export async function getSelectedProjectItemFromViewId(viewId) {
+  const projectItemSelection = await ppro.ProjectUtils.getSelectionFromViewId(
+    viewId
+  );
+  return projectItemSelection.getItems();
+}

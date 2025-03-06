@@ -74,3 +74,10 @@ export async function exportSequence(sequence: Sequence) {
     presetFile // preset file
   );
 }
+
+/**
+ * Get Export File Extension based on preset and sequence
+ */
+export async function getExportFileExtension(sequence, presetFile) {
+  return ppro.EncoderManager.getExportFileExtension(sequence, presetFile);
+}
