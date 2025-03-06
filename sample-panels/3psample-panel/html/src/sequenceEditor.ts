@@ -129,7 +129,7 @@ export async function cloneSelectedTrackItem(project: Project) {
             1, // new trackItem video track index go up by 1 if apply
             1, // new trackItem audio track index go up by 1 if apply
             true, // alignToVideo
-            false // Insert, not overwrite
+            true // Insert, not overwrite
           );
           compoundAction.addAction(cloneItemAction);
         }, "TrackItem cloned");
