@@ -71,7 +71,7 @@ import {
   changeMediaFilePath,
   getProjectViewIds,
   getProjectFromViewId,
-  getSelectedProjectItemFromViewId,
+  getSelectedProjectItemsFromViewId,
 } from "./src/projectPanel";
 
 import {
@@ -154,7 +154,7 @@ import {
 } from "./src/sequenceEditor";
 
 //global objects.
-import type { premierepro, ProjectItem, Guid } from "./types.d.ts";
+import type { premierepro, ProjectItem, Guid, Project } from "./types.d.ts";
 const ppro = require("premierepro") as premierepro;
 const uxp = require("uxp") as typeof import("uxp");
 
@@ -760,12 +760,12 @@ async function attachProxyClicked() {
   if (!project) return;
 
   let proxyFile;
-  log("Please select media file for attach proxy");
+  log("Please select media file to attach as proxy");
   const file = await uxp.storage.localFileSystem.getFileForOpening();
   if (file && file.isFile && file.nativePath) {
     proxyFile = file.nativePath;
   } else {
-    log("Selection of proxy media file failed. Please try again");
+    log("Selection of proxy file failed. Please try again");
     return;
   }
 
@@ -782,7 +782,7 @@ async function changePathClicked() {
   if (!project) return;
 
   let mediaFile;
-  log("Please select media file for attach proxy");
+  log("Please select media file for the change of media file path");
   const file = await uxp.storage.localFileSystem.getFileForOpening();
   if (file && file.isFile && file.nativePath) {
     mediaFile = file.nativePath;
@@ -801,20 +801,20 @@ async function changePathClicked() {
 
 async function getProjectViewIdsClicked() {
   const viewIds: Array<Guid> = await getProjectViewIds();
-  if (!viewIds || viewIds.length == 0) {
+  if (viewIds.length == 0) {
     log("No project view available for getting ids", "red");
     return;
   }
-  viewIds.forEach((id, index) => {
-    log(`    ${index + 1}: ${id.toString()}`);
+  viewIds.forEach((viewGuid, index) => {
+    log(`    ${index + 1}: ${viewGuid.toString()}`);
   });
 }
 
 async function getProjectFromViewIdClicked() {
   // get project from first view id found
-  const viewIds = await getProjectViewIds();
-  if (!viewIds || viewIds.length == 0) {
-    log("No project view found.", "red");
+  const viewIds: Array<Guid> = await getProjectViewIds();
+  if (viewIds.length == 0) {
+    log("No project view found for getting project", "red");
     return;
   }
   const projectViewId = viewIds[0];
@@ -829,15 +829,15 @@ async function getProjectFromViewIdClicked() {
 }
 
 async function getSelectionFromViewIdClicked() {
-  // get project from first view id found
+  // get selected projectItems from first view id found
   const viewIds: Array<Guid> = await getProjectViewIds();
-  if (!viewIds || viewIds.length == 0) {
+  if (viewIds.length == 0) {
     log("No project view found.", "red");
     return;
   }
   const projectViewId = viewIds[0];
   const selectedItems: Array<ProjectItem> =
-    await getSelectedProjectItemFromViewId(projectViewId);
+    await getSelectedProjectItemsFromViewId(projectViewId);
   if (selectedItems.length == 0) {
     log(`No item is selected for project view with id ${projectViewId}`);
     return;
@@ -1324,7 +1324,7 @@ async function getExportFileExtensionClicked() {
 
   const sequence = await getActiveSequence(project);
   if (!sequence) {
-    log("No active sequence available for export.");
+    log("No active sequence available for getting exported extension");
     return;
   }
 

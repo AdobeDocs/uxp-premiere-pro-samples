@@ -11,6 +11,7 @@
  * then your use, modification, or distribution of it requires the prior
  * written permission of Adobe.
  **************************************************************************/
+
 import type {
   AudioClipTrackItem,
   premierepro,
@@ -24,7 +25,7 @@ import { log } from "./utils";
 
 /**
  * Use first selected projectItem to create new trackItem that overwrites at V2/A2 of active sequence
- * Please note that input is NOT offset. Inputing 2 for video track index will always overwrite with new trackItem at V3.
+ * Please note that input is NOT offset. Inputing 2 for video track index will always overwrite trackItem at V3.
  */
 export async function overwriteTrackItem(project: Project) {
   let success = false;
@@ -40,12 +41,11 @@ export async function overwriteTrackItem(project: Project) {
           "No projectItem selected in project panel for overwrite"
         );
       }
-      const time = ppro.TickTime.TIME_ZERO;
       project.lockedAccess(() => {
         success = project.executeTransaction((compoundAction) => {
           const overwriteItemAction = sequenceEditor.createOverwriteItemAction(
             projectItems[0], // projectItem reference for creating trackItem
-            time, // insert at this TickTime
+            ppro.TickTime.TIME_ZERO, // Overwrite at beginning of timeline
             1, // video track index (V2)
             1 // audio track index (A2)
           );
@@ -53,7 +53,7 @@ export async function overwriteTrackItem(project: Project) {
         }, "TrackItem Overwritten");
       });
     } catch (err) {
-      log(`Error: ${err}`, "red");
+      log(`${err}`, "red");
       return false;
     }
   } else {
@@ -85,7 +85,7 @@ export async function insertTrackItem(project: Project) {
             ppro.TickTime.TIME_ZERO, // time
             1, // video track index
             1, // audio track index
-            true // limitedShift, don't shift other non-input track for this insert
+            true // limitedShift, don't shift non-input track for this insert
           );
           compoundAction.addAction(insertItemAction);
         }, "TrackItem Inserted");
@@ -102,10 +102,10 @@ export async function insertTrackItem(project: Project) {
 
 /**
  * Clone first selected trackItem to another track (with index + 1) and 1 second leftward in time
- * For example, if input trackItem is located at V1, it will be cloned at V2
  * Please note that input for this API is offset compared to input trackItem data, which could be negative.
+ * For example, if input trackItem is located at V1, it will be cloned at V2.
  * If your input trackItem is located at V2, it will be cloned at V3.
- * If your input trackItem ends at 00:00:12:00, cloned items ends at 00:00:11:00.
+ * If your input trackItem ends at 00:00:12:00, cloned item will end at 00:00:11:00.
  */
 export async function cloneSelectedTrackItem(project: Project) {
   let success = false;
@@ -133,7 +133,7 @@ export async function cloneSelectedTrackItem(project: Project) {
         }, "TrackItem cloned");
       });
     } catch (err) {
-      log(`Error: ${err}`, "red");
+      log(`${err}`, "red");
       return false;
     }
   } else {
@@ -168,7 +168,7 @@ export async function removeSelectedTrackItems(project: Project) {
         }, "TrackItem removed");
       });
     } catch (err) {
-      log(`Error: ${err}`, "red");
+      log(`${err}`, "red");
       return false;
     }
   } else {
