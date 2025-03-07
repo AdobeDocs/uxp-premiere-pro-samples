@@ -547,7 +547,6 @@ export declare type Sequence = {
   createCloneAction(): Action	//Creates an action to clone the given sequence
   createSubsequence(ignoreTrackTargeting?: boolean): Promise<Sequence>	//Returns a new sequence, which is a sub-sequence of the existing sequence
   isDoneAnalyzingForVideoEffects(): Promise<boolean>	//Returns whether or not the sequence is done analyzing for video effects
-  waitUntilMediaReady(timeout?: number): object	//Awaits for all media in sequence to be ready.
   getZeroPoint(): Promise<TickTime>	//Time representing the zero point of the sequence.
   getEndTime(): Promise<TickTime>	//Time representing the end of the sequence
   getInPoint(): Promise<TickTime>	//Get time representing the inPoint of sequence.
@@ -562,11 +561,10 @@ export declare type Sequence = {
 }
 
 export declare type SequenceEditorStatic = {
-  getEditor(sequenceObject: any): SequenceEditorObject	//Get Sequence Editor reference for editing the sequence timeline
+  getEditor(sequenceObject: any): SequenceEditor	//Get Sequence Editor reference for editing the sequence timeline
 }
 
 export declare type SequenceEditor = {
-  createAddItemAction(projectItem: object, time: object, videoTrackIndex: number, audioTrackIndex: number, insert: boolean, insertToFit: boolean, limitedShift: boolean): object	//Create insert or overwite item action for sequence
   createRemoveItemsAction(trackItemSelection: object, ripple: boolean, mediaType: object, shiftOverLapping?: boolean): action	//Create remove action for sequence
   createInsertProjectItemAction(projectItem: ProjectItem, time: TickTime, videoTrackIndex: number, audioTrackIndex: number, limitShift: boolean): Action	//Create insert ProjectItem into Sequence Action
   createOverwriteItemAction(projectItem: ProjectItem, time: TickTime, videoTrackIndex: number, audioTrackIndex: number): Action	//Create overwrite Sequence with ProjectItem Action
@@ -627,7 +625,7 @@ export declare type TrackItemSelectionStatic = {
 export declare type TrackItemSelection = {
   addItem(trackItem: object, skipDuplicateCheck?: boolean): boolean	//Add a track item to this selection
   removeItem(trackItem: object): boolean	//Remove a track item from this selection
-  getItems(): Promise<[]>	//Get track items from this selection
+  getTrackItems(): Promise<[]>	//return list of trackItems inside of trackItemSelection
 }
 
 export declare type TransitionFactoryStatic = {

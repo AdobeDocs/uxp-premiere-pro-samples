@@ -461,7 +461,7 @@ async function getSequenceSelectionClicked() {
 
   const sequence = await project.getActiveSequence();
   let trackItemSelection = await getSequenceSelection(sequence);
-  let trackItems = await trackItemSelection.getItems();
+  let trackItems = await trackItemSelection.getTrackItems();
   log(
     trackItemSelection
       ? `Selection of ${trackItems.length} trackItems found for sequence ${sequence.name}`
