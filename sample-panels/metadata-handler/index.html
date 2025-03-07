@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width" />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="index.js"></script>
+  </head>
+
+  <body>
+    <div class="scroll">
+      <sp-heading>Metadata Handler Panel</sp-heading>
+      <!--Warning Dialog-->
+      <dialog id="dialog">
+        <sp-heading size="L">Warning ⚠️</sp-heading>
+        <sp-divider size="large"></sp-divider>
+        <sp-body
+          >No items were selected in your project. <br />
+          No column data was modified.
+        </sp-body>
+        <div class="row">
+          <sp-button
+            id="dialog-close-button"
+            variant="secondary"
+            class="flex-block"
+          >
+            Ok
+          </sp-button>
+        </div>
+      </dialog>
+      <sp-body id="console">
+        Please select at least one project item to update or delete metadata
+      </sp-body>
+      <div class="section updater">
+        <h4>Column to Column Changer</h4>
+        <sp-picker
+          placeholder="Select the Column for update"
+          id="column-picker-left"
+        >
+          <sp-menu slot="options" class="metadata-columns"> </sp-menu>
+        </sp-picker>
+
+        <sp-picker
+          placeholder="Select the Column for update"
+          id="column-picker-right"
+        >
+          <sp-menu slot="options" class="metadata-columns"> </sp-menu>
+        </sp-picker>
+
+        <sp-radio-group>
+          <sp-radio value="copy" checked id="copy"
+            >Copy Column to Column</sp-radio
+          >
+          <sp-radio value="exchange" id="exchange"
+            >Exchange Column Datas</sp-radio
+          >
+        </sp-radio-group>
+
+        <sp-button id="column-update-button">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="currentColor"
+            class="bi bi-chevron-double-right"
+            viewBox="0 0 16 16"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M3.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L9.293 8 3.646 2.354a.5.5 0 0 1 0-.708"
+            />
+            <path
+              fill-rule="evenodd"
+              d="M7.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L13.293 8 7.646 2.354a.5.5 0 0 1 0-.708"
+            />
+          </svg>
+        </sp-button>
+      </div>
+
+      <div class="section updater">
+        <h4>Column Data Changer</h4>
+        <div class="flex">
+          <div class="flex-div">
+            <sp-picker
+              placeholder="Select the Column for update"
+              id="column-picker"
+            >
+              <sp-menu slot="options" class="metadata-columns"> </sp-menu>
+            </sp-picker>
+
+            <sp-field-label for="prefix">Prefix</sp-field-label>
+            <sp-textfield
+              size="m"
+              id="prefix"
+              type="input"
+              placeholder="Prefix of value. Use # for sequential number"
+            >
+            </sp-textfield>
+
+            <sp-field-label for="body">Body</sp-field-label>
+            <sp-textfield
+              size="m"
+              id="body"
+              type="input"
+              placeholder="Leave empty to use current value"
+            >
+            </sp-textfield>
+
+            <sp-field-label for="suffix">Suffix</sp-field-label>
+            <sp-textfield
+              size="m"
+              id="suffix"
+              type="input"
+              placeholder="Suffix of value. Use # for sequential number"
+            >
+            </sp-textfield>
+
+            <sp-field-label for="seq-num"
+              >Sequential Number Starts</sp-field-label
+            >
+            <sp-textfield size="m" id="seq-num" type="input" placeholder="0">
+            </sp-textfield>
+          </div>
+          <div class="preview section flex-div">
+            <div>
+              <h4>Preview Updated Text:</h4>
+              <div id="preview-text">
+                <span id="prefix-text">Select a Column to preview value</span
+                ><span id="body-text"></span><span id="suffix-text"></span>
+              </div>
+              <span id="explanation"
+                >Use the # symbol in prefix, body, or suffix field to add place
+                for sequential numbering. For padding, add more #.
+                <br />
+                <br />
+                For example, assume we select two clips named original.mov and
+                original2.mov. We have ##_ entered as prefix and the rest empty.
+                <br />
+                Given that, column will be updated with value like
+                01_original.mov, 02_original2.mov and so on
+              </span>
+              <br />
+              <br />
+              <sp-button id="refresh-button" class="updater-section"
+                ><svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  class="bi bi-arrow-clockwise"
+                  viewBox="0 0 16 16"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z"
+                  />
+                  <path
+                    d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"
+                  />
+                </svg>
+              </sp-button>
+              <p>
+                Sometimes preview body text can be inaccurate due to selection
+                changes. Refresh if needed.
+              </p>
+              <p id="write-state" class="empty">
+                You will overwrite the entire value for current column metadata
+              </p>
+            </div>
+          </div>
+        </div>
+        <sp-button id="update-button">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="currentColor"
+            class="bi bi-chevron-double-right"
+            viewBox="0 0 16 16"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M3.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L9.293 8 3.646 2.354a.5.5 0 0 1 0-.708"
+            />
+            <path
+              fill-rule="evenodd"
+              d="M7.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L13.293 8 7.646 2.354a.5.5 0 0 1 0-.708"
+            />
+          </svg>
+        </sp-button>
+      </div>
+      <div class="section">
+        <h4>Delete Column Data</h4>
+        <div class="flex">
+          <div class="flex-block">
+            <sp-picker
+              placeholder="Select the Column for update"
+              id="column-delete"
+            >
+              <sp-menu
+                slot="options"
+                class="metadata-columns"
+                id="delete-picker"
+              >
+              </sp-menu>
+            </sp-picker>
+          </div>
+          <div class="flex-block">
+            <sp-button id="delete-button">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                class="bi bi-trash"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"
+                />
+                <path
+                  d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"
+                />
+              </svg>
+            </sp-button>
+          </div>
+        </div>
+      </div>
+      <div class="section">
+        <h4>Metadata Exporter</h4>
+        <sp-radio-group id="time-type">
+          <sp-label slot="label">Select Time Type:</sp-label>
+          <sp-radio value="smpte" checked>SMPTE Timecode</sp-radio>
+          <sp-radio value="frames">Frames</sp-radio>
+          <sp-radio value="feet+frames">Feet+Frames</sp-radio>
+        </sp-radio-group>
+        <div>
+          <sp-radio-group id="file-type">
+            <sp-label slot="label">Select File Type:</sp-label>
+            <sp-radio value="csv" checked>CSV</sp-radio>
+            <sp-radio value="tsv">TSV</sp-radio>
+          </sp-radio-group>
+        </div>
+        <sp-button id="export-button">Export To Disk</sp-button>
+      </div>
+
+      <div class="section">
+        <h4>Clip Marker Exporter</h4>
+        <div>
+          <sp-radio-group id="clip-marker-type">
+            <sp-label slot="label">Select File Type:</sp-label>
+            <sp-radio value="csv" checked>CSV</sp-radio>
+            <sp-radio value="tsv">TSV</sp-radio>
+          </sp-radio-group>
+        </div>
+        <div class="updater-section">
+          <h5>Active Project: <span id="active-project"></span></h5>
+        </div>
+        <sp-button id="export-marker-button">Export To Disk</sp-button>
+      </div>
+      <footer></footer>
+    </div>
+  </body>
+</html>
