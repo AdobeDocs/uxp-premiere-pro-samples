@@ -19,7 +19,7 @@ A sample panel we developed to improve user's control over project item metadata
 
 1. Right now, doing a set of update project metadata action via compound action could pollute history panel with list of update message instead of a single message, which was not intended. We have started investigating into the bug.
 2. Due to the same bug, you can't undo two set of update metadata actions. 
-3. Due to the same bug and the limit of history panel is 10000, if you update over this number of project items' metadata, you will not be able to undo all of them. 
+3. Due to the same bug and the limit of history panel is 25000, if you update over this number of project items' metadata, you will not be able to undo all of them. 
 
 
 ## Special Thanks
