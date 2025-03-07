@@ -566,7 +566,7 @@ export declare type SequenceEditorStatic = {
 }
 
 export declare type SequenceEditor = {
-  createAddItemsAction(TrackItemSelection: object, HorizontalOffset: object, VideoVerticalOffset: number, AudioVerticalOffset: number, Insert: boolean, InsertToFit: boolean, LimitedShift: boolean, MediaType: object): Action	//Create insert action for sequence
+  createAddItemAction(projectItem: object, time: object, videoTrackIndex: number, audioTrackIndex: number, insert: boolean, insertToFit: boolean, limitedShift: boolean): object	//Create insert or overwite item action for sequence
   createRemoveItemsAction(trackItemSelection: object, ripple: boolean, mediaType: object, shiftOverLapping?: boolean): action	//Create remove action for sequence
   createInsertProjectItemAction(projectItem: ProjectItem, time: TickTime, videoTrackIndex: number, audioTrackIndex: number, limitShift: boolean): Action	//Create insert ProjectItem into Sequence Action
   createOverwriteItemAction(projectItem: ProjectItem, time: TickTime, videoTrackIndex: number, audioTrackIndex: number): Action	//Create overwrite Sequence with ProjectItem Action
