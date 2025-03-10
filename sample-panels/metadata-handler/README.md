@@ -9,19 +9,21 @@ A sample panel we developed to improve user's control over project item metadata
 - Open your console / terminal / command prompt
 - cd into the `sample-panels/metadata-handler` directory
 - Open the UDT tool and add this new plugin by selecting ```manifest.json``` under the metadata-handler directory 
-<img width="600" alt="Screenshot 2024-12-17 at 9 21 07 AM" src="https://git.corp.adobe.com/storage/user/57827/files/affa011d-5f1e-45e0-916f-d71a7f8bfba7">
+<img width="800" alt="Screenshot 2025-03-07 at 2 52 41 PM" src="https://github.com/user-attachments/assets/55739aed-28dc-4531-8d05-d7e98e42280a" />
 
 - Load panel from UDT and have fun playing with it!
-<img width="600" alt="Screenshot 2024-12-17 at 9 22 50 AM" src="https://git.corp.adobe.com/storage/user/57827/files/249db66d-9a8c-4ac7-9531-0081ba7336af">
+<img width="800" alt="Screenshot 2025-03-07 at 2 53 52 PM" src="https://github.com/user-attachments/assets/7aae497d-6664-4952-bc8a-27497fdda91e" />
 
 ## Preview and Known Issues
-<img width="699" alt="Screenshot 2025-01-06 at 4 32 17 PM" src="https://git.corp.adobe.com/storage/user/57827/files/00636040-eca0-4207-9b9c-dec617cf8ff1">
+<img width="714" alt="Screenshot 2025-03-07 at 2 55 15 PM" src="https://github.com/user-attachments/assets/fc82e968-544e-4d0d-b975-d8dc748ce2ff" />
 
 1. Right now, doing a set of update project metadata action via compound action could pollute history panel with list of update message instead of a single message, which was not intended. We have started investigating into the bug.
 2. Due to the same bug, you can't undo two set of update metadata actions. 
-3. Due to the same bug and the limit of history panel is 10000, if you update over this number of project items' metadata, you will not be able to undo all of them. 
+3. Due to the same bug and the limit of history panel is 25000, if you update over this number of project items' metadata, you will not be able to undo all of them. 
 
 
 ## Special Thanks
 Kudos to Fran's CEP Panel, where we get the inspiration of developing a UXP Panel that could improve 
-control over metadata. From there, we redesigned the UI and expanded functionalities to make this UXP Panel.We hope this could be a good sample indicating how we were able to transfer CEP panel to a UXP Panel with more intuitive UI and functionalities. 
+control over metadata.
+
+We hope this could be a good sample indicating how we were able to transfer CEP panel to a UXP Panel with more intuitive UI and functionalities. Have fun!
