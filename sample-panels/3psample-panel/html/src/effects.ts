@@ -13,7 +13,7 @@
  **************************************************************************/
 
 import { log } from "./utils";
-import type { premierepro } from "../types.d.ts";
+import type { premierepro, VideoClipTrackItem } from "../types.d.ts";
 const ppro = require("premierepro") as premierepro;
 
 let matchnames;
@@ -91,44 +91,55 @@ export async function addEffects(project) {
 }
 
 export async function addMultipleEffects(project) {
-  if (project) {
-    const videoComponentChain = await getVideoComponentChain();
-    if (!videoComponentChain) {
-      return;
-    }
+    const proj = await ppro.Project.getActiveProject();
+    const sequence = await proj.getActiveSequence();
+    const selection = await sequence.getSelection();
+    const trackItems = await selection.getTrackItems();
     const newComponent1 = await filterFactory.createComponent(
       "PR.ADBE Gamma Correction"
     );
 
-    const newComponent2 = await filterFactory.createComponent(
-      "PR.ADBE Extract"
+    const matchnames = await ppro.TransitionFactory.getVideoTransitionMatchNames();
+    const videoTransition = await ppro.TransitionFactory.createVideoTransition(
+      matchnames[1]
     );
 
+    let actions = [];
     let success = false;
+    let components = [];
+    for (let i = 0; i < trackItems.length; i+=1){
+      let item = trackItems[i];
+      let videoComponentChain = await item.getComponentChain();
+      components.push(videoComponentChain);
+    }
     try {
-      project.lockedAccess(() => {
-        success = project.executeTransaction((compoundAction) => {
-          var action1 = videoComponentChain.createInsertComponentAction(
+      await project.lockedAccess(() => {
+        for (let i = 0; i < components.length; i+=1){
+          let component = components[i];
+          let item = trackItems[i];
+          var action1 = component.createInsertComponentAction(
             newComponent1,
             2
           );
-          var action2 = videoComponentChain.createInsertComponentAction(
-            newComponent2,
-            2
-          );
-          compoundAction.addAction(action1);
-          compoundAction.addAction(action2);
-        }, "Add Multiple Effects");
+          if (!action1){
+            continue; 
+          }
+          var action2 = item.createAddVideoTransitionAction(videoTransition);
+          actions.push(action1);
+          actions.push(action2);
+        }
+        success = project.executeTransaction((compoundAction) => {
+          actions.forEach(action => {
+            compoundAction.addAction(action);
+          })
+        }, "Add Gamma Effect and End transition");
+        return success;
       });
     } catch (err) {
       log(`Error: ${err}`, "red");
       return false;
     }
-
     return success;
-  } else {
-    log(`No project found.`, "red");
-  }
 }
 
 export async function removeEffects(project) {

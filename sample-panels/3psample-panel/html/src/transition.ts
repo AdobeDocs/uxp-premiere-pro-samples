@@ -12,7 +12,7 @@
  * written permission of Adobe.
  **************************************************************************/
 
-import type { premierepro, Project, Sequence } from "../types.d.ts";
+import type { premierepro, Project } from "../types.d.ts";
 const ppro = require("premierepro") as premierepro;
 import { log } from "./utils";
 

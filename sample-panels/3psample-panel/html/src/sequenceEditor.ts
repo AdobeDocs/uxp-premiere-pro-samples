@@ -46,8 +46,8 @@ export async function overwriteTrackItem(project: Project) {
           const overwriteItemAction = sequenceEditor.createOverwriteItemAction(
             projectItems[0], // projectItem reference for creating trackItem
             ppro.TickTime.TIME_ZERO, // Overwrite at beginning of timeline
-            1, // video track index (V2)
-            1 // audio track index (A2)
+            0, // video track index (V2)
+            0 // audio track index (A2)
           );
           compoundAction.addAction(overwriteItemAction);
         }, "TrackItem Overwritten");
@@ -83,8 +83,8 @@ export async function insertTrackItem(project: Project) {
           const insertItemAction = sequenceEditor.createInsertProjectItemAction(
             projectItems[0], // reference for creating trackItem for overwrite
             ppro.TickTime.TIME_ZERO, // time
-            1, // video track index
-            1, // audio track index
+            0, // video track index
+            0, // audio track index
             true // limitedShift, don't shift non-input track for this insert
           );
           compoundAction.addAction(insertItemAction);
