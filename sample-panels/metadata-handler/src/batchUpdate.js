@@ -145,7 +145,7 @@ async function getProjectItemMetadatas(projectItems) {
       if (projectItemMetadata) {
         projectItemMetadatas.push(projectItemMetadata);
       } else {
-        projectItemMetadatas.push("");
+        projectItemMetadatas.push(null);
       }
     }
   }
