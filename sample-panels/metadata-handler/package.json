@@ -1,0 +1,7 @@
+{
+  "name": "@adobe/uxp-template-pr-starter",
+  "version": "1.0.0",
+  "description": "Default template for creating Adobe UXP based PremierePro plugin.",
+  "author": "Adobe Inc",
+  "license": "Apache-2.0"
+}
