@@ -117,32 +117,39 @@ async function getColSampleData() {
   return body;
 }
 
-async function getSetMetadataAction(
-  projectItem,
-  xmpProject,
-  column,
-  updateValue
-) {
+function getSetMetadataAction(projectItem, xmpProject, column, updateValue) {
   let updatedFields = [column];
-  try {
-    if (updateValue == "") {
-      if (xmpProject.doesPropertyExist(PPRO_METADATA_URL, column)) {
-        await xmpProject.deleteProperty(PPRO_METADATA_URL, column);
-      }
-    } else {
-      await xmpProject.setProperty(PPRO_METADATA_URL, column, updateValue);
+  if (updateValue == "") {
+    if (xmpProject.doesPropertyExist(PPRO_METADATA_URL, column)) {
+      xmpProject.deleteProperty(PPRO_METADATA_URL, column);
     }
-
-    let newXmpStr = xmpProject.serialize();
-    return ppro.Metadata.createSetProjectMetadataAction(
-      projectItem,
-      newXmpStr,
-      updatedFields
-    );
-  } catch (err) {
-    console.log(`${err}`);
-    return false;
+  } else {
+    xmpProject.setProperty(PPRO_METADATA_URL, column, updateValue);
   }
+
+  let newXmpStr = xmpProject.serialize();
+  return ppro.Metadata.createSetProjectMetadataAction(
+    projectItem,
+    newXmpStr,
+    updatedFields
+  );
+}
+
+async function getProjectItemMetadatas(projectItems) {
+  let projectItemMetadatas = [];
+  for (const projectItem of projectItems) {
+    if (ppro.ClipProjectItem.cast(projectItem)) {
+      let projectItemMetadata = await ppro.Metadata.getProjectMetadata(
+        projectItem
+      );
+      if (projectItemMetadata) {
+        projectItemMetadatas.push(projectItemMetadata);
+      } else {
+        projectItemMetadatas.push("");
+      }
+    }
+  }
+  return projectItemMetadatas;
 }
 
 // replace # in input string with sequential number with padding
@@ -191,45 +198,46 @@ async function updateMetadata() {
   let suffix = "";
   const bodyUndefined = bodyPattern == "" ? true : false;
   let updateValue = "";
-  project.lockedAccess(async () => {
+
+  const projectItemMetadatas = await getProjectItemMetadatas(projectItems);
+  project.lockedAccess(() => {
     let setMetadataActions = [];
-    for (const projectItem of projectItems) {
-      // if it can be casted to clip project item
-      if (ppro.ClipProjectItem.cast(projectItem)) {
-        // update the metadata column with the updated text
-        prefix = getTranslatedString(prefixPattern, index);
-        suffix = getTranslatedString(suffixPattern, index);
-        let projectItemMetadata = await ppro.Metadata.getProjectMetadata(
-          projectItem
-        );
-        let xmpProject = new XMPMeta(projectItemMetadata);
-        // If body is not defined by user, use original column value as body
-        if (
-          xmpProject.doesPropertyExist(PPRO_METADATA_URL, column) &&
-          bodyUndefined
-        ) {
-          body = await xmpProject.getProperty(PPRO_METADATA_URL, column).value;
-          body = getTranslatedString(body, index);
-        } else {
-          body = getTranslatedString(bodyPattern, index);
-        }
-        index += 1;
-
-        updateValue = `${prefix}${body}${suffix}`;
-
-        let inputValidity = await isInputValidForColumn(column, updateValue);
-        if (!inputValidity) {
-          return;
-        }
-
-        let action = await getSetMetadataAction(
-          projectItem,
-          xmpProject,
-          column,
-          updateValue
-        );
-        setMetadataActions.push(action);
+    for (let i = 0; i < projectItemMetadatas.length; i += 1) {
+      let currItemMetadata = projectItemMetadatas[i];
+      if (!currItemMetadata) {
+        continue;
       }
+      let projectItem = projectItems[i];
+      // update the metadata column with the updated text
+      prefix = getTranslatedString(prefixPattern, index);
+      suffix = getTranslatedString(suffixPattern, index);
+      let xmpProject = new XMPMeta(currItemMetadata);
+      // If body is not defined by user, use original column value as body
+      if (
+        xmpProject.doesPropertyExist(PPRO_METADATA_URL, column) &&
+        bodyUndefined
+      ) {
+        body = xmpProject.getProperty(PPRO_METADATA_URL, column).value;
+        body = getTranslatedString(body, index);
+      } else {
+        body = getTranslatedString(bodyPattern, index);
+      }
+      index += 1;
+
+      updateValue = `${prefix}${body}${suffix}`;
+
+      let inputValidity = isInputValidForColumn(column, updateValue);
+      if (!inputValidity) {
+        return;
+      }
+
+      let action = getSetMetadataAction(
+        projectItem,
+        xmpProject,
+        column,
+        updateValue
+      );
+      setMetadataActions.push(action);
     }
     project.executeTransaction((compoundAction) => {
       for (const setAction of setMetadataActions) {
@@ -261,67 +269,61 @@ async function updateColumnMetadata() {
       "Select at least one project item to update";
     return;
   }
-  project.lockedAccess(async () => {
+
+  const projectItemMetadatas = await getProjectItemMetadatas(projectItems);
+  project.lockedAccess(() => {
     let setMetadataActions = [];
-    for (const projectItem of projectItems) {
-      // if it can be casted to clip project item
-      if (ppro.ClipProjectItem.cast(projectItem)) {
-        // update the metadata column with the updated text
-        let projectItemMetadata = await ppro.Metadata.getProjectMetadata(
-          projectItem
-        );
-        let xmpProject = new XMPMeta(projectItemMetadata);
-        // get value from column left
-        let leftColValue = "";
-        if (xmpProject.doesPropertyExist(PPRO_METADATA_URL, columnLeft)) {
-          leftColValue = await xmpProject.getProperty(
-            PPRO_METADATA_URL,
-            columnLeft
-          ).value;
-        }
+    for (let i = 0; i < projectItemMetadatas.length; i += 1) {
+      let currItemMetadata = projectItemMetadatas[i];
+      if (!currItemMetadata) {
+        continue;
+      }
+      let projectItem = projectItems[i];
+      let xmpProject = new XMPMeta(currItemMetadata);
+      // get value from column left
+      let leftColValue = "";
+      if (xmpProject.doesPropertyExist(PPRO_METADATA_URL, columnLeft)) {
+        leftColValue = xmpProject.getProperty(
+          PPRO_METADATA_URL,
+          columnLeft
+        ).value;
+      }
 
-        let rightColValue = "";
-        if (xmpProject.doesPropertyExist(PPRO_METADATA_URL, columnRight)) {
-          rightColValue = await xmpProject.getProperty(
-            PPRO_METADATA_URL,
-            columnRight
-          ).value;
-        }
+      let rightColValue = "";
+      if (xmpProject.doesPropertyExist(PPRO_METADATA_URL, columnRight)) {
+        rightColValue = xmpProject.getProperty(
+          PPRO_METADATA_URL,
+          columnRight
+        ).value;
+      }
 
-        let inputValidity = await isInputValidForColumn(
-          columnRight,
-          leftColValue
+      let inputValidity = isInputValidForColumn(columnRight, leftColValue);
+      if (!inputValidity) {
+        return;
+      }
+
+      let action = getSetMetadataAction(
+        projectItem,
+        xmpProject,
+        columnRight,
+        leftColValue
+      );
+
+      setMetadataActions.push(action);
+
+      if (document.getElementById("exchange").checked) {
+        action = getSetMetadataAction(
+          projectItem,
+          xmpProject,
+          columnLeft,
+          rightColValue
         );
+
+        inputValidity = isInputValidForColumn(columnLeft, rightColValue);
         if (!inputValidity) {
           return;
         }
-
-        let action = await getSetMetadataAction(
-          projectItem,
-          xmpProject,
-          columnRight,
-          leftColValue
-        );
-
         setMetadataActions.push(action);
-
-        if (document.getElementById("exchange").checked) {
-          action = await getSetMetadataAction(
-            projectItem,
-            xmpProject,
-            columnLeft,
-            rightColValue
-          );
-
-          inputValidity = await isInputValidForColumn(
-            columnLeft,
-            rightColValue
-          );
-          if (!inputValidity) {
-            return;
-          }
-          setMetadataActions.push(action);
-        }
       }
     }
     project.executeTransaction((compoundAction) => {
@@ -342,25 +344,26 @@ async function deleteMetadata() {
       "Select at least one project item to delete";
     return;
   }
-  project.lockedAccess(async () => {
+  const projectItemMetadatas = await getProjectItemMetadatas(projectItems);
+  project.lockedAccess(() => {
     let setMetadataActions = [];
-    for (const projectItem of projectItems) {
-      // if it can be casted to clip project item
-      if (ppro.ClipProjectItem.cast(projectItem)) {
-        let projectItemMetadata = await ppro.Metadata.getProjectMetadata(
-          projectItem
+    for (let i = 0; i < projectItemMetadatas.length; i += 1) {
+      let currItemMetadata = projectItemMetadatas[i];
+      if (!currItemMetadata) {
+        continue;
+      }
+      let projectItem = projectItems[i];
+      let xmpProject = new XMPMeta(currItemMetadata);
+
+      if (xmpProject.doesPropertyExist(PPRO_METADATA_URL, column)) {
+        // remove column data if exist
+        let action = getSetMetadataAction(
+          projectItem,
+          xmpProject,
+          column,
+          "" // tell getSetMetadataAction no need to update xmpProject
         );
-        let xmpProject = new XMPMeta(projectItemMetadata);
-        if (xmpProject.doesPropertyExist(PPRO_METADATA_URL, column)) {
-          // remove column data if exist
-          let action = await getSetMetadataAction(
-            projectItem,
-            xmpProject,
-            column,
-            "" // tell getSetMetadataAction no need to update xmpProject
-          );
-          setMetadataActions.push(action);
-        }
+        setMetadataActions.push(action);
       }
     }
 
