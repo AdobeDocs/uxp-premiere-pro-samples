@@ -115,7 +115,7 @@ export async function cloneSelectedTrackItem(project: Project) {
     try {
       const trackItemSelection = await sequence.getSelection();
       const selectedItems: Array<VideoClipTrackItem | AudioClipTrackItem> =
-        await trackItemSelection.getItems();
+        await trackItemSelection.getTrackItems();
       if (selectedItems.length == 0) {
         throw new Error("No trackItem is selected at sequence for clone");
       }
@@ -154,7 +154,7 @@ export async function removeSelectedTrackItems(project: Project) {
     try {
       const trackItemSelection = await sequence.getSelection();
       const selectedItems: Array<VideoClipTrackItem | AudioClipTrackItem> =
-        await trackItemSelection.getItems();
+        await trackItemSelection.getTrackItems();
       if (selectedItems.length == 0) {
         throw new Error("No trackItem is selected at sequence for removal");
       }
