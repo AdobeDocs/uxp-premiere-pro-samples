@@ -403,3 +403,50 @@ export async function setOverridePixelAspectRatio(project: Project) {
 
   return success;
 }
+
+/**
+ * Note:
+ * If inHighRes is set to true, we will attach input file as high resolution footage.
+ * If inHighRes is set to false, we will attach input file as proxy to projectItem without changing its media content.
+ */
+export async function attachProxy(project: Project, proxyFile: String) {
+  const clipProjectItem = await getClipProjectItem(project);
+  let success = false;
+  try {
+    success = await clipProjectItem.attachProxy(
+      proxyFile,
+      false // inHighRes, attach as proxy file
+    );
+  } catch (err) {
+    log(`Error: ${err}`, "red");
+    return false;
+  }
+  return success;
+}
+
+export async function changeMediaFilePath(project: Project, mediaFile: String) {
+  const clipProjectItem = await getClipProjectItem(project);
+  let success = false;
+  try {
+    success = await clipProjectItem.changeMediaFilePath(mediaFile);
+  } catch (err) {
+    log(`Error: ${err}`, "red");
+    return false;
+  }
+  return success;
+}
+
+export async function getProjectViewIds() {
+  return ppro.ProjectUtils.getProjectViewIds();
+}
+
+export async function getProjectFromViewId(viewId) {
+  return ppro.ProjectUtils.getProjectFromViewId(viewId);
+}
+
+export async function getSelectedProjectItemsFromViewId(viewId) {
+  const projectItemSelection = await ppro.ProjectUtils.getSelectionFromViewId(
+    viewId
+  );
+  return projectItemSelection.getItems();
+}

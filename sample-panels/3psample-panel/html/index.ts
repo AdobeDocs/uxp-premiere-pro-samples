@@ -67,6 +67,11 @@ import {
   setFootageInterpretation,
   setOverrideFrameRate,
   setOverridePixelAspectRatio,
+  attachProxy,
+  changeMediaFilePath,
+  getProjectViewIds,
+  getProjectFromViewId,
+  getSelectedProjectItemsFromViewId,
 } from "./src/projectPanel";
 
 import {
@@ -123,7 +128,11 @@ import { getScratchDiskSetting, setScratchDiskSettings } from "./src/settings";
 
 import { addProjSeqListeners } from "./src/eventManager";
 
-import { exportSequenceFrame, exportSequence } from "./src/export";
+import {
+  exportSequenceFrame,
+  exportSequence,
+  getExportFileExtension,
+} from "./src/export";
 
 import {
   importFiles,
@@ -137,8 +146,15 @@ import {
   setPreferenceSetting,
 } from "./src/appPreference";
 
+import {
+  overwriteTrackItem,
+  insertTrackItem,
+  cloneSelectedTrackItem,
+  removeSelectedTrackItems,
+} from "./src/sequenceEditor";
+
 //global objects.
-import type { premierepro, ProjectItem, Sequence } from "./types.d.ts";
+import type { premierepro, ProjectItem, Guid, Project } from "./types.d.ts";
 const ppro = require("premierepro") as premierepro;
 const uxp = require("uxp") as typeof import("uxp");
 
@@ -445,9 +461,10 @@ async function getSequenceSelectionClicked() {
 
   const sequence = await project.getActiveSequence();
   let trackItemSelection = await getSequenceSelection(sequence);
+  let trackItems = await trackItemSelection.getTrackItems();
   log(
     trackItemSelection
-      ? `Selection found for sequence ${sequence.name}`
+      ? `Selection of ${trackItems.length} trackItems found for sequence ${sequence.name}`
       : `Could not find selection for sequence ${sequence.name}`
   );
 }
@@ -475,6 +492,54 @@ async function createSubsequenceClicked() {
     newSequence
       ? `Sub sequence created with ${newSequence.name}`
       : `Could not create sub sequence`
+  );
+}
+
+async function overwriteItemClicked() {
+  const project = await getProject();
+  if (!project) return;
+
+  const success = await overwriteTrackItem(project);
+  log(
+    success
+      ? "New trackItem overwrote item at V2/A2 of active sequence"
+      : "Failed to overwrite trackItem in active sequence"
+  );
+}
+
+async function insertItemClicked() {
+  const project = await getProject();
+  if (!project) return;
+
+  const success = await insertTrackItem(project);
+  log(
+    success
+      ? "New trackItem is inserted at V2/A2 of active sequence"
+      : "Failed to insert trackItem in active sequence"
+  );
+}
+
+async function cloneSelectedItemClicked() {
+  const project = await getProject();
+  if (!project) return;
+
+  const success = await cloneSelectedTrackItem(project);
+  log(
+    success
+      ? "Selected trackItem is cloned at track of active sequence"
+      : "Failed to clone the trackItem in active sequence"
+  );
+}
+
+async function removeSelectedItemClicked() {
+  const project = await getProject();
+  if (!project) return;
+
+  const success = await removeSelectedTrackItems(project);
+  log(
+    success
+      ? "Selected trackItems are removed at active sequence"
+      : "Failed to remove selected trackItems at active sequence"
   );
 }
 
@@ -688,6 +753,98 @@ async function setFootageInterpretationClicked() {
     return;
   }
   log("Successfully set footage interpretation");
+}
+
+async function attachProxyClicked() {
+  const project = await getProject();
+  if (!project) return;
+
+  let proxyFile;
+  log("Please select media file to attach as proxy");
+  const file = await uxp.storage.localFileSystem.getFileForOpening();
+  if (file && file.isFile && file.nativePath) {
+    proxyFile = file.nativePath;
+  } else {
+    log("Selection of proxy file failed. Please try again");
+    return;
+  }
+
+  const success = await attachProxy(project, proxyFile);
+  log(
+    success
+      ? "Successfully attached new proxy to projectItem"
+      : "Failed to attach proxy"
+  );
+}
+
+async function changePathClicked() {
+  const project = await getProject();
+  if (!project) return;
+
+  let mediaFile;
+  log("Please select media file for the change of media file path");
+  const file = await uxp.storage.localFileSystem.getFileForOpening();
+  if (file && file.isFile && file.nativePath) {
+    mediaFile = file.nativePath;
+  } else {
+    log("Selection of new media file failed. Please try again");
+    return;
+  }
+
+  const success = await changeMediaFilePath(project, mediaFile);
+  log(
+    success
+      ? "Successfully changed media file path"
+      : "Failed to change media file path of projectItem"
+  );
+}
+
+async function getProjectViewIdsClicked() {
+  const viewIds: Array<Guid> = await getProjectViewIds();
+  if (viewIds.length == 0) {
+    log("No project view available for getting ids", "red");
+    return;
+  }
+  viewIds.forEach((viewGuid, index) => {
+    log(`    ${index + 1}: ${viewGuid.toString()}`);
+  });
+}
+
+async function getProjectFromViewIdClicked() {
+  // get project from first view id found
+  const viewIds: Array<Guid> = await getProjectViewIds();
+  if (viewIds.length == 0) {
+    log("No project view found for getting project", "red");
+    return;
+  }
+  const projectViewId = viewIds[0];
+  const project = await getProjectFromViewId(projectViewId);
+  if (project) {
+    log(
+      `Project is "${project.name}" for the project view id: ${projectViewId}`
+    );
+  } else {
+    log(`Failed to find the project for the id ${projectViewId}`, "red");
+  }
+}
+
+async function getSelectionFromViewIdClicked() {
+  // get selected projectItems from first view id found
+  const viewIds: Array<Guid> = await getProjectViewIds();
+  if (viewIds.length == 0) {
+    log("No project view found.", "red");
+    return;
+  }
+  const projectViewId = viewIds[0];
+  const selectedItems: Array<ProjectItem> =
+    await getSelectedProjectItemsFromViewId(projectViewId);
+  if (selectedItems.length == 0) {
+    log(`No item is selected for project view with id ${projectViewId}`);
+    return;
+  }
+  selectedItems.forEach((item, index) => {
+    log(`   ${index + 1}: ${item.name}`);
+  });
 }
 
 //metadata button events
@@ -1161,6 +1318,36 @@ async function exportSequenceClicked() {
   );
 }
 
+async function getExportFileExtensionClicked() {
+  const project = await getProject();
+  if (!project) return;
+
+  const sequence = await getActiveSequence(project);
+  if (!sequence) {
+    log("No active sequence available for getting exported extension");
+    return;
+  }
+
+  let presetFile;
+  log("Please select a preset file for getting the export file extension");
+  const file = await uxp.storage.localFileSystem.getFileForOpening({
+    types: ["epr"],
+  });
+  if (file && file.isFile && file.nativePath) {
+    presetFile = file.nativePath;
+  } else {
+    log("Selection of preset file failed. Please try again");
+    return;
+  }
+
+  try {
+    const extension = await getExportFileExtension(sequence, presetFile);
+    log(`Exported file extension will be ${extension}`);
+  } catch (err) {
+    log(`Error: ${err}`, "red");
+  }
+}
+
 //import button events
 async function importFilesClicked() {
   let success = false;
@@ -1332,6 +1519,10 @@ window.addEventListener("load", async () => {
   registerClick("get-selection-sequence", getSequenceSelectionClicked);
   registerClick("set-selection-sequence", setSequenceSelectionClicked);
   registerClick("create-sub-sequence", createSubsequenceClicked);
+  registerClick("overwrite-item", overwriteItemClicked);
+  registerClick("insert-item", insertItemClicked);
+  registerClick("clone-selected-item", cloneSelectedItemClicked);
+  registerClick("remove-selected-items", removeSelectedItemClicked);
 
   //marker events registering
   registerClick("marker-comment", createMarkerCommentClicked);
@@ -1393,6 +1584,11 @@ window.addEventListener("load", async () => {
   registerClick("set-footage-interpretation", setFootageInterpretationClicked);
   registerClick("set-footage-interpretation", setFootageInterpretationClicked);
   registerClick("refresh-media", refreshMediaClicked);
+  registerClick("attach-proxy", attachProxyClicked);
+  registerClick("change-path", changePathClicked);
+  registerClick("get-view-ids", getProjectViewIdsClicked);
+  registerClick("get-project-from-view-id", getProjectFromViewIdClicked);
+  registerClick("get-selection-from-view-id", getSelectionFromViewIdClicked);
 
   //Effects & transitions
   registerClick("get-effect-names", getEffectsNameClicked);
@@ -1420,6 +1616,7 @@ window.addEventListener("load", async () => {
   // Export
   registerClick("export-frame", exportSequenceFrameClicked);
   registerClick("export-sequence", exportSequenceClicked);
+  registerClick("get-export-file-extension", getExportFileExtensionClicked);
 
   // Import controls
   registerClick("import-ae-component", importAeComponentClicked);

@@ -97,7 +97,7 @@ export async function getVideoTrack(sequence: Sequence, trackIndex: number) {
 
 export async function getSequenceSelection(sequence: Sequence) {
   if (sequence) {
-    return await sequence.getSelection();
+    return sequence.getSelection();
   } else {
     log("No sequence found.");
   }

@@ -22,6 +22,7 @@ export declare type premierepro = {
   ProjectUtils: ProjectUtilsStatic
   Properties: PropertiesStatic
   ScratchDiskSettings: ScratchDiskSettingsStatic
+  SequenceEditor: SequenceEditorStatic
   SequenceUtils: SequenceUtilsStatic
   SourceMonitor: SourceMonitorStatic
   TickTime: TickTimeStatic
@@ -152,11 +153,13 @@ export declare type ClipProjectItem = {
   canProxy(): Promise<boolean>	//Indicates whether it is possible to attach a proxy, to this project item.
   getProxyPath(): Promise<string>	//Returns the proxy path if the project item has a proxy attached
   hasProxy(): Promise<boolean>	//Indicates whether a proxy has already been attached, to the project item.
+  attachProxy(mediaPath: string, isHiRes: boolean, inMakeAlternateLinkInTeamProjects?: boolean): Promise<boolean>	//Attach proxy or high resolution footage to projectItem and return if this non-undoable action is successful.
   findItemsMatchingMediaPath(matchString: string, ignoreSubclips?: boolean): Promise<[]>	//Returns array of projects items with media paths containing match string
   refreshMedia(): Promise<boolean>	//Updates representation of the media associated with the project item
   createSetOfflineAction(): Action	//Returns an action which sets the media offline
   getFootageInterpretation(): Promise<FootageInterpretation>	//Get the footage interpretation object for project item
   createSetFootageInterpretationAction(footageInterpretation: FootageInterpretation): Action	//Set the footage interpretation object for project item
+  changeMediaFilePath(newPath: string, overrideCompatibilityCheck?: boolean): Promise<boolean>	//Change media file path of projectItem and return if non-undoable action is successful
   isMergedClip(): Promise<boolean>	//Returns true if the clip Project item is a merged clip
   isMulticamClip(): Promise<boolean>	//Returns true if the clip Project item is a multicam clip
   getEmbeddedLUTID(): Promise<string>	//Get GUID of LUT embedded in media
@@ -216,6 +219,7 @@ export declare type CompoundAction = {
 
 export declare type EncoderManagerStatic = {
   getManager(): EncoderManager	//Get the Encoder Manager object.
+  getExportFileExtension(sequence: Sequence, presetFilePath: string): Promise<string>	//Get the Export File Extension of Input Preset file
   EXPORT_QUEUE_TO_AME: string	//Export type used to queue an export job into the Adobe Media Encoder export queue
   EXPORT_QUEUE_TO_APP: string	//Export type used to queue an export job into the app export queue
   EXPORT_IMMEDIATELY: string	//Export type used to immediately exporting an object
@@ -479,6 +483,9 @@ export declare type ProjectSettings = {
 
 export declare type ProjectUtilsStatic = {
   getSelection(project: Project): Promise<ProjectItemSelection>	//Get array of selected project items in project view
+  getProjectViewIds(): Promise<[]>	//Get array of project view ids
+  getProjectFromViewId(guid: Guid): Promise<object>	//Get project based on input view guid
+  getSelectionFromViewId(guid: Guid): Promise<ProjectItemSelection>	//Get array of selected projectItem based on input view guid
 }
 
 export declare type ProjectUtils = {
@@ -553,6 +560,17 @@ export declare type Sequence = {
   name: string	//The sequence name.
 }
 
+export declare type SequenceEditorStatic = {
+  getEditor(sequenceObject: any): SequenceEditor	//Get Sequence Editor reference for editing the sequence timeline
+}
+
+export declare type SequenceEditor = {
+  createRemoveItemsAction(trackItemSelection: object, ripple: boolean, mediaType: object, shiftOverLapping?: boolean): action	//Create remove action for sequence
+  createInsertProjectItemAction(projectItem: ProjectItem, time: TickTime, videoTrackIndex: number, audioTrackIndex: number, limitShift: boolean): Action	//Create insert ProjectItem into Sequence Action
+  createOverwriteItemAction(projectItem: ProjectItem, time: TickTime, videoTrackIndex: number, audioTrackIndex: number): Action	//Create overwrite Sequence with ProjectItem Action
+  createCloneTrackItemAction(trackItem: any, timeOffset: any, videoTrackVerticalOffset: number, audioTrackVerticalOffset: number, alignToVideo: boolean, isInsert: boolean): Action	//Create insert or overwrite to timeline with clone of input trackItem action. Input should be offset value in comparison to original input trackItem's time and track indexes
+}
+
 export declare type SequenceUtilsStatic = {
   performSceneEditDetectionOnSelection(clipOperation: string, trackItemSelection: TrackItemSelection): Promise<boolean>	//Performs cut detection on the sequence selection
   SEQUENCE_OPERATION_APPLYCUT: string	//ApplyCuts
@@ -607,6 +625,7 @@ export declare type TrackItemSelectionStatic = {
 export declare type TrackItemSelection = {
   addItem(trackItem: object, skipDuplicateCheck?: boolean): boolean	//Add a track item to this selection
   removeItem(trackItem: object): boolean	//Remove a track item from this selection
+  getTrackItems(): Promise<[]>	//return list of trackItems inside of trackItemSelection
 }
 
 export declare type TransitionFactoryStatic = {
