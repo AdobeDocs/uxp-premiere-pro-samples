@@ -502,7 +502,7 @@ async function overwriteItemClicked() {
   const success = await overwriteTrackItem(project);
   log(
     success
-      ? "New trackItem overwrited item at V2/A2 of active sequence"
+      ? "New trackItem overwrote item at V2/A2 of active sequence"
       : "Failed to overwrite trackItem in active sequence"
   );
 }
