@@ -1,0 +1,144 @@
+body {
+  color: var(--uxp-host-text-color-secondary, white);
+  padding: 0 16px;
+  overflow-y: auto;
+  height: 100vh;
+}
+
+sp-radio,
+sp-radio-group,
+sp-label,
+sp-textfield {
+  color: var(--uxp-host-text-color-secondary, white);
+}
+
+#dialog div {
+  justify-content: flex-end;
+  margin-top: 30px;
+}
+
+#dialog sp-heading {
+  margin: 0;
+}
+
+#dialog sp-divider {
+  margin: 10px 0;
+}
+
+#console {
+  border: 1px solid #808080;
+  border-radius: 4px;
+  height: 30px;
+  font-size: 1rem;
+  padding-left: 13px;
+}
+
+.section {
+  padding: 19px 16px;
+  margin-top: 10px;
+  border: 1px solid #808080;
+  border-radius: 4px;
+}
+
+.section.preview {
+  margin-top: 0px;
+}
+
+.section h4 {
+  margin-bottom: 6px;
+}
+
+.section.updater h4 {
+  margin-bottom: 10px;
+}
+
+sp-dropdown {
+  width: 200px;
+}
+
+.updater-section {
+  margin-bottom: 8px;
+}
+
+.updater-section h5 {
+  margin-bottom: 8px;
+}
+
+sp-picker {
+  margin-bottom: 8px;
+}
+
+sp-textfield {
+  margin-bottom: 6px;
+  width: 230px;
+}
+
+sp-radio-group {
+  display: block;
+}
+
+sp-field-label {
+  font-size: 0.8rem;
+  margin-bottom: 5px;
+}
+
+.flex {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.flex-div {
+  flex: 1 1 140px;
+}
+
+.flex-block {
+  margin-right: 15px;
+}
+
+#seq-num {
+  width: 20px;
+}
+
+#update-button {
+  margin-top: 5px;
+}
+
+div p {
+  overflow: auto;
+}
+
+#preview-text {
+  font-size: 0;
+  margin-bottom: 10%;
+}
+
+#preview-text span {
+  font-size: 1.1rem;
+  text-align: left;
+}
+
+#write-state {
+  font-size: 0.9rem;
+  color: red;
+}
+
+.empty {
+  display: none;
+}
+
+#body-text.highlight {
+  color: #aaa7ad;
+}
+
+#explanation {
+  line-height: 1.1;
+  font-size: 0.65rem;
+}
+
+.updater-section h5 {
+  font-weight: 400;
+}
+
+#active-project {
+  font-weight: 700;
+}
