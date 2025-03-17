@@ -7,8 +7,9 @@ A sample panel we developed to improve user's control over project item metadata
 
 ## Set Up
 - Open your console / terminal / command prompt
-- cd into the `sample-panels/metadata-handler` directory
-- Open the UDT tool and add this new plugin by selecting ```manifest.json``` under the metadata-handler directory 
+- Clone this repo at a preferred location of your local computer via ```git clone https://github.com/AdobeDocs/uxp-premiere-pro-samples.git```. This will create a new directory called ```uxp-premiere-pro-samples``` with necessary files to load this panel
+- Open the UDT (UXP Developer Tool) and Premiere Pro (Beta)
+- In UDT, click the Add Plugin button, and then select the ```manifest.json file``` in the ```uxp-premiere-pro-samples/sample-panels/metadata-handler``` directory
 <img width="800" alt="Screenshot 2025-03-07 at 2 52 41 PM" src="https://github.com/user-attachments/assets/55739aed-28dc-4531-8d05-d7e98e42280a" />
 
 - Load panel from UDT and have fun playing with it!
@@ -17,13 +18,9 @@ A sample panel we developed to improve user's control over project item metadata
 ## Preview and Known Issues
 <img width="714" alt="Screenshot 2025-03-07 at 2 55 15 PM" src="https://github.com/user-attachments/assets/fc82e968-544e-4d0d-b975-d8dc748ce2ff" />
 
-1. Right now, doing a set of update project metadata action via compound action could pollute history panel with list of update message instead of a single message, which was not intended. We have started investigating into the bug.
-2. Due to the same bug, you can't undo two set of update metadata actions. 
-3. Due to the same bug and the limit of history panel is 25000, if you update over this number of project items' metadata, you will not be able to undo all of them. 
+- Currently, metadata updates to multiple selected items are performed as individual actions per items, which can fill and flood the history/undo queue when many items are selected. This can result in large metadata changes not being fully undoable, and other previous UI actions no longer being undoable. This behavior is not intended and is under investigation.
 
 
 ## Special Thanks
 Kudos to Fran's CEP Panel, where we get the inspiration of developing a UXP Panel that could improve 
-control over metadata.
-
-We hope this could be a good sample indicating how we were able to transfer CEP panel to a UXP Panel with more intuitive UI and functionalities. Have fun!
+control over metadata :)
