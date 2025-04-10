@@ -1,7 +1,7 @@
 {
   "type": "commonjs",
   "scripts": {
-    "clean": "rm -rf ../build-html",
+    "clean": "rimraf ../build-html",
     "copy": "cp-cli ../html ../build-html",
     "compile": "tsc",
     "fix-imports": "node ./scripts/fix-imports.js",
@@ -12,6 +12,7 @@
     "@types/node": "^22.10.2",
     "cp-cli": "^2.0.0",
     "tslib": "^2.8.1",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.2",
+    "rimraf": "^3.0.2"
   }
 }
