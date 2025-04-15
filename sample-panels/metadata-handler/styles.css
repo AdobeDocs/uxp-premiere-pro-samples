@@ -113,12 +113,12 @@ div p {
 }
 
 #preview-text span {
-  font-size: 1.1rem;
+  font-size: 1.3rem;
   text-align: left;
 }
 
 #write-state {
-  font-size: 0.9rem;
+  font-size: 1rem;
   color: red;
 }
 
@@ -132,7 +132,7 @@ div p {
 
 #explanation {
   line-height: 1.1;
-  font-size: 0.65rem;
+  font-size: 0.8rem;
 }
 
 .updater-section h5 {
