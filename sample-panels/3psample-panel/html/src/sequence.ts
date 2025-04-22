@@ -12,11 +12,18 @@
  * written permission of Adobe.
  **************************************************************************/
 
-import type { premierepro, Project, Sequence } from "../types.d.ts";
+import type {
+  AudioClipTrackItem,
+  Guid,
+  premierepro,
+  Project,
+  Sequence,
+  VideoClipTrackItem,
+} from "../types.d.ts";
 const ppro = require("premierepro") as premierepro;
 import { log } from "./utils";
 
-export async function getSequence(project: Project, sequenceGuid: string) {
+export async function getSequence(project: Project, sequenceGuid: Guid) {
   if (project) {
     return await project.getSequence(sequenceGuid);
   } else {
@@ -134,4 +141,33 @@ export async function createSubsequence(sequence: Sequence) {
   } else {
     log("No sequence found.");
   }
+}
+
+export async function trimSelectedItem(project: Project, sequence: Sequence) {
+  let success = false;
+  if (sequence) {
+    try {
+      const selection = await sequence.getSelection();
+      const items: Array<VideoClipTrackItem | AudioClipTrackItem> =
+        await selection.getTrackItems();
+      if (items.length > 0) {
+        const oldEnd = await items[0].getEndTime();
+        const newEnd = ppro.TickTime.createWithSeconds(oldEnd.seconds - 1.0);
+        project.lockedAccess(() => {
+          success = project.executeTransaction((compoundAction) => {
+            var action1 = items[0].createSetEndAction(newEnd);
+            compoundAction.addAction(action1);
+          }, "Trim end of item by 1 second");
+        });
+      } else {
+        throw new Error("no trackItem is selected at sequence");
+      }
+    } catch (err) {
+      log(err.toString(), "red");
+      return success;
+    }
+  } else {
+    log("No sequence found.");
+  }
+  return success;
 }

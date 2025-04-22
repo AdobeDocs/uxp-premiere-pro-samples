@@ -12,7 +12,7 @@
  * written permission of Adobe.
  **************************************************************************/
 
-import type { premierepro, Project } from "../types.d.ts";
+import type { premierepro, Project, ProjectItem } from "../types.d.ts";
 const ppro = require("premierepro") as premierepro;
 import { log } from "./utils";
 
@@ -48,7 +48,7 @@ export async function getXMPMetadata(project: Project) {
     log(`No project found.`, "red");
     return;
   }
-  let projectItems = await getProjectItems(project);
+  let projectItems: Array<ProjectItem> = await getProjectItems(project);
   let xmpMetadata = await ppro.Metadata.getXMPMetadata(projectItems[0]);
   return xmpMetadata;
 }
@@ -59,7 +59,7 @@ export async function getProjectColumnsMetadata(project: Project) {
     log(`No project found.`, "red");
     return;
   }
-  const projectItems = await getProjectItems(project);
+  const projectItems: Array<ProjectItem> = await getProjectItems(project);
   const metadata = await ppro.Metadata.getProjectColumnsMetadata(
     projectItems[0]
   );
@@ -78,7 +78,7 @@ export async function setXMPMetadata(project: Project) {
     log(`No project found.`, "red");
     return;
   }
-  let projectItems = await getProjectItems(project);
+  let projectItems: Array<ProjectItem> = await getProjectItems(project);
 
   if (!(projectItems.length >= 2)) {
     log("Required at least two projectitems", "red");
@@ -111,8 +111,8 @@ export async function setProjectMetadata(project: Project) {
     log(`No project found.`, "red");
     return;
   }
-  let projectItems = await getProjectItems(project);
-  let projectItem1 = await projectItems[0];
+  let projectItems: Array<ProjectItem> = await getProjectItems(project);
+  let projectItem1 = projectItems[0];
 
   const metadata =
     '<?xpacket begin="" id="W5M0MpCehiHzreSzNTczkc9d"?><x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="Adobe XMP Core 9.0-c001 152.deb9585, 2024/02/06-08:36:10 "><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"><rdf:Description rdf:about="" xmlns:premierePrivateProjectMetaData="http://ns.adobe.com/premierePrivateProjectMetaData/1.0/"><premierePrivateProjectMetaData:Column.Intrinsic.Name>Name changed</premierePrivateProjectMetaData:Column.Intrinsic.Name><premierePrivateProjectMetaData:Column.PropertyBool.Hide>True</premierePrivateProjectMetaData:Column.PropertyBool.Hide></rdf:Description></rdf:RDF></x:xmpmeta><?xpacket end="w"?>';

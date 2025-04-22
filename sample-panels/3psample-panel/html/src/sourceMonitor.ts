@@ -12,8 +12,9 @@
  * written permission of Adobe.
  **************************************************************************/
 
-import type { premierepro, Project, Sequence } from "../types.d.ts";
+import type { premierepro, ProjectItem } from "../types.d.ts";
 const ppro = require("premierepro") as premierepro;
+const uxp = require("uxp") as typeof import("uxp");
 import { log } from "./utils";
 
 /// Source Monitor html helper functions
@@ -30,7 +31,7 @@ export async function addProjectItemsOptions() {
     return;
   }
   const projectRootItem = await proj.getRootItem();
-  let projectItems = await projectRootItem.getItems();
+  let projectItems: Array<ProjectItem> = await projectRootItem.getItems();
 
   if (!projectItems) {
     log(`Project Empty. Cannot find valid projectItem to open`);
@@ -48,7 +49,7 @@ export async function addProjectItemsOptions() {
 /**
  * clear options for projectItems under select
  */
-function clearProjectItemOptions() {
+export async function clearProjectItemOptions() {
   let items = document.getElementById("project-items");
   items.innerHTML = "";
 }
@@ -93,7 +94,7 @@ export async function openProjectItem(selected: string) {
     return;
   }
   const projectRootItem = await proj.getRootItem();
-  let projectItems = await projectRootItem.getItems();
+  let projectItems: Array<ProjectItem> = await projectRootItem.getItems();
   if (!projectItems) {
     log(`Project Empty. Cannot find valid projectItem to open`);
     return;

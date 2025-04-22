@@ -11,7 +11,12 @@
  * then your use, modification, or distribution of it requires the prior
  * written permission of Adobe.
  **************************************************************************/
-import type { premierepro } from "../types.d.ts";
+
+import type {
+  AudioClipTrackItem,
+  premierepro,
+  VideoClipTrackItem,
+} from "../types.d.ts";
 const ppro = require("premierepro") as premierepro;
 import { log } from "./utils";
 import { getActiveProject, getActiveSequence } from "./project";
@@ -96,6 +101,55 @@ async function onProjectDirty() {
 }
 
 /**
+ * Callback function for sequence trackItem selection change event
+ * Log selected trackItem's name in console
+ */
+async function onSequenceSelectionChange(sequence) {
+  console.log(`Selection for ${sequence.name} changed`);
+  const project = await getActiveProject();
+  const seq = await getActiveSequence(project);
+  const selection = await seq.getSelection();
+  const trackItems = await selection.getTrackItems();
+  trackItems.forEach(async (item: VideoClipTrackItem | AudioClipTrackItem) => {
+    let name = await item.getName();
+    console.log(`selection for trackItem named ${name} changed`);
+  });
+}
+
+/**
+ * Callback function for encoder complete event
+ * Log encoder complete in console when AME job complete
+ */
+async function onEncoderComplete() {
+  console.log("Encoder process complete");
+}
+
+/**
+ * Callback function for encoder cancel event
+ * Log encoder in progress in console when AME job is in progress
+ */
+async function onEncoderProgress() {
+  console.log("Encoder in progress");
+}
+
+/**
+ * Add Encoder event listeners
+ */
+export async function addEncoderListeners() {
+  let encoder = await ppro.EncoderManager.getManager();
+  await ppro.EventManager.addEventListener(
+    encoder,
+    ppro.EncoderManager.EVENT_RENDER_PROGRESS,
+    onEncoderProgress
+  );
+  await ppro.EventManager.addEventListener(
+    encoder,
+    ppro.EncoderManager.EVENT_RENDER_COMPLETE,
+    onEncoderComplete
+  );
+}
+
+/**
  * Add project and sequence event listeners
  */
 export async function addProjSeqListeners() {
@@ -132,5 +186,9 @@ export async function addProjSeqListeners() {
   ppro.EventManager.addGlobalEventListener(
     ppro.Constants.SequenceEvent.ACTIVATED,
     onSequenceActivated
+  );
+  ppro.EventManager.addGlobalEventListener(
+    ppro.Constants.SequenceEvent.SELECTION_CHANGED,
+    onSequenceSelectionChange
   );
 }

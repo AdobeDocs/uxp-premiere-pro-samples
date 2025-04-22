@@ -12,7 +12,7 @@
  * written permission of Adobe.
  **************************************************************************/
 
-import type { premierepro, Project } from "../types.d.ts";
+import type { Marker, premierepro, Project, ProjectItem } from "../types.d.ts";
 const ppro = require("premierepro") as premierepro;
 import { log } from "./utils";
 
@@ -20,7 +20,7 @@ import { log } from "./utils";
 
 export async function getMarkerObjects(project: Project) {
   const rootItem = await project.getRootItem();
-  const projectItems = await rootItem.getItems();
+  const projectItems: Array<ProjectItem> = await rootItem.getItems();
 
   if (projectItems.length === 0) {
     log("No project items found.", "red");
@@ -155,7 +155,7 @@ export async function createMarkerFlashCuePoint(project: Project) {
 export async function moveMarker(project: Project) {
   const { sequenceMarkers } = await getMarkerObjects(project);
 
-  let markerlist = await sequenceMarkers.getMarkers();
+  let markerlist: Array<Marker> = await sequenceMarkers.getMarkers();
   let marker = markerlist[0];
 
   let success = false;
