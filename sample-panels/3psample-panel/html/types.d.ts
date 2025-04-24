@@ -321,8 +321,6 @@ export declare type Guid = {
 export declare type IngestSettings = {
   getIsIngestEnabled(): Promise<boolean>	//Get whether or not ingest is enabled
   setIngestEnabled(enabled: boolean): Promise<boolean>	//Set whether or not ingest is enabled
-  getPresetPath(): Promise<string>	//Get preset path for ingest settings
-  setPresetPath(presetPath: string): Promise<boolean>	//Set preset path for ingest settings
 }
 
 export declare type KeyframeStatic = {

@@ -321,8 +321,6 @@ export declare type Guid = {
 export declare type IngestSettings = {
   getIsIngestEnabled(): Promise<boolean>	//Get whether or not ingest is enabled
   setIngestEnabled(enabled: boolean): Promise<boolean>	//Set whether or not ingest is enabled
-  getPresetPath(): Promise<string>	//Get preset path for ingest settings
-  setPresetPath(presetPath: string): Promise<boolean>	//Set preset path for ingest settings
 }
 
 export declare type KeyframeStatic = {
@@ -566,7 +564,6 @@ export declare type Sequence = {
   createCloneAction(): Action	//Creates an action to clone the given sequence
   createSubsequence(ignoreTrackTargeting?: boolean): Promise<Sequence>	//Returns a new sequence, which is a sub-sequence of the existing sequence
   isDoneAnalyzingForVideoEffects(): Promise<boolean>	//Returns whether or not the sequence is done analyzing for video effects
-  waitUntilMediaReady(timeout?: number): object	//Awaits for all media in sequence to be ready.
   getZeroPoint(): Promise<TickTime>	//Time representing the zero point of the sequence.
   getEndTime(): Promise<TickTime>	//Time representing the end of the sequence
   getInPoint(): Promise<TickTime>	//Get time representing the inPoint of sequence.
