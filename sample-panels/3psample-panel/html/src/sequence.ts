@@ -20,6 +20,7 @@ import type {
   Sequence,
   VideoClipTrackItem,
 } from "../types.d.ts";
+import { getClipProjectItem } from "./projectPanel.js";
 const ppro = require("premierepro") as premierepro;
 import { log } from "./utils";
 
@@ -52,21 +53,7 @@ export async function createSequenceFromMedia(
   sequenceName: string
 ) {
   if (project) {
-    const rootItem = await project.getRootItem();
-    const projectItems = await rootItem.getItems();
-
-    let mediaItem;
-    for (let projectItem of projectItems) {
-      const clipProjectItem = ppro.ClipProjectItem.cast(projectItem);
-      if (
-        clipProjectItem &&
-        (await clipProjectItem.getContentType()) ===
-          ppro.Constants.ContentType.MEDIA
-      ) {
-        mediaItem = clipProjectItem;
-      }
-    }
-
+    let mediaItem = await getClipProjectItem(project);
     if (!mediaItem) {
       log("No media item found in the project.");
       return;
