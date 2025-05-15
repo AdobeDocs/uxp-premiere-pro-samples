@@ -11,7 +11,7 @@
  * then your use, modification, or distribution of it requires the prior
  * written permission of Adobe.
  **************************************************************************/
-import type { premierepro, Project, Sequence } from "../types.d.ts";
+import type { Guid, premierepro, Project, Sequence } from "../types.d.ts";
 const ppro = require("premierepro") as premierepro;
 const uxp = require("uxp") as typeof import("uxp");
 import { log } from "./utils";
@@ -45,7 +45,7 @@ export async function getActiveSequence(project: Project) {
   }
 }
 
-export async function getProjectFromId(projectId: string) {
+export async function getProjectFromId(projectId: Guid) {
   return ppro.Project.getProject(projectId);
 }
 
@@ -127,7 +127,7 @@ export async function getColorSettings(project: Project) {
 export async function getSupportedGraphicsWhiteLuminances(project: Project) {
   if (project) {
     const colorSettings = await getColorSettings(project);
-    return await colorSettings.getSupportedGraphicsWhiteLuminances(project);
+    return colorSettings.getSupportedGraphicsWhiteLuminances();
   } else {
     log("No project found.", "red");
   }

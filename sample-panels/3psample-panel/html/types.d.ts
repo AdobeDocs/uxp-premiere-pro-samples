@@ -35,6 +35,7 @@ export declare type premierepro = {
   VideoFilterFactory: VideoFilterFactoryStatic
   VideoTrack: VideoTrackStatic
   VideoTransition: VideoTransitionStatic
+  Constants: Constants
 }
 
 export declare type Action = {
@@ -78,6 +79,8 @@ export declare type AudioClipTrackItemStatic = {
 
 export declare type AudioClipTrackItem = {
   getMatchName(): Promise<string>	//Returns the value of internal matchname for this trackItem
+  getName(): Promise<string>	//Returns the display name for trackItem
+  getIsSelected(): Promise<boolean>	//Returns if trackItem is selected or not
   getSpeed(): Promise<number>	//Returns the value of speed of the trackItem
   isAdjustmentLayer(): Promise<boolean>	//Returns true if the trackitem is an adjustment layer
   isSpeedReversed(): Promise<number>	//Returns true if the trackitem is reversed
@@ -88,6 +91,8 @@ export declare type AudioClipTrackItem = {
   createSetOutPointAction(tickTime: TickTime): Action	//Create SetInPointAction for sequence
   getStartTime(): Promise<TickTime>	//Timecode representing the start of this track item relative to the sequence start.
   getEndTime(): Promise<TickTime>	//Timecode representing the end of this track item relative to the sequence start.
+  createSetStartAction(tickTime: TickTime): Action	//Create set start time action for sequence
+  createSetEndAction(tickTime: TickTime): Action	//Create set end time action for sequence
   getDuration(): Promise<TickTime>	//Timecode representing the duration of this track item relative to the sequence start.
   getType(): Promise<number>	//Index representing the type of this track item.
   isDisabled(): Promise<boolean>	//Returns true if rackitem is muted/disabled
@@ -153,13 +158,13 @@ export declare type ClipProjectItem = {
   canProxy(): Promise<boolean>	//Indicates whether it is possible to attach a proxy, to this project item.
   getProxyPath(): Promise<string>	//Returns the proxy path if the project item has a proxy attached
   hasProxy(): Promise<boolean>	//Indicates whether a proxy has already been attached, to the project item.
-  attachProxy(mediaPath: string, isHiRes: boolean, inMakeAlternateLinkInTeamProjects?: boolean): Promise<boolean>	//Attach proxy or high resolution footage to projectItem and return if this non-undoable action is successful.
+  attachProxy(mediaPath: string, isHiRes: boolean, inMakeAlternateLinkInTeamProjects?: boolean): Promise<boolean>	//Attach proxy or high resolution footage to projectItem and returns true if successful. Not undoable.
   findItemsMatchingMediaPath(matchString: string, ignoreSubclips?: boolean): Promise<[]>	//Returns array of projects items with media paths containing match string
   refreshMedia(): Promise<boolean>	//Updates representation of the media associated with the project item
   createSetOfflineAction(): Action	//Returns an action which sets the media offline
   getFootageInterpretation(): Promise<FootageInterpretation>	//Get the footage interpretation object for project item
   createSetFootageInterpretationAction(footageInterpretation: FootageInterpretation): Action	//Set the footage interpretation object for project item
-  changeMediaFilePath(newPath: string, overrideCompatibilityCheck?: boolean): Promise<boolean>	//Change media file path of projectItem and return if non-undoable action is successful
+  changeMediaFilePath(newPath: string, overrideCompatibilityCheck?: boolean): Promise<boolean>	//Change media file path of projectItem and returns true if successful. Not undoable.
   isMergedClip(): Promise<boolean>	//Returns true if the clip Project item is a merged clip
   isMulticamClip(): Promise<boolean>	//Returns true if the clip Project item is a multicam clip
   getEmbeddedLUTID(): Promise<string>	//Get GUID of LUT embedded in media
@@ -224,6 +229,10 @@ export declare type EncoderManagerStatic = {
   EXPORT_QUEUE_TO_APP: string	//Export type used to queue an export job into the app export queue
   EXPORT_IMMEDIATELY: string	//Export type used to immediately exporting an object
   EVENT_RENDER_COMPLETE: string	//Broadcast when AME is finished rendering
+  EVENT_RENDER_ERROR: string	//Broadcast when AME gives back error message
+  EVENT_RENDER_CANCEL: string	//Broadcast when AME job is canceled
+  EVENT_RENDER_QUEUE: string	//Broadcast when AME job is queued
+  EVENT_RENDER_PROGRESS: string	//Broadcast when AME job is rendering the job
 }
 
 export declare type EncoderManager = {
@@ -307,6 +316,11 @@ export declare type GuidStatic = {
 
 export declare type Guid = {
   toString(): string	//Return string representation of the GUID
+}
+
+export declare type IngestSettings = {
+  getIsIngestEnabled(): Promise<boolean>	//Get whether or not ingest is enabled
+  setIngestEnabled(enabled: boolean): Promise<boolean>	//Set whether or not ingest is enabled
 }
 
 export declare type KeyframeStatic = {
@@ -476,6 +490,8 @@ export declare type ProjectItemSelection = {
 export declare type ProjectSettingsStatic = {
   createSetScratchDiskSettingsAction(project: Project, scratchDiskSettings: ScratchDiskSettings): Action	//Returns an action which sets ScratchDiskSetting
   getScratchDiskSettings(project: Project): Promise<ScratchDiskSettings>	//Returns project ScratchDiskSettings
+  getIngestSettings(project: Project): Promise<IngestSettings>	//Returns project ingest settings
+  createSetIngestSettingsAction(project: Project, ingestSettings: IngestSettings): Action	//Returns an action which sets IngestSettings
 }
 
 export declare type ProjectSettings = {
@@ -513,6 +529,7 @@ export declare type RectF = {
 }
 
 export declare type ScratchDiskSettingsStatic = {
+  FOLDERTYPE_CAPTURE: string	//Folder Type: CAPTURED
   FOLDERTYPE_VIDEO_CAPTURE: string	//Folder Type: VIDEOCAPTURE
   FOLDERTYPE_AUDIO_CAPTURE: string	//Folder Type: AUDIOCAPTURE
   FOLDERTYPE_VIDEO_PREVIEW: string	//Folder Type: VIDEOPREVIEW
@@ -568,7 +585,7 @@ export declare type SequenceEditor = {
   createRemoveItemsAction(trackItemSelection: object, ripple: boolean, mediaType: object, shiftOverLapping?: boolean): action	//Create remove action for sequence
   createInsertProjectItemAction(projectItem: ProjectItem, time: TickTime, videoTrackIndex: number, audioTrackIndex: number, limitShift: boolean): Action	//Create insert ProjectItem into Sequence Action
   createOverwriteItemAction(projectItem: ProjectItem, time: TickTime, videoTrackIndex: number, audioTrackIndex: number): Action	//Create overwrite Sequence with ProjectItem Action
-  createCloneTrackItemAction(trackItem: any, timeOffset: any, videoTrackVerticalOffset: number, audioTrackVerticalOffset: number, alignToVideo: boolean, isInsert: boolean): Action	//Create insert or overwrite to timeline with clone of input trackItem action. Input should be offset value in comparison to original input trackItem's time and track indexes
+  createCloneTrackItemAction(trackItem: any, timeOffset: any, videoTrackVerticalOffset: number, audioTrackVerticalOffset: number, alignToVideo: boolean, isInsert: boolean): Action	//Duplicate trackItem using an insert or overwrite edit method to a destination track. Target track and start time of trackItem is determined using an offset value from the original trackItem position.
 }
 
 export declare type SequenceUtilsStatic = {
@@ -655,6 +672,8 @@ export declare type VideoClipTrackItem = {
   createAddVideoTransitionAction(videoTransition: VideoTransition, addTransitionOptionsProperties?: AddTransitionOptions): Action	//Create add transition action for sequence
   createRemoveVideoTransitionAction(transitionPosition?: number): Action	//Returns true if trackItem has transition
   getMatchName(): Promise<string>	//Returns the value of internal matchname for this trackItem
+  getName(): Promise<string>	//Returns the display name for trackItem
+  getIsSelected(): Promise<boolean>	//Returns if trackItem is selected or not
   getSpeed(): Promise<number>	//Returns the value of speed of the trackItem
   isAdjustmentLayer(): Promise<boolean>	//Returns true if the trackitem is an adjustment layer
   isSpeedReversed(): Promise<number>	//Returns true if the trackitem is reversed
@@ -665,6 +684,8 @@ export declare type VideoClipTrackItem = {
   createSetOutPointAction(tickTime: TickTime): Action	//Create SetInPointAction for sequence
   getStartTime(): Promise<TickTime>	//Timecode representing the start of this track item relative to the sequence start.
   getEndTime(): Promise<TickTime>	//Timecode representing the end of this track item relative to the sequence start.
+  createSetStartAction(tickTime: TickTime): Action	//Create set start time action for sequence
+  createSetEndAction(tickTime: TickTime): Action	//Create set end time action for sequence
   getDuration(): Promise<TickTime>	//Timecode representing the duration of this track item relative to the sequence start.
   getType(): Promise<number>	//Index representing the type of this track item.
   isDisabled(): Promise<boolean>	//Returns true if rackitem is muted/disabled
@@ -756,7 +777,8 @@ export namespace Constants {
 		OPENED,
 		CLOSED,
 		DIRTY,
-		ACTIVATED
+		ACTIVATED,
+		PROJECT_ITEM_SELECTION_CHANGED
 	}
 
 	export enum InterpolationMode {
@@ -781,10 +803,12 @@ export namespace Constants {
 
 	export enum SequenceEvent {
 		ACTIVATED,
-		CLOSED
+		CLOSED,
+		SELECTION_CHANGED
 	}
 
 	export enum ScratchDiskFolderType {
+		CAPTURE,
 		AUDIO_CAPTURE,
 		VIDEO_CAPTURE,
 		AUDIO_PREVIEW,
@@ -809,8 +833,7 @@ export namespace Constants {
 	export enum ExportType {
 		QUEUE_TO_AME,
 		QUEUE_TO_APP,
-		IMMEDIATELY,
-		EVENT_RENDER_COMPLETE
+		IMMEDIATELY
 	}
 
 	export enum PreferenceKey {

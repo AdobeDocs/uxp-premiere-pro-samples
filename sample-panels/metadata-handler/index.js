@@ -60,12 +60,21 @@ const exchangeSvg = `<svg
   />
 </svg>`;
 
+let selectedProjectItems = [];
+
 async function onProjectActivated(project) {
   // update active project name
   document.getElementById("active-project").innerText = project.name.replace(
     /\.\w+$/,
     ""
   );
+}
+
+async function onProjectItemSelectionChange(project) {
+  // update selected projectItem array
+  selectedProjectItems = project.projectItems;
+  // load new preview metadata value based on selected item
+  await setPreviewText();
 }
 
 async function addProjListeners() {
@@ -83,12 +92,14 @@ async function addProjListeners() {
     onProjectDirty, // update preview text & columns when projectItem changes
     true // in capture phase
   );
+
+  ppro.EventManager.addGlobalEventListener(
+    ppro.Constants.ProjectEvent.PROJECT_ITEM_SELECTION_CHANGED,
+    onProjectItemSelectionChange // update items when selection changes
+  );
 }
 
 async function onProjectDirty() {
-  // load new preview metadata value for selected column
-  await setPreviewText();
-
   // load metadata column if they are empty due to lack of valid proejctItem before
   if (
     document.querySelectorAll(".metadata-columns")[0].childNodes.length == 1
@@ -207,9 +218,6 @@ window.addEventListener("load", async () => {
   document.getElementById("body").addEventListener("input", setPreviewText);
   document.getElementById("suffix").addEventListener("input", setPreviewText);
   document.getElementById("seq-num").addEventListener("input", setPreviewText);
-  document
-    .getElementById("refresh-button")
-    .addEventListener("click", setPreviewText);
   document
     .getElementById("column-picker")
     .addEventListener("click", setPreviewText);

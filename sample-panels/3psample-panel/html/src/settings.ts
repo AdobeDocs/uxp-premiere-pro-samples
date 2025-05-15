@@ -63,3 +63,42 @@ export async function setScratchDiskSettings(project: Project) {
 
   return succeed;
 }
+
+/**
+ * Get if ingest enabled in project's ingest setting
+ * @return [bool] If ingest is enabled for current project
+ */
+export async function getIngestEnabled(project: Project) {
+  const projectSettings = ppro.ProjectSettings;
+  const ingestSettings = await projectSettings.getIngestSettings(project);
+  return ingestSettings.getIsIngestEnabled();
+}
+
+/**
+ * Set ingest enabled to true for current project's ingest settings
+ * @return [bool] if set action succeed or not
+ */
+export async function setIngestEnabled(project: Project) {
+  const projectSettings = ppro.ProjectSettings;
+  const ingestSettings = await projectSettings.getIngestSettings(project);
+  // set to enabled
+  await ingestSettings.setIngestEnabled(true);
+
+  let succeed = false;
+  try {
+    project.lockedAccess(() => {
+      succeed = project.executeTransaction((compoundAction) => {
+        var action = projectSettings.createSetIngestSettingsAction(
+          project,
+          ingestSettings
+        );
+        compoundAction.addAction(action);
+      }, "set ingest enabled");
+    });
+  } catch (err) {
+    log(`Error: ${err}`, "red");
+    return false;
+  }
+
+  return succeed;
+}

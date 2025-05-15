@@ -47,16 +47,8 @@ async function getProjectName() {
 }
 
 async function getSelectedProjectItems(showDialog = true) {
-  // update every projectItem at top layer of project for now
-  const project = await ppro.Project.getActiveProject();
-  if (!project) {
-    document.getElementById("console").innerHTML =
-      "Please open a project to load metadata columns";
-    return null;
-  }
   // Use selected ProjectItem
-  const projectSelection = await ppro.ProjectUtils.getSelection(project);
-  const projectItems = await projectSelection.getItems();
+  const projectItems = selectedProjectItems;
   if (projectItems.length == 0 && showDialog) {
     openDialog();
   }

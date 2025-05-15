@@ -138,7 +138,7 @@ export async function renameBin(project: Project) {
     return false;
   }
 
-  const newItems = await rootItem.getItems();
+  const newItems: Array<ProjectItem> = await rootItem.getItems();
 
   const newBin = newItems.find((item) => item.name == "Bin3");
 
@@ -176,7 +176,7 @@ export async function removeItem(project: Project) {
     log(`Error: ${err}`, "red");
     return false;
   }
-  const newItems = await rootItem.getItems();
+  const newItems: Array<ProjectItem> = await rootItem.getItems();
 
   const newBin = newItems.find((item) => item.name == "Bin4");
 
@@ -200,7 +200,7 @@ export async function removeItem(project: Project) {
     if (success) {
       log("Successfully removed the item form project panel");
     }
-  }, "1000");
+  }, 1000);
 }
 
 export async function moveItem(project: Project) {
@@ -229,7 +229,7 @@ export async function moveItem(project: Project) {
     return false;
   }
 
-  const newItems = await rootItem.getItems();
+  const newItems: Array<ProjectItem> = await rootItem.getItems();
 
   const newBin1 = newItems.find((item) => item.name == "Bin5");
   const newBin2 = newItems.find((item) => item.name == "Bin6");
@@ -255,7 +255,7 @@ export async function moveItem(project: Project) {
     if (success) {
       log("Successfully moved the item to another bin");
     }
-  }, "1000");
+  }, 1000);
 }
 
 export async function setInOutPoint(project: Project) {

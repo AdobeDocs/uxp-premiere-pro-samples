@@ -41,6 +41,7 @@ import {
   getSequenceSelection,
   setSequenceSelection,
   createSubsequence,
+  trimSelectedItem,
 } from "./src/sequence";
 
 import {
@@ -124,9 +125,14 @@ import {
   clearSampleSequenceProperty,
 } from "./src/properties";
 
-import { getScratchDiskSetting, setScratchDiskSettings } from "./src/settings";
+import {
+  getScratchDiskSetting,
+  setScratchDiskSettings,
+  getIngestEnabled,
+  setIngestEnabled,
+} from "./src/settings";
 
-import { addProjSeqListeners } from "./src/eventManager";
+import { addProjSeqListeners, addEncoderListeners } from "./src/eventManager";
 
 import {
   exportSequenceFrame,
@@ -154,7 +160,14 @@ import {
 } from "./src/sequenceEditor";
 
 //global objects.
-import type { premierepro, ProjectItem, Guid, Project } from "./types.d.ts";
+import type {
+  premierepro,
+  ProjectItem,
+  Guid,
+  Sequence,
+  VideoClipTrackItem,
+  AudioClipTrackItem,
+} from "./types.d.ts";
 const ppro = require("premierepro") as premierepro;
 const uxp = require("uxp") as typeof import("uxp");
 
@@ -217,7 +230,7 @@ async function getAllSequencesClicked() {
   const project = await getProject();
   if (!project) return;
 
-  const sequences = await getAllSequences(project);
+  const sequences: Array<Sequence> = await getAllSequences(project);
   if (sequences.length === 0) {
     log("No sequences found.", "red");
   } else {
@@ -244,14 +257,14 @@ async function openSequenceClicked() {
     );
     return;
   }
-  const activeSequence = await getActiveSequence(project);
+  const activeSequence: Sequence = await getActiveSequence(project);
   if (!activeSequence) {
     log(`Failed to find active sequence`, "red");
     return;
   }
 
-  const proposedSequence = sequences.find(
-    (seq) => seq.name != activeSequence.name
+  const proposedSequence: Sequence = sequences.find(
+    (seq: Sequence) => seq.name != activeSequence.name
   );
 
   if (!proposedSequence) {
@@ -354,9 +367,9 @@ async function getSequenceClicked() {
   if (!project) return;
 
   //Finding the last sequence id
-  let sequenceGuid;
+  let sequenceGuid: Guid;
   const sequences = await getAllSequences(project);
-  sequences.forEach((sequence) => {
+  sequences.forEach((sequence: Sequence) => {
     sequenceGuid = sequence.guid;
   });
 
@@ -365,13 +378,13 @@ async function getSequenceClicked() {
     return;
   }
 
-  log(`Trying to get sequence from sequence id ${sequenceGuid}`);
+  log(`Trying to get sequence from sequence id ${sequenceGuid.toString()}`);
 
   const sequence = await getSequence(project, sequenceGuid);
   log(
     sequence
       ? `Sequence ${sequence.name} found`
-      : `No sequence found for id ${sequenceId}`
+      : `No sequence found for id ${sequenceGuid.toString()}`
   );
 }
 
@@ -462,10 +475,16 @@ async function getSequenceSelectionClicked() {
   const sequence = await project.getActiveSequence();
   let trackItemSelection = await getSequenceSelection(sequence);
   let trackItems = await trackItemSelection.getTrackItems();
-  log(
-    trackItemSelection
-      ? `Selection of ${trackItems.length} trackItems found for sequence ${sequence.name}`
-      : `Could not find selection for sequence ${sequence.name}`
+  if (!trackItems.length) {
+    log("No track items selected", "red");
+    return;
+  }
+  log(`Selected TrackItems:\n`);
+  trackItems.forEach(
+    async (item: VideoClipTrackItem | AudioClipTrackItem, index) => {
+      let name = await item.getName();
+      log(`    ${index + 1}: ${name}\n`);
+    }
   );
 }
 
@@ -543,6 +562,19 @@ async function removeSelectedItemClicked() {
   );
 }
 
+async function trimSelectedItemClicked() {
+  const project = await getProject();
+  const sequence = await getActiveSequence(project);
+  if (!project) return;
+
+  const success = await trimSelectedItem(project, sequence);
+  log(
+    success
+      ? "First selected trackItem is trimmed and shortened by 1s"
+      : "Failed to trim selected trackItem at active sequence"
+  );
+}
+
 //marker button events
 async function createMarkerCommentClicked() {
   const project = await getProject();
@@ -606,7 +638,7 @@ async function getProjectItemsClicked() {
   const project = await getProject();
   if (!project) return;
 
-  const projectItems = await getProjectItems(project);
+  const projectItems: Array<ProjectItem> = await getProjectItems(project);
   if (!projectItems.length) {
     log("No project items found", "red");
     return;
@@ -1267,6 +1299,26 @@ async function setScratchDiskSettingsClicked() {
   );
 }
 
+async function getIngestSettingsClicked() {
+  const project = await getProject();
+  if (!project) return;
+
+  let enabled = await getIngestEnabled(project);
+  log(`IngestEnabled: ${enabled}`);
+}
+
+async function setIngestSettingsClicked() {
+  const project = await getProject();
+  if (!project) return;
+
+  let success = await setIngestEnabled(project);
+  log(
+    success
+      ? "Successfully updated ingest enabled to true"
+      : "Failed to update ingest settings"
+  );
+}
+
 //AppPreference button events
 async function getPreferenceSettingClicked() {
   let currSetting = await getPreferenceSetting();
@@ -1392,7 +1444,7 @@ async function importSequencesClicked() {
   let newProject = await openProject();
 
   // if no sequence exist, return and alert user
-  let sequences = await newProject.getSequences();
+  let sequences: Array<Sequence> = await newProject.getSequences();
   if (sequences.length == 0) {
     log(`no sequence found for import`);
     return;
@@ -1523,6 +1575,7 @@ window.addEventListener("load", async () => {
   registerClick("insert-item", insertItemClicked);
   registerClick("clone-selected-item", cloneSelectedItemClicked);
   registerClick("remove-selected-items", removeSelectedItemClicked);
+  registerClick("trim-selected-item", trimSelectedItemClicked);
 
   //marker events registering
   registerClick("marker-comment", createMarkerCommentClicked);
@@ -1608,6 +1661,8 @@ window.addEventListener("load", async () => {
   // Settings
   registerClick("get-project-setting", getScratchDiskSettingClicked);
   registerClick("set-project-setting", setScratchDiskSettingsClicked);
+  registerClick("get-ingest-setting", getIngestSettingsClicked);
+  registerClick("set-ingest-enabled", setIngestSettingsClicked);
 
   // AppPreference
   registerClick("get-autopeak-preference", getPreferenceSettingClicked);
@@ -1628,8 +1683,11 @@ window.addEventListener("load", async () => {
     .querySelector(".clear-btn")!
     .addEventListener("click", () => clearLog());
 
-  // add project & seq open/close/activate event listeners. Details in eventManager.js
+  // add project & seq open/close/activate event listeners. Details in eventManager.ts
   await addProjSeqListeners();
+
+  // add encoder event listeners. Details in eventManager.ts
+  await addEncoderListeners();
 });
 
 //Helper functions

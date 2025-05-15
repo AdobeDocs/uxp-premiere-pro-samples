@@ -12,23 +12,15 @@
  * written permission of Adobe.
  **************************************************************************/
 
-import type { premierepro, Project } from "../types.d.ts";
+import type { Marker, premierepro, Project } from "../types.d.ts";
+import { getClipProjectItem } from "./projectPanel.js";
 const ppro = require("premierepro") as premierepro;
 import { log } from "./utils";
 
 //Returning the sequence markers and clip markers objects from sequence and project root items respectivily
 
 export async function getMarkerObjects(project: Project) {
-  const rootItem = await project.getRootItem();
-  const projectItems = await rootItem.getItems();
-
-  if (projectItems.length === 0) {
-    log("No project items found.", "red");
-    return;
-  }
-
-  const projectItem = ppro.ClipProjectItem.cast(projectItems[0]);
-
+  const projectItem = await getClipProjectItem(project);
   if (!projectItem) {
     log("No clip project item found.", "red");
     return;
@@ -155,7 +147,7 @@ export async function createMarkerFlashCuePoint(project: Project) {
 export async function moveMarker(project: Project) {
   const { sequenceMarkers } = await getMarkerObjects(project);
 
-  let markerlist = await sequenceMarkers.getMarkers();
+  let markerlist: Array<Marker> = await sequenceMarkers.getMarkers();
   let marker = markerlist[0];
 
   let success = false;
