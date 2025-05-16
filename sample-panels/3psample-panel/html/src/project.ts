@@ -18,7 +18,7 @@ import { log } from "./utils";
 
 export async function openProject() {
   const file = await uxp.storage.localFileSystem.getFileForOpening({
-    types: ["prproj"],
+    types: ["prproj", "pr"],
   });
   if (file && file.isFile && file.nativePath) {
     try {
