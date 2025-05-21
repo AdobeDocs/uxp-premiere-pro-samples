@@ -20,6 +20,7 @@ import type {
   Sequence,
   VideoClipTrackItem,
 } from "../types.d.ts";
+import { getProjectColumnsMetadata } from "./metadata.js";
 import { getClipProjectItem } from "./projectPanel.js";
 const ppro = require("premierepro") as premierepro;
 import { log } from "./utils";
@@ -156,5 +157,103 @@ export async function trimSelectedItem(project: Project, sequence: Sequence) {
   } else {
     log("No sequence found.");
   }
+  return success;
+}
+
+/*
+  * Add media handles to both the start and end of a track item.  Adding a handle
+  * value of 1 second to the start and end will add 1 second of media to the start
+  * of the track item, and add 1 second of media to the end of the track item.
+  * 
+  * To truncate clips, a negative offset value may be used (effectively removing,
+  * rather than adding, media handles).
+  * 
+  * @param project The current working project
+  * @param trackItem_toChange The target track item to modify
+  * @param inpoint_offset_secs The amount of media to add to the start of the track item, in seconds
+  * @param outpoint_offset_secs The amount of media to add to the end of the track item, in seconds
+  * @returns boolean, where true indicates success, and false indicates faiure
+  */
+export async function addHandlesToTrackItem(
+                                  project: Project, 
+                                  trackItem_toChange: VideoClipTrackItem | AudioClipTrackItem, 
+                                  inpoint_offset_secs: number = 0.0, 
+                                  outpoint_offset_secs: number = 0.0
+                                ) {
+  let success = false;
+  
+  if(trackItem_toChange){
+  
+    try{
+
+      var projItem = await trackItem_toChange.getProjectItem();
+      var projItem_metadata = await ppro.Metadata.getProjectColumnsMetadata(projItem);
+      var projItem_metadata_json = JSON.parse(projItem_metadata);
+      var projItem_startTime;
+      var projItem_endTime;
+      
+      for (var currentMetadata of projItem_metadata_json){
+        if (projItem_startTime && projItem_endTime){
+          break;
+        }else if (
+          currentMetadata.ColumnID == "Column.Intrinsic.MediaStart" && 
+          currentMetadata.ColumnName == "Media Start"
+          ){
+            projItem_startTime = ppro.TickTime.createWithTicks(currentMetadata.ColumnValue);
+            ppro.TickTime.create
+        }else if (
+          currentMetadata.ColumnID == "Column.Intrinsic.MediaEnd" &&
+          currentMetadata.ColumnName == "Media End"
+          ){
+            projItem_endTime = ppro.TickTime.createWithTicks(currentMetadata.ColumnValue);
+        }
+      }
+
+      var trackItem_inPoint = await trackItem_toChange.getInPoint();
+      var trackItem_outPoint = await trackItem_toChange.getOutPoint();
+
+      var trackItem_inPoint_secs_absolute = trackItem_inPoint.seconds;
+      var trackItem_outPoint_secs_absolute = trackItem_outPoint.seconds;
+      var trackItem_inPoint_secs_offset = trackItem_inPoint.seconds + projItem_startTime.seconds;
+      var trackItem_outPoint_secs_offset = trackItem_outPoint.seconds + projItem_startTime.seconds;
+
+      var newInPoint_secs_absolute = trackItem_inPoint_secs_absolute - inpoint_offset_secs;
+      var newOutPoint_secs_absolute = trackItem_outPoint_secs_absolute + outpoint_offset_secs;
+      var newInPoint_secs_offset = trackItem_inPoint_secs_offset - inpoint_offset_secs;
+      var newOutPoint_secs_offset = trackItem_outPoint_secs_offset + outpoint_offset_secs;
+
+      if (
+        (projItem_startTime != undefined && projItem_endTime != undefined) &&
+        newInPoint_secs_offset >= projItem_startTime.seconds &&
+        newOutPoint_secs_offset <= projItem_endTime.seconds &&
+        newInPoint_secs_offset <= newOutPoint_secs_offset
+      ){
+        project.lockedAccess(() => {
+          project.executeTransaction((compoundAction) => {
+            
+            var action1 = trackItem_toChange.createSetInPointAction(
+              ppro.TickTime.createWithSeconds(newInPoint_secs_absolute)
+            );
+
+            var action2 = trackItem_toChange.createSetOutPointAction(
+              ppro.TickTime.createWithSeconds(newOutPoint_secs_absolute)
+            );
+
+            compoundAction.addAction(action1);
+            compoundAction.addAction(action2);
+          }, `Add Handles [${inpoint_offset_secs}s, ${outpoint_offset_secs}s]`);
+        
+        success = true;
+        })
+      }else{
+        log("Could not adjust trackItem in/out points due to media limits.", "red");
+      }
+    }catch (err) {
+      log(err.toString(), "red");
+    }
+  }else{
+    log("No track item provided.", "red")
+  }
+
   return success;
 }
