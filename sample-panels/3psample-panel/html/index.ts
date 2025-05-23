@@ -43,6 +43,7 @@ import {
   createSubsequence,
   trimSelectedItem,
   addHandlesToTrackItem,
+  addHandlesToTrackItem_usingTicks,
 } from "./src/sequence";
 
 import {
@@ -593,14 +594,14 @@ async function trimHandlesClicked(callback) {
     var inPointOffset = -1;
     var outPointOffset = -1;
 
-    success = await addHandlesToTrackItem(project, trackItem_toChange, inPointOffset, outPointOffset);
+    success = await addHandlesToTrackItem_usingTicks(project, sequence, trackItem_toChange, inPointOffset, outPointOffset);
   } else {
     log("No trackItem selected.", "red");
     throw new Error("no trackItem is selected at sequence");
   }
 
   if (success){
-    log(`First trackItem handles were changed by ${inPointOffset} second(s) at head and ${outPointOffset} second(s) at the tail.`);
+    log(`First trackItem handles were changed by ${inPointOffset} frame(s) at head and ${outPointOffset} frame(s) at the tail.`);
   }else{
     log("Failed to trim first selected trackItem.", "red");
   }
