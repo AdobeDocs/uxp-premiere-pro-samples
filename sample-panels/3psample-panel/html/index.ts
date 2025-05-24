@@ -43,7 +43,6 @@ import {
   createSubsequence,
   trimSelectedItem,
   addHandlesToTrackItem,
-  addHandlesToTrackItem_usingTicks,
 } from "./src/sequence";
 
 import {
@@ -594,7 +593,7 @@ async function trimHandlesClicked(callback) {
     var inPointOffset = -20;
     var outPointOffset = -20;
 
-    success = await addHandlesToTrackItem_usingTicks(project, sequence, trackItem_toChange, inPointOffset, outPointOffset);
+    success = await addHandlesToTrackItem(project, sequence, trackItem_toChange, inPointOffset, outPointOffset);
   } else {
     log("No trackItem selected.", "red");
     throw new Error("no trackItem is selected at sequence");
