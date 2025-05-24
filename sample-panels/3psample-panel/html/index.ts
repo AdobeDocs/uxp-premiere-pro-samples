@@ -591,8 +591,8 @@ async function trimHandlesClicked(callback) {
   if (items.length > 0) {
     const trackItem_toChange = items[0];
 
-    var inPointOffset = -1;
-    var outPointOffset = -1;
+    var inPointOffset = -20;
+    var outPointOffset = -20;
 
     success = await addHandlesToTrackItem_usingTicks(project, sequence, trackItem_toChange, inPointOffset, outPointOffset);
   } else {

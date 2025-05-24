@@ -14,6 +14,7 @@
 
 import type {
   AudioClipTrackItem,
+  ClipProjectItem,
   Guid,
   premierepro,
   Project,
@@ -268,8 +269,8 @@ export async function addHandlesToTrackItem(
   * 
   * @param project The current working project
   * @param trackItem_toChange The target track item to modify
-  * @param inpoint_offset_secs The amount of media to add to the start of the track item, in frames
-  * @param outpoint_offset_secs The amount of media to add to the end of the track item, in frames
+  * @param inpoint_offset_secs The number of frames to add to the start of the track item in the sequence
+  * @param outpoint_offset_secs The number of frames to add to the end of the track item in the sequence
   * @returns boolean, where true indicates success, and false indicates faiure
   */
 export async function addHandlesToTrackItem_usingTicks(
@@ -284,14 +285,14 @@ export async function addHandlesToTrackItem_usingTicks(
   if(trackItem_toChange){
   
     if ( !(Number.isInteger(inpoint_offset_frames)) || !(Number.isInteger(outpoint_offset_frames)) ){
-      throw new Error("Frame offset arguments must be be integers.");
+      throw new Error("Frame offset arguments must be integers.");
     }
 
     try{
       const ticks_per_sec = 254016000000;
 
       var projItem = await trackItem_toChange.getProjectItem();
-      var clipProjItem = await ppro.ClipProjectItem.cast(projItem);
+      var clipProjItem: ClipProjectItem = await ppro.ClipProjectItem.cast(projItem);
 
       var projItem_metadata = await ppro.Metadata.getProjectColumnsMetadata(projItem);
       var projItem_metadata_json = JSON.parse(projItem_metadata);
@@ -335,31 +336,24 @@ export async function addHandlesToTrackItem_usingTicks(
       var inpoint_offset_ticks = Number(inpoint_offset_TickTime.ticks);      
       var outpoint_offset_ticks = Number(outpoint_offset_TickTime.ticks);
 
-      // we need to consider the source and sequence timebases, since we're adding handles at the sequence level,
-      // but modifying the source in/out.
+      // We need to consider the source and sequence timebases, since we're adding handles at the sequence level,
+      // but using the source timebase to modify the in/out of the trackItem source to establish those handles.
       //
-      // For Example:  If with a sequence at 30FPS and a source clip at 60FPS, we need to add 60 frames of source
+      // For Example:  With a sequence at 30FPS and a source clip at 60FPS, we need to add 60 frames of source
       // in order to add 30 frames of handle at the sequence level.
       var source_sequence_timebase_ratio = projItem_Framerate.value/seq_Framerate.value;
 
-      // Compensate for source:sequence timebase ratio
-      // var newInPoint_ticks_absolute = trackItem_inPoint_ticks_absolute - (inpoint_offset_ticks * source_sequence_timebase_ratio);
-      // var newOutPoint_ticks_absolute = trackItem_outPoint_ticks_absolute + (outpoint_offset_ticks * source_sequence_timebase_ratio);
-      // var newInPoint_ticks_offset = trackItem_inPoint_ticks_offset - (inpoint_offset_ticks * source_sequence_timebase_ratio);
-      // var newOutPoint_ticks_offset = trackItem_outPoint_ticks_offset + (outpoint_offset_ticks* source_sequence_timebase_ratio);
-      
-      // Ignore source:sequence timebase ratio, and use source framerate only.
-      var newInPoint_ticks_absolute = trackItem_inPoint_ticks_absolute - inpoint_offset_ticks;
-      var newOutPoint_ticks_absolute = trackItem_outPoint_ticks_absolute + outpoint_offset_ticks;
-      var newInPoint_ticks_offset = trackItem_inPoint_ticks_offset - inpoint_offset_ticks;
-      var newOutPoint_ticks_offset = trackItem_outPoint_ticks_offset + outpoint_offset_ticks;
-
+      // Calculate new In/Out points. Compensate for source:sequence timebase ratio.
+      var newInPoint_ticks_absolute = trackItem_inPoint_ticks_absolute - (inpoint_offset_ticks * source_sequence_timebase_ratio);
+      var newOutPoint_ticks_absolute = trackItem_outPoint_ticks_absolute + (outpoint_offset_ticks * source_sequence_timebase_ratio);
+      var newInPoint_ticks_offset = trackItem_inPoint_ticks_offset - (inpoint_offset_ticks * source_sequence_timebase_ratio);
+      var newOutPoint_ticks_offset = trackItem_outPoint_ticks_offset + (outpoint_offset_ticks* source_sequence_timebase_ratio);
 
       if (
         (projItem_startTime != undefined && projItem_endTime != undefined) &&
         newInPoint_ticks_offset >= projItem_startTime.ticks &&
         newOutPoint_ticks_offset <= projItem_endTime.ticks &&
-        newInPoint_ticks_offset <= newOutPoint_ticks_offset
+        newInPoint_ticks_offset < newOutPoint_ticks_offset
       ){
         project.lockedAccess(() => {
           project.executeTransaction((compoundAction) => {
@@ -374,7 +368,7 @@ export async function addHandlesToTrackItem_usingTicks(
 
             compoundAction.addAction(action1);
             compoundAction.addAction(action2);
-          }, `Add Handles [${inpoint_offset_frames}f, ${outpoint_offset_frames}f]`);
+          }, `Add Handles [${inpoint_offset_frames}F, ${outpoint_offset_frames}F]`);
         
         success = true;
         })
