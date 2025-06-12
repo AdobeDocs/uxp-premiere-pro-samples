@@ -31,3 +31,4 @@ cypress/screenshots
 
 # lerna
 lerna-debug.log
+sample-panels/uxppro/yarn.lock
