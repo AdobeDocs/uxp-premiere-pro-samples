@@ -37,10 +37,6 @@ import {
   createSequence,
   createSequenceFromMedia,
   getCaptionTrackCount,
-  getCaptionTrack,
-  getCaptionTrackInfo,
-  toggleCaptionTrackMute,
-  getCaptionTrackItems,
   getVideoTrack,
   getSequenceSelection,
   setSequenceSelection,
@@ -457,83 +453,6 @@ async function getCaptionTrackCountClicked() {
       ? `Number of caption tracks found: ${captionTrackCount}`
       : `No caption tracks found`
   );
-}
-
-async function getCaptionTrackInfoClicked() {
-  const project = await getProject();
-  if (!project) return;
-
-  const sequence = await project.getActiveSequence();
-  if (!sequence) {
-    log("No active sequence available", "red");
-    return;
-  }
-
-  const trackInfos = await getCaptionTrackInfo(sequence);
-  if (trackInfos.length === 0) {
-    return; // Already logged by getCaptionTrackInfo
-  }
-
-  log(`Found ${trackInfos.length} caption track(s):`, "blue");
-  trackInfos.forEach((trackInfo) => {
-    log(`  Track ${trackInfo.index}:`, "blue");
-    log(`    Name: ${trackInfo.name}`, "blue");
-    log(`    ID: ${trackInfo.id}`, "blue");
-    log(`    Index: ${trackInfo.trackIndex}`, "blue");
-    log(`    Muted: ${trackInfo.isMuted}`, "blue");
-    log(`    Media Type GUID: ${trackInfo.mediaType.toString()}`, "blue");
-  });
-}
-
-async function toggleCaptionTrackMuteClicked() {
-  const project = await getProject();
-  if (!project) return;
-
-  const sequence = await project.getActiveSequence();
-  if (!sequence) {
-    log("No active sequence available", "red");
-    return;
-  }
-
-  const success = await toggleCaptionTrackMute(sequence, 0); // Toggle first caption track
-  if (!success) {
-    // Error already logged by toggleCaptionTrackMute
-    return;
-  }
-}
-
-async function getCaptionTrackItemsClicked() {
-  const project = await getProject();
-  if (!project) return;
-
-  const sequence = await project.getActiveSequence();
-  if (!sequence) {
-    log("No active sequence available", "red");
-    return;
-  }
-
-  const trackItems = await getCaptionTrackItems(sequence);
-  if (trackItems.length === 0) {
-    return; // Already logged by getCaptionTrackItems
-  }
-
-  log(`Getting track items from ${trackItems.length} caption track(s):`, "blue");
-  trackItems.forEach((trackData) => {
-    log(`  Caption Track "${trackData.trackName}":`, "blue");
-    log(`    Total track items (including empty): ${trackData.allItemsCount}`, "blue");
-    log(`    Clip track items only: ${trackData.clipItemsCount}`, "blue");
-    
-    if (trackData.clipItemsCount > 0) {
-      log(`    Clip track item details:`, "blue");
-      trackData.clipItems.forEach((item: any, index: number) => {
-        try {
-          log(`      Item ${index}: Type ${item.constructor.name}`, "blue");
-        } catch (itemError) {
-          log(`      Item ${index}: Could not get detailed info`, "orange");
-        }
-      });
-    }
-  });
 }
 
 async function getVideoTrackClicked() {
@@ -1648,9 +1567,6 @@ window.addEventListener("load", async () => {
   registerClick("create-sequence", createSequenceClicked);
   registerClick("create-media-sequence", createSequenceFromMediaClicked);
   registerClick("get-caption-track-count", getCaptionTrackCountClicked);
-  registerClick("get-caption-track-info", getCaptionTrackInfoClicked);
-  registerClick("toggle-caption-track-mute", toggleCaptionTrackMuteClicked);
-  registerClick("get-caption-track-items", getCaptionTrackItemsClicked);
   registerClick("get-video-track-sequence", getVideoTrackClicked);
   registerClick("get-selection-sequence", getSequenceSelectionClicked);
   registerClick("set-selection-sequence", setSequenceSelectionClicked);
