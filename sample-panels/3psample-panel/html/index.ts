@@ -46,6 +46,7 @@ import {
   setSequenceSelection,
   createSubsequence,
   trimSelectedItem,
+  addHandlesToTrackItem,
 } from "./src/sequence";
 
 import {
@@ -654,6 +655,36 @@ async function trimSelectedItemClicked() {
       ? "First selected trackItem is trimmed and shortened by 1s"
       : "Failed to trim selected trackItem at active sequence"
   );
+}
+
+async function trimHandlesClicked(callback) {
+  var success = false;
+  const project = await getProject();
+  if (!project) return;
+
+  const sequence = await getActiveSequence(project);
+
+  const selection = await sequence.getSelection();
+  const items: Array<VideoClipTrackItem | AudioClipTrackItem> =
+    await selection.getTrackItems();
+    
+  if (items.length > 0) {
+    const trackItem_toChange = items[0];
+
+    var inPointOffset = -20;
+    var outPointOffset = -20;
+
+    success = await addHandlesToTrackItem(project, sequence, trackItem_toChange, inPointOffset, outPointOffset);
+  } else {
+    log("No trackItem selected.", "red");
+    throw new Error("no trackItem is selected at sequence");
+  }
+
+  if (success){
+    log(`First trackItem handles were changed by ${inPointOffset} frame(s) at head and ${outPointOffset} frame(s) at the tail.`);
+  }else{
+    log("Failed to trim first selected trackItem.", "red");
+  }
 }
 
 //marker button events
@@ -1660,6 +1691,7 @@ window.addEventListener("load", async () => {
   registerClick("clone-selected-item", cloneSelectedItemClicked);
   registerClick("remove-selected-items", removeSelectedItemClicked);
   registerClick("trim-selected-item", trimSelectedItemClicked);
+  registerClick("trim-handles", trimHandlesClicked);
 
   //marker events registering
   registerClick("marker-comment", createMarkerCommentClicked);
