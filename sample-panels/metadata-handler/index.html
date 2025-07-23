@@ -205,6 +205,8 @@
       </div>
       <div class="section">
         <h4>Metadata Exporter</h4>
+        <h6>All project items will be exported if no project items are selected.</h6>
+        <br>
         <sp-radio-group id="time-type">
           <sp-label slot="label">Select Time Type:</sp-label>
           <sp-radio value="smpte" checked>SMPTE Timecode</sp-radio>
@@ -223,6 +225,11 @@
 
       <div class="section">
         <h4>Clip Marker Exporter</h4>
+        <h6>All project items will be exported if no project items are selected.</h6>
+        <h6>Items that contain no markers are skipped and not exported.</h6>
+        <h6>Sequences are ignored during this export.  Markers are exported only for media items.</h6>
+         <h6>Multicams are included in the export.</h6>
+        <br>
         <div>
           <sp-radio-group id="clip-marker-type">
             <sp-label slot="label">Select File Type:</sp-label>
