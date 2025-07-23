@@ -20,11 +20,11 @@ import type {
   Project,
   Sequence,
   VideoClipTrackItem,
-} from "../types.d.ts";
+} from "../types.js";
 import { getProjectColumnsMetadata } from "./metadata.js";
 import { getClipProjectItem, setFootageInterpretation } from "./projectPanel.js";
 const ppro = require("premierepro") as premierepro;
-import { log } from "./utils";
+import { log } from "./utils.js";
 
 export async function getSequence(project: Project, sequenceGuid: Guid) {
   if (project) {

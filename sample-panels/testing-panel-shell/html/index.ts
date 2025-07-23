@@ -168,7 +168,7 @@ import type {
   Sequence,
   VideoClipTrackItem,
   AudioClipTrackItem,
-} from "./types.d.ts";
+} from "./types";
 const ppro = require("premierepro") as premierepro;
 const uxp = require("uxp") as typeof import("uxp");
 
@@ -1570,129 +1570,8 @@ async function importAllAeComponentsClicked() {
   }
 }
 
-async function testButtonClicked(){ // for testing Sequence.getSettings() - remove __testing_getSettings from function name to use
-  let success = false;
-
-  const project = await getProject();
-  const projRootItem = await project.getRootItem();
-  let folderItems = await projRootItem.getItems();
-  
-  let sequences = await project.getSequences();
-  
-  for(let i = 0; i < folderItems.length; i++){
-    log(`Looking at ${folderItems[i].name}`);
-    let clipProjItem = ppro.ClipProjectItem.cast(folderItems[i]);
-    let isMulticam = await clipProjItem.isMulticamClip();
-    let isSequence = await clipProjItem.isSequence();
-    if(isMulticam || isSequence){
-      try{
-        let seqForProjItem = await clipProjItem.getSequence();
-        let projItemSettings = await seqForProjItem.getSettings();
-        let pulledSetting = await projItemSettings.getPreviewCodec();
-        log(`...Got the settings!`);
-      }catch(e) {
-        log(e);
-      }
-    }else{
-      log(`...Not a Sequence or Mutlicam`);
-    }
-    // let isMC = await folderItems[i].isMulticamClip();
- 
-      
-    }
-  }
-}
-
-async function testButtonClicked__testing_tickTimeMath(){ // for testing ticktime math - remove __testing_ticktimeMath from function name to use
-  // log("Test Button Clicked!")
-  
-  const ticks_per_sec = 254016000000;
-  
-  // Testing Audio Filter Factory
-  const AUTOMATIC_CLICK_REMOVER_MATCH_NAME =
-    "433322b0-d25a-4cfa-a4f1-4a1ab2d7615b";
-
-  // const matchNames = await ppro.AudioFilterFactory.getMatchNames();
-  
-  // const sampleRate = ppro.FrameRate.createWithValue(48000);
-  // const audioChannelLayout =
-  //   dvaMediaTypes.AudioChannelLayout.createCommonAudioChannelLayout(
-  //     dvaMediaTypes.AudioChannelLayout.CHANNELLAYOUT_STEREO
-  //   );
-
-
-  // const filterModule = await ppro.AudioFilterFactory.getFilterModule(
-  //     AUTOMATIC_CLICK_REMOVER_MATCH_NAME
-  //   );
-
-  // let audioFilterComponent = await ppro.AudioFilterFactory.createComponent(
-  //     AUTOMATIC_CLICK_REMOVER_MATCH_NAME,
-  //     sampleRate,
-  //     audioChannelLayout
-  //   );
-
-
-  // Testing Sequence In/Out Points
-  let success = false;
-
-  const project = await getProject();
-  const sequence = await getActiveSequence(project);
-  const seqFramerate = ppro.FrameRate.createWithValue(
-    ticks_per_sec/Number(await sequence.getTimebase())
-  );
-
-
-
-  if (sequence) {
-
-    let inPoint = 2; //seconds
-    let outPoint = 10; //seconds
-
-    let inTickTime = ppro.TickTime.createWithTicks(String(inPoint * seqFramerate.value * seqFramerate.ticksPerFrame));
-    // let inTickTime_rounded = inTickTime.alignToNearestFrame(seqFramerate);
-    let inTickTime_rounded = inTickTime.alignToFrame(seqFramerate);
-
-    let outTickTime = ppro.TickTime.createWithTicks(String(outPoint * seqFramerate.value * seqFramerate.ticksPerFrame));
-    // let outTickTime_rounded = outTickTime.alignToNearestFrame(seqFramerate);
-    let outTickTime_rounded = outTickTime.alignToNearestFrame(seqFramerate);
-
-    let addedTicktime = outTickTime.add(inTickTime);
-    let subtractedTickTime = outTickTime.subtract(inTickTime);
-    let multTickTime = outTickTime.multiply(inPoint);
-    let divTickTime = outTickTime.divide(inPoint);
-
-    project.lockedAccess(() => {
-      project.executeTransaction((compoundAction) => {
-        let action1 = sequence.createSetInPointAction(
-          ppro.TickTime.createWithTicks(
-            inTickTime_rounded.ticks
-          )
-        );
-        
-        let action2 = sequence.createSetOutPointAction(
-          ppro.TickTime.createWithTicks(
-            outTickTime_rounded.ticks
-          )
-        );
-    
-        compoundAction.addAction(action1);
-        compoundAction.addAction(action2);
-      })
-    })
-    
-    success = true;
-
-  } else {
-    log("Test conditions were not met.  See IF statement of test..", "red");
-    throw new Error("Test IF condition not met");
-  }
-
-  if (success){
-    log(`Test Succeeded.`);
-  }else{
-    log("Test Failed!", "red");
-  }
-  
+async function testButtonClicked(){
+  log("Test Button Clicked!")  
   return;
 }
 

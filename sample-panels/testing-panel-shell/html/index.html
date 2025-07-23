@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="index.js"></script>
+  </head>
+  <style>
+    body {
+      color: white;
+      padding: 0 16px;
+      overflow-y: auto;
+      height: 100vh;
+    }
+
+    li:before {
+      content: "• ";
+      width: 3em;
+    }
+
+    #plugin-body {
+      color: var(--uxp-host-text-color-secondary, white);
+      margin-top: 5px;
+      border: 1px solid #808080;
+      border-radius: 4px;
+      padding: 16px;
+      overflow: scroll;
+      height: 220px;
+    }
+
+    sp-heading {
+      color: var(--uxp-host-text-color-secondary, white);
+    }
+
+    footer {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      margin-top: 300px;
+    }
+
+    footer > * {
+      margin-bottom: 10px;
+    }
+
+    sp-button {
+      height: 20px;
+      border-radius: 0.5em;
+      font-size: 1.1em;
+    }
+
+    #ae-component-name {
+      height: 20px;
+      border-radius: 0.5em;
+      font-size: 1.1em;
+      margin: 0;
+    }
+
+    h4 {
+      margin-top: 0.5em;
+      margin-bottom: 0.5em;
+    }
+
+    footer div {
+      width: 100%;
+      margin-bottom: 1em;
+    }
+
+    #project-items {
+      margin: 0;
+      height: 20px;
+      width: 50%;
+    }
+
+    .main-div {
+      position: relative;
+    }
+
+    .clear-btn {
+      display: none;
+      position: absolute;
+      top: 10px;
+      right: 6px;
+      cursor: pointer;
+    }
+
+    .main-div:hover .clear-btn {
+      display: inline;
+    }
+
+    .title-heading {
+      padding-top: 5px;
+      padding-bottom: 15px;
+    }
+
+    .fixed {
+      position: fixed;
+      top: 0;
+      width: calc(100% - 32px);
+      background-color: #222;
+      z-index: 1000;
+      margin-right: 20px;
+    }
+  </style>
+
+  <body>
+    <div class="fixed">
+      <h4>Console</h4>
+      <div class="main-div">
+        <sp-body id="plugin-body"> Ready <br /></sp-body>
+        <div class="clear-btn" title="Clear console">
+          <sp-icon name="ui:CrossSmall"></sp-icon>
+        </div>
+      </div>
+    </div>
+    <footer>
+      <div class="Quick Test">
+        <h4>Buttons</h4>
+        <sp-button id="test-button">Test Button</sp-button>
+      </div>
+    </footer>
+  </body>
+</html>
