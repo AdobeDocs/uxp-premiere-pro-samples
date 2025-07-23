@@ -14,7 +14,7 @@
 
 const ppro = require("premierepro");
 const uxp = require("uxp");
-const { getProjectName, getProjectItems } = require("./commonUtils");
+const { getSelectedProjectItems, getProjectName, getProjectItems } = require("./commonUtils");
 
 const timeColKeys = [
   "Media Start",
@@ -32,6 +32,8 @@ const outOrEndKeys = ["Media End", "Video Out Point", "Subclip End"];
 async function exportMetadata() {
   let projectName = await getProjectName();
   let projectItems = await getProjectItems();
+  let selectedProjectItems = await getSelectedProjectItems(showDialog = false);
+  let exportedItems = [];  // track exported project items to prevent redundant item export
   if (projectItems.length == 0) {
     document.getElementById("console").innerHTML =
       "Please have at least one projectItem available to export metadata";
@@ -40,12 +42,21 @@ async function exportMetadata() {
 
   let timeType = document.getElementById("time-type").value;
   let metadata = [];
+
+  if (selectedProjectItems.length > 0) {
+    projectItems = selectedProjectItems;  // use user selection if present
+  }
+
   for (const projectItem of projectItems) {
     // if it can be casted to clip project item
-    if (ppro.ClipProjectItem.cast(projectItem) != null) {
+    if (
+      ppro.ClipProjectItem.cast(projectItem) != null &&
+      !exportedItems.includes(projectItem)
+    ) {
       // get metdata
       let clipMetadata = await getClipMetadata(projectItem, timeType);
       metadata.push(clipMetadata);
+      exportedItems.push(projectItem);
     }
     // otherwise cast to folder projectItem and read info inside
     const item = ppro.FolderItem.cast(projectItem);
@@ -84,14 +95,16 @@ async function exportMetadata() {
 }
 
 function secondToTimeCode(seconds, frameRate, isOutOrEnd = false) {
-  const frames = Math.round(seconds * frameRate);
+
+  let frames = Math.round(seconds * frameRate);
+
+  if (isOutOrEnd) {
+    frames = frames--; // out frames need to be rolled back one frame for timecode notation
+  }
+
   const frameRateRounded = Math.round(frameRate);
   const wholeDisplaySeconds = Math.floor(frames / frameRateRounded);
   let ff = Math.floor(frames - wholeDisplaySeconds * frameRateRounded);
-
-  if (isOutOrEnd) {
-    ff = ff - 1; // wrap frame count with start index of 0
-  }
 
   const hours = Math.floor(wholeDisplaySeconds / 3600);
   const minutes = Math.floor((wholeDisplaySeconds % 3600) / 60);
@@ -169,8 +182,13 @@ async function getClipMetadata(inProjectItem, timeType) {
 }
 
 async function getMarkerMetadata(inProjectItem) {
-  let clipProjectItem = ppro.ClipProjectItem.cast(inProjectItem);
-  const clipMarkers = await ppro.Markers.getMarkers(clipProjectItem);
+  let itemWithMarkers = ppro.ClipProjectItem.cast(inProjectItem);
+  
+  if (await itemWithMarkers.isMulticamClip()){
+    itemWithMarkers = await itemWithMarkers.getSequence(); // use sequence if project item is a multicam
+  }
+
+  const clipMarkers = await ppro.Markers.getMarkers(itemWithMarkers);
   const markers = await clipMarkers.getMarkers();
   if (markers.length == 0) {
     return null;
@@ -200,19 +218,29 @@ async function getMarkerMetadata(inProjectItem) {
 
 async function exportClipMarkerData() {
   const projectName = await getProjectName();
-  const projectItems = await getProjectItems();
+  let projectItems = await getProjectItems();
+  let selectedProjectItems = await getSelectedProjectItems(showDialog = false);
+  let exportedItems = [];  // track exported project items to prevent redundant item export
   if (projectItems.length == 0) {
     document.getElementById("console").innerHTML =
       "Please have at least one projectItem available to get clip marker data";
     return;
   }
   let metadata = [];
+
+  if (selectedProjectItems.length > 0) {
+    projectItems = selectedProjectItems;  // use user selection if present
+  }
+
   for (const projectItem of projectItems) {
     // if it can be casted to clip project item, record marker data
-    if (ppro.ClipProjectItem.cast(projectItem)) {
+    if (
+      ppro.ClipProjectItem.cast(projectItem) && !exportedItems.includes(projectItem)
+    ) {
       let clipMarkersData = await getMarkerMetadata(projectItem);
       if (clipMarkersData != null) {
         metadata.push(...clipMarkersData);
+        exportedItems.push(projectItem);
       }
     }
     // otherwise cast to folder projectItem and read item inside
@@ -230,7 +258,10 @@ async function exportClipMarkerData() {
   let type = document.getElementById("clip-marker-type").value;
 
   // parse array of json object into selected format
-  if (type == "csv") {
+  if (metadata.length == 0){
+    // TODO would be nice if this was a dialog to the user instead of exporting an unuseful file
+    content = "No markers found to export."
+  }else if (type == "csv") {
     // export in csv format
     content = convertToCSV(metadata);
   } else {
