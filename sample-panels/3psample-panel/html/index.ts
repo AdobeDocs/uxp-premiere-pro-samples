@@ -601,23 +601,22 @@ async function trimSelectedItemClicked() {
 }
 
 async function trimHandlesClicked(callback) {
-  var success = false;
+  let success = false;
   const project = await getProject();
   if (!project) return;
 
   const sequence = await getActiveSequence(project);
+  if (!sequence) return;
 
   const selection = await sequence.getSelection();
   const items: Array<VideoClipTrackItem | AudioClipTrackItem> =
     await selection.getTrackItems();
     
+  const inPointOffset = -20; 
+  const outPointOffset = -20;
   if (items.length > 0) {
-    const trackItem_toChange = items[0];
-
-    var inPointOffset = -20;
-    var outPointOffset = -20;
-
-    success = await addHandlesToTrackItem(project, sequence, trackItem_toChange, inPointOffset, outPointOffset);
+    const trackItemToChange = items[0];
+    success = await addHandlesToTrackItem(project, sequence, trackItemToChange, inPointOffset, outPointOffset);
   } else {
     log("No trackItem selected.", "red");
     throw new Error("no trackItem is selected at sequence");
