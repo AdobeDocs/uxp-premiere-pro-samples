@@ -1,57 +1,49 @@
 # ReadMe
 
-Getting started developing a Universal Extensibility Platform - UXP panel for Adobe Premiere Pro.
+These instructions explain how to develop UXP plugins within Premiere Pro. [*As of August 2025, only Premiere Pro BETA builds support UXP plugins.*]
 
-The Premiere Pro UXP API is available here: <https://developer.adobe.com/premiere-pro/uxp/>
+The Premiere Pro UXP API documentation is available here: <https://developer.adobe.com/premiere-pro/uxp/>.
 
-## Things you need to begin
+## Things you will need
 
-- Premiere Pro 25.2.0 BETA (Build 13) or later, available through Creative Cloud Desktop -CCD
-- UXP Developer Tool-UDT,Version 2.1.0 (2.1.0.30) which is available for download through CCD
-- Adobe third-party sample panel - **3psample-panel** directory available in this repo
+- Premiere Pro BETA build, available through Creative Cloud Desktop.
+- UXP Developer Tool, also available for download through Creative Cloud Desktop.
+- Adobe third-party sample panel - **3psample-panel** directory from this Git repository.
 
-## Build the test panel
+## Build the sample
 
-- Open your console / terminal / command prompt
-- cd into the sample-panels/3psample-panel/html directory
+- Open your console / terminal / command prompt, into ```sample-panels/3psample-panel/html```.
 - Install dependencies with ```npm i```
 - Bulid the project with ```npm run build```
-- Then fix import with ```npm run fix-imports``` 
-- Panel is now built in the "build-html" directory
+- Then fix import with ```npm run fix-imports```
 
-*You will see errors after the build command. That doesn't mean the build failed - we are working actively on providing better type definition files to avoid triggering those errors. Please only run fix-imports command after build command for the same reason* 
+The plugin is now built in the ```/build-html``` directory.
 
-## How to launch the test panel
+*NOTE: You will see errors after the build command. That doesn't mean the build failed - we are working actively on providing better type definition files to avoid triggering those errors. Please only run fix-imports command after build command for the same reason.*
 
-- Launch Premiere Pro BETA, and set a feature flag:
-  - open a new blank project
-  - Enter debug console via: Command + Function + F12
-  - Use hamburger menu to select debug database view
-  - In the search bar type: uxp
-  - Check the box for **dvauxphost.UseDvascriptingContext** to set it to true
-  - ![UXP feature flag](payloads/dvauxphost-true.png)
-  - Important: the debug console is _not_ a place to experiment.
+## Display the sample
 
-* Load UDT. On first launch it will be blank. Click the **Add Plugin** button
-* Navigate to the location where you downloaded the 3psample-panel
-* Select 3psample-panel/build-html/manifest.json, and click **Open**
+- Launch Premiere Pro Beta.
+- Load UDT. *On first launch it will be blank*.
+- Click **Add Plugin**.
+- Navigate to the ```3psample-panel/build-html/manifest.json```, and click **Open**.
 
 ![UXP Developer Tool UDT](payloads/UDT_load_panel.png)
 
-- Marvel at the magnificent UXP sample panel.
+The UXP sample plugin displays in Premiere Pro Beta:
 
 ![UXP Sample Panel](payloads/UXP-sample-panel-loaded.png)
 
-## Adding TypeScript Definitions to VS Code
+## Adding TypeScript Definitions in Visual Studio Code
 
-![UXP typescript autocomplete](payloads/ts_def_demo.png)
+To see definitions, add typescript definitions to the .js file in which you are working.
 
-Add typescript definitions to the .js file you are working in, so that you will see definitions
+Copy ```types.d.ts``` to the root of the ```/html``` directory.
 
-copy the provided file; types.d.ts to the root of the html directory
-
-Add this line to the top of the index.js file
+Add this line to the top of ```index.js```:
 
 `/// <reference path="./types.d.ts" />`
 
-###### posted 10DEC2024 dmcsween
+You can now see and use TypeScript definitions for Premiere Pro's UXP APIs, in Visual Studio Code.
+
+![UXP typescript autocomplete](payloads/ts_def_demo.png)
