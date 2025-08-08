@@ -111,6 +111,7 @@ import {
   addEffects,
   addMultipleEffects,
   removeEffects,
+  addVocalEnhancerEffect
 } from "./src/effects";
 
 import {
@@ -156,6 +157,7 @@ import {
 import {
   overwriteTrackItem,
   insertTrackItem,
+  insertMogrt, 
   cloneSelectedTrackItem,
   removeSelectedTrackItems,
 } from "./src/sequenceEditor";
@@ -539,6 +541,28 @@ async function insertItemClicked() {
   );
 }
 
+async function insertMogrtClicked() {
+  const project = await getProject();
+  if (!project) return;
+  let mogrtPath; 
+  // @ts-ignore
+  const file = await uxp.storage.localFileSystem.getFileForOpening({
+    types: ["mogrt"],
+  }); 
+  if (file?.isFile && file.nativePath) {
+    mogrtPath = file.nativePath;
+  } else {
+    log("Selection of file failed. Please try again");
+    return;
+  }
+  const success = await insertMogrt(project, mogrtPath); 
+  log(
+    success
+      ? "New mogrt item inserted at V2/A2 of active sequence"
+      : "Failed to insert trackItem in active sequence"
+  );
+}
+
 async function cloneSelectedItemClicked() {
   const project = await getProject();
   if (!project) return;
@@ -824,8 +848,9 @@ async function attachProxyClicked() {
 
   let proxyFile;
   log("Please select media file to attach as proxy");
+  // @ts-ignore
   const file = await uxp.storage.localFileSystem.getFileForOpening();
-  if (file && file.isFile && file.nativePath) {
+  if (file?.isFile && file.nativePath) {
     proxyFile = file.nativePath;
   } else {
     log("Selection of proxy file failed. Please try again");
@@ -846,8 +871,9 @@ async function changePathClicked() {
 
   let mediaFile;
   log("Please select media file for the change of media file path");
+  // @ts-ignore
   const file = await uxp.storage.localFileSystem.getFileForOpening();
-  if (file && file.isFile && file.nativePath) {
+  if (file?.isFile && file.nativePath) {
     mediaFile = file.nativePath;
   } else {
     log("Selection of new media file failed. Please try again");
@@ -918,7 +944,7 @@ async function getProjectMetadataClicked() {
   const metadata = await getProjectMetadata(project);
   if (metadata) {
     try {
-      await navigator.clipboard.write({ "text/plain": metadata });
+      await navigator.clipboard.writeText(metadata);
       log(`Project metadata copied to clipboard`);
     } catch {
       log("Failed to copy Project metadata to clipboard", "red");
@@ -935,7 +961,7 @@ async function getXMPMetadataClicked() {
   const metadata = await getXMPMetadata(project);
   if (metadata) {
     try {
-      await navigator.clipboard.write({ "text/plain": metadata });
+      await navigator.clipboard.writeText(metadata);
       log(`XMP Metadata copied to clipboard`);
     } catch {
       log("Failed to copy XMP Metadata to clipboard", "red");
@@ -952,7 +978,7 @@ async function getProjectColumnsMetadataClicked() {
   const metadata = await getProjectColumnsMetadata(project);
   if (metadata) {
     try {
-      await navigator.clipboard.write({ "text/plain": metadata });
+      await navigator.clipboard.writeText(metadata);
       log(`Project column metadata copied to clipboard`);
     } catch {
       log("Failed to copy Project column Metadata to clipboard", "red");
@@ -966,7 +992,7 @@ async function getProjectPanelMetadataClicked() {
   const metadata = await getProjectPanelMetadata();
   if (metadata) {
     try {
-      await navigator.clipboard.write({ "text/plain": metadata });
+      await navigator.clipboard.writeText(metadata);
       log(`Project panel metadata copied to clipboard`);
     } catch {
       log("Failed to copy Project panel metadata to clipboard", "red");
@@ -1028,7 +1054,7 @@ async function openFilePathClicked() {
 }
 
 async function openProjectItemClicked() {
-  let selected = document.getElementById("project-items").value;
+  let selected = (document.getElementById("project-items") as HTMLInputElement)?.value;
 
   if (!selected) {
     log("Please select a projectItem to open");
@@ -1232,6 +1258,18 @@ async function removeTransitionStartClicked() {
   );
 }
 
+async function addVocalEnhancerEffectClicked() {
+  const project = await getProject();
+  if (!project) return;
+
+  const success = await addVocalEnhancerEffect(project);
+  log(
+    success
+      ? "Successfully add vocal enhancer effect to ptrackitem"
+      : "Failed to apply vocal enhancer effefct"
+  );
+}
+
 async function setOverrideFrameRateClicked() {
   const project = await getProject();
   if (!project) return;
@@ -1413,10 +1451,11 @@ async function getExportFileExtensionClicked() {
 
   let presetFile;
   log("Please select a preset file for getting the export file extension");
+  // @ts-ignore
   const file = await uxp.storage.localFileSystem.getFileForOpening({
     types: ["epr"],
   });
-  if (file && file.isFile && file.nativePath) {
+  if (file?.isFile && file.nativePath) {
     presetFile = file.nativePath;
   } else {
     log("Selection of preset file failed. Please try again");
@@ -1434,6 +1473,7 @@ async function getExportFileExtensionClicked() {
 //import button events
 async function importFilesClicked() {
   let success = false;
+  // @ts-ignore
   const files = await uxp.storage.localFileSystem.getFileForOpening({
     allowMultiple: true,
   }); // allow multiple files selection
@@ -1443,9 +1483,9 @@ async function importFilesClicked() {
     return;
   } else {
     log(`Importing files selected..`);
-    for (let i = 0; i < files.length; i++) {
-      if (files[i] && files[i].isFile && files[i].nativePath) {
-        filePaths.push(files[i].nativePath);
+    for (const file of files) {
+      if (file?.isFile && file.nativePath) {
+        filePaths.push(file.nativePath);
       }
     }
   }
@@ -1516,12 +1556,13 @@ async function importAeComponentClicked() {
   const rootItem = await project.getRootItem();
 
   // let user select ae composition file for import
+  // @ts-ignore
   const file = await uxp.storage.localFileSystem.getFileForOpening({
     types: ["aep"],
   });
-  if (file && file.isFile && file.nativePath) {
+  if (file?.isFile && file.nativePath) {
     // check if user have input for ae composition name for import
-    let aeCompName = document.getElementById("ae-component-name")!.value;
+    let aeCompName = (document.getElementById("ae-component-name") as HTMLInputElement)?.value;
     if (!aeCompName) {
       log("Please put name of ae composition in entry");
       return;
@@ -1556,11 +1597,12 @@ async function importAllAeComponentsClicked() {
 
   let success = false;
   const rootItem = await project.getRootItem();
+  // @ts-ignore
   // let user select ae composition file for import
   const file = await uxp.storage.localFileSystem.getFileForOpening({
     types: ["aep"],
   });
-  if (file && file.isFile && file.nativePath) {
+  if (file?.isFile && file.nativePath) {
     success = await importAllAeComponents(project, file.nativePath, rootItem);
   }
   if (success) {
@@ -1604,6 +1646,7 @@ window.addEventListener("load", async () => {
   registerClick("create-sub-sequence", createSubsequenceClicked);
   registerClick("overwrite-item", overwriteItemClicked);
   registerClick("insert-item", insertItemClicked);
+  registerClick("insert-mogrt", insertMogrtClicked);
   registerClick("clone-selected-item", cloneSelectedItemClicked);
   registerClick("remove-selected-items", removeSelectedItemClicked);
   registerClick("trim-selected-item", trimSelectedItemClicked);
@@ -1684,6 +1727,7 @@ window.addEventListener("load", async () => {
   registerClick("add-transition-start", addTransitionStartClicked);
   registerClick("add-transition-end", addTransitionEndClicked);
   registerClick("remove-transition-start", removeTransitionStartClicked);
+  registerClick("add-vocal-enhancer-effect", addVocalEnhancerEffectClicked);
 
   // Properties
   registerClick("get-sequence-property", getSampleSequencePropertyClicked);

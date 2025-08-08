@@ -61,7 +61,7 @@ export async function createSequenceFromMedia(
       return;
     }
 
-    return await project.createSequenceFromMedia(sequenceName, mediaItem);
+    return project.createSequenceFromMedia(sequenceName, [mediaItem]);
   } else {
     log("No project found.");
   }
