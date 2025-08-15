@@ -15,11 +15,8 @@ The Premiere Pro UXP API documentation is available here: <https://developer.ado
 - Open your console / terminal / command prompt, into ```sample-panels/3psample-panel/html```.
 - Install dependencies with ```npm i```
 - Bulid the project with ```npm run build```
-- Then fix import with ```npm run fix-imports```
 
 The plugin is now built in the ```/build-html``` directory.
-
-*NOTE: You will see errors after the build command. That doesn't mean the build failed - we are working actively on providing better type definition files to avoid triggering those errors. Please only run fix-imports command after build command for the same reason.*
 
 ## Display the sample
 

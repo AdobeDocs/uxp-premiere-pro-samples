@@ -12,12 +12,7 @@
  * written permission of Adobe.
  **************************************************************************/
 
-import type {
-  FolderItem,
-  premierepro,
-  Project,
-  ProjectItem,
-} from "../types.d.ts";
+import type { Guid, premierepro, Project, ProjectItem } from "../types.d.ts";
 const ppro = require("premierepro") as premierepro;
 
 /**
@@ -46,7 +41,7 @@ export async function importFiles(project: Project, filePaths: string[]) {
 export async function importSequences(
   project: Project,
   projectFilePath: string,
-  seqIds: string[]
+  seqIds: Guid[]
 ) {
   return project.importSequences(projectFilePath, seqIds);
 }
@@ -65,7 +60,7 @@ export async function importAeComponent(
   aeCompName: string,
   rootItem: ProjectItem
 ) {
-  return project.importAEComps(projectFilePath, aeCompName, rootItem);
+  return project.importAEComps(projectFilePath, [aeCompName], rootItem);
 }
 
 /**

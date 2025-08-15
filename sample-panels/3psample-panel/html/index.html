@@ -144,6 +144,15 @@
       </div>
       <div class="section">
         <h4>Sequence</h4>
+        <sp-button id="get-sequence-settings"
+          >Get Sequence Video Settings Infos</sp-button
+        >
+        <sp-button id="set-sequence-settings"
+          >Set Sequence Pixel Aspect Ratio</sp-button
+        >
+        <sp-button id="set-sequence-in-out-point"
+          >Set Sequence In and Out Point</sp-button
+        >
         <sp-button id="get-sequence-from-id">Get Sequence From Id</sp-button>
         <sp-button id="set-active-sequence">Set Last Sequence Active</sp-button>
         <sp-button id="create-sequence">Create Sequence</sp-button>
@@ -169,6 +178,7 @@
         <sp-button id="insert-item"
           >Insert TrackItem with Selected ProjectItem</sp-button
         >
+        <sp-button id="insert-mogrt">Insert Mogrt from Path at V2</sp-button>
         <sp-button id="clone-selected-item"
           >Clone Selected TrackItem to Another Track</sp-button
         >
@@ -178,9 +188,11 @@
         <sp-button id="trim-selected-item">
           Trim First Selected TrackItem
         </sp-button>
-
         <sp-button id="trim-handles">
           Trim 20 Frames Off Head and Tail of First Selected TrackItem
+        </sp-button>
+        <sp-button id="rename-first-selected-trackItem">
+          Rename First Selected TrackItem
         </sp-button>
       </div>
       <div class="section">
@@ -193,6 +205,9 @@
         >
         <sp-button id="marker-movemarker">Move Marker</sp-button>
         <sp-button id="marker-removemarker">Remove Marker</sp-button>
+        <sp-button id="marker-info-sequence"
+          >Get Sequence Marker Info</sp-button
+        >
       </div>
       <div class="section">
         <h4>Project Panel Item Manipulation</h4>
@@ -201,6 +216,10 @@
           Get Selected Project Items</sp-button
         >
         <sp-button id="get-media-path"> Get Media File Path</sp-button>
+        <sp-button id="get-media-info"> Get Media Info</sp-button>
+        <sp-button id="set-media-start">
+          Set Media Start to 1 second
+        </sp-button>
         <sp-button id="create-bin"> Create Bin</sp-button>
         <sp-button id="create-smart-bin"> Create Smart Bin</sp-button>
         <sp-button id="rename-bin"> Rename Bin</sp-button>
@@ -230,6 +249,9 @@
         <sp-button id="get-selection-from-view-id">
           Get Selected ProjectItems From First View Id</sp-button
         >
+        <sp-button id="rename-first-selected-projectItem">
+          Rename First Selected ProjectItem
+        </sp-button>
       </div>
       <div class="section">
         <h4>Metadata</h4>
@@ -281,6 +303,9 @@
         <sp-button id="add-multiple-effects"
           >Add Gamma Correction and Extract Effect</sp-button
         >
+        <sp-button id="add-vocal-enhancer-effect"
+          >Add Vocal Enhancer Effect</sp-button
+        >
         <sp-button id="remove-gamma-correction-effect"
           >Remove The Last Effect</sp-button
         >
@@ -315,12 +340,8 @@
         <sp-button id="set-project-setting"
           >Set Scratch Disk Path Setting To MyDocuments</sp-button
         >
-        <sp-button id="get-ingest-setting"
-          >Get Ingest Enabled</sp-button
-        >
-        <sp-button id="set-ingest-enabled"
-          >Set Ingest Enabled</sp-button
-        >
+        <sp-button id="get-ingest-setting">Get Ingest Enabled</sp-button>
+        <sp-button id="set-ingest-enabled">Set Ingest Enabled</sp-button>
       </div>
       <div class="section">
         <h4>App Preference</h4>

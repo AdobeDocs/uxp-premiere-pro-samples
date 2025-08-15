@@ -17,10 +17,11 @@ const uxp = require("uxp") as typeof import("uxp");
 import { log } from "./utils";
 
 export async function openProject() {
+  // @ts-ignore
   const file = await uxp.storage.localFileSystem.getFileForOpening({
     types: ["prproj"],
   });
-  if (file && file.isFile && file.nativePath) {
+  if (file?.isFile && file.nativePath) {
     try {
       return await ppro.Project.open(file.nativePath);
     } catch (e) {
@@ -94,6 +95,7 @@ export async function saveProject(project: Project) {
 
 export async function saveAsProject(project: Project) {
   if (project) {
+    // @ts-ignore
     const file = await uxp.storage.localFileSystem.getFileForSaving(
       `newProjectCopy`,
       {

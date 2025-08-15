@@ -43,6 +43,10 @@ import {
   createSubsequence,
   trimSelectedItem,
   addHandlesToTrackItem,
+  getVideoSettingsInfo,
+  setSequencePixelAsepctRatio,
+  setSequenceInOutPoint,
+  renameFirstSelectedTrackItem,
 } from "./src/sequence";
 
 import {
@@ -52,6 +56,7 @@ import {
   createMarkerFlashCuePoint,
   moveMarker,
   removeMarker,
+  getSequenceMarkerInfo,
 } from "./src/markers";
 import {
   getProjectItems,
@@ -74,6 +79,9 @@ import {
   getProjectViewIds,
   getProjectFromViewId,
   getSelectedProjectItemsFromViewId,
+  renameFirstSelectedProjectItem,
+  getMediaInfo,
+  setMediaStart,
 } from "./src/projectPanel";
 
 import {
@@ -111,7 +119,7 @@ import {
   addEffects,
   addMultipleEffects,
   removeEffects,
-  addVocalEnhancerEffect
+  addVocalEnhancerEffect,
 } from "./src/effects";
 
 import {
@@ -157,7 +165,7 @@ import {
 import {
   overwriteTrackItem,
   insertTrackItem,
-  insertMogrt, 
+  insertMogrt,
   cloneSelectedTrackItem,
   removeSelectedTrackItems,
 } from "./src/sequenceEditor";
@@ -365,6 +373,56 @@ async function closeProjectClicked() {
 }
 
 //sequence button events
+async function getSequenceSettingsClicked() {
+  const project = await getProject();
+  if (!project) return;
+
+  const sequence = await project.getActiveSequence();
+  if (!sequence) {
+    log(`No sequences found`);
+    return;
+  }
+
+  const sequenceVideoSettingsInfo = await getVideoSettingsInfo(sequence);
+  for (let info of sequenceVideoSettingsInfo) {
+    log(info);
+  }
+}
+
+async function setSequencePixelAspectRatioClicked() {
+  const project = await getProject();
+  if (!project) return;
+
+  const sequence = await project.getActiveSequence();
+  if (!sequence) {
+    log(`No sequences found`);
+    return;
+  }
+  const success = await setSequencePixelAsepctRatio(project, sequence);
+  log(
+    success
+      ? `Sequence ${sequence.name} pixel aspect ratio changed to Square`
+      : `Failed to set pixel asepct ratio of ${sequence.name}`
+  );
+}
+
+async function setSequenceInOutPointClicked() {
+  const project = await getProject();
+  if (!project) return;
+
+  const sequence = await project.getActiveSequence();
+  if (!sequence) {
+    log(`No sequences found`);
+    return;
+  }
+  const success = await setSequenceInOutPoint(project, sequence);
+  log(
+    success
+      ? `Sequence ${sequence.name} in out point set successfully`
+      : `Failed to set in out point for ${sequence.name}`
+  );
+}
+
 async function getSequenceClicked() {
   const project = await getProject();
   if (!project) return;
@@ -544,18 +602,18 @@ async function insertItemClicked() {
 async function insertMogrtClicked() {
   const project = await getProject();
   if (!project) return;
-  let mogrtPath; 
+  let mogrtPath;
   // @ts-ignore
   const file = await uxp.storage.localFileSystem.getFileForOpening({
     types: ["mogrt"],
-  }); 
+  });
   if (file?.isFile && file.nativePath) {
     mogrtPath = file.nativePath;
   } else {
     log("Selection of file failed. Please try again");
     return;
   }
-  const success = await insertMogrt(project, mogrtPath); 
+  const success = await insertMogrt(project, mogrtPath);
   log(
     success
       ? "New mogrt item inserted at V2/A2 of active sequence"
@@ -611,22 +669,46 @@ async function trimHandlesClicked(callback) {
   const selection = await sequence.getSelection();
   const items: Array<VideoClipTrackItem | AudioClipTrackItem> =
     await selection.getTrackItems();
-    
-  const inPointOffset = -20; 
+
+  const inPointOffset = -20;
   const outPointOffset = -20;
   if (items.length > 0) {
     const trackItemToChange = items[0];
-    success = await addHandlesToTrackItem(project, sequence, trackItemToChange, inPointOffset, outPointOffset);
+    success = await addHandlesToTrackItem(
+      project,
+      sequence,
+      trackItemToChange,
+      inPointOffset,
+      outPointOffset
+    );
   } else {
     log("No trackItem selected.", "red");
     throw new Error("no trackItem is selected at sequence");
   }
 
-  if (success){
-    log(`First trackItem handles were changed by ${inPointOffset} frame(s) at head and ${outPointOffset} frame(s) at the tail.`);
-  }else{
+  if (success) {
+    log(
+      `First trackItem handles were changed by ${inPointOffset} frame(s) at head and ${outPointOffset} frame(s) at the tail.`
+    );
+  } else {
     log("Failed to trim first selected trackItem.", "red");
   }
+}
+
+async function renameFirstSelectedTrackItemClicked() {
+  const project = await getProject();
+  if (!project) return;
+
+  const sequence = await getActiveSequence(project);
+  if (!sequence) {
+    log("No sequences found");
+  }
+  const success = await renameFirstSelectedTrackItem(project, sequence);
+  log(
+    success
+      ? "Successfully renamed first selected trackItem to TrackItem 1"
+      : "Failed to rename trackItem"
+  );
 }
 
 //marker button events
@@ -686,6 +768,31 @@ async function removeMarkerClicked() {
 
   const success = await removeMarker(project);
   log(success ? "Remove marker successfull" : "Failed to remove marker");
+}
+
+async function getSequenceMarkerInfoClicked() {
+  const project = await getProject();
+  if (!project) return;
+
+  const sequence = await project.getActiveSequence();
+  if (!sequence) {
+    log("No sequences found");
+    return;
+  }
+
+  const sequenceMarkerInfos = await getSequenceMarkerInfo(sequence);
+  if (sequenceMarkerInfos.length == 0) {
+    log("No sequence markers found");
+    return;
+  }
+  for (const [index, markerInfo] of sequenceMarkerInfos.entries()) {
+    log(`${index + 1}.`);
+    log(`Marker Name: ${markerInfo.name}`);
+    log(`Marker Type: ${markerInfo.type}`);
+    log(
+      `Marker Color: RGBA(${markerInfo.color.red}, ${markerInfo.color.green}, ${markerInfo.color.blue}, ${markerInfo.color.alpha})`
+    );
+  }
 }
 
 async function getProjectItemsClicked() {
@@ -935,6 +1042,47 @@ async function getSelectionFromViewIdClicked() {
   });
 }
 
+async function renameFirstSelectedProjectItemClicked() {
+  const project = await getActiveProject();
+  if (!project) {
+    return;
+  }
+  const success = await renameFirstSelectedProjectItem(project);
+  log(
+    success
+      ? "renamed first selected projectItem to Item 1"
+      : "failed to rename projectItem"
+  );
+}
+
+async function getMediaInfoClicked() {
+  const project = await getActiveProject();
+  if (!project) {
+    return;
+  }
+  const mediaInfo = await getMediaInfo(project);
+  if (mediaInfo) {
+    log(`ClipProjectItem Name: ${mediaInfo.name}`);
+    log(`     Media Start: ${mediaInfo.start}`);
+    log(`     Media Duration: ${mediaInfo.duration}`);
+  } else {
+    log(`Failed to gather Media Info`);
+  }
+}
+
+async function setMediaStartClicked() {
+  const project = await getActiveProject();
+  if (!project) {
+    return;
+  }
+  const success = await setMediaStart(project);
+  log(
+    success
+      ? "Successfully set media start to 1 second"
+      : "Failed to set media start"
+  );
+}
+
 //metadata button events
 async function getProjectMetadataClicked() {
   const project = await getProject();
@@ -1053,7 +1201,8 @@ async function openFilePathClicked() {
 }
 
 async function openProjectItemClicked() {
-  let selected = (document.getElementById("project-items") as HTMLInputElement)?.value;
+  let selected = (document.getElementById("project-items") as HTMLInputElement)
+    ?.value;
 
   if (!selected) {
     log("Please select a projectItem to open");
@@ -1220,7 +1369,6 @@ async function getTransitionNamesClicked() {
   }
 }
 
-//transition and effects button events
 async function addTransitionStartClicked() {
   const project = await getProject();
   if (!project) return;
@@ -1561,7 +1709,9 @@ async function importAeComponentClicked() {
   });
   if (file?.isFile && file.nativePath) {
     // check if user have input for ae composition name for import
-    let aeCompName = (document.getElementById("ae-component-name") as HTMLInputElement)?.value;
+    let aeCompName = (
+      document.getElementById("ae-component-name") as HTMLInputElement
+    )?.value;
     if (!aeCompName) {
       log("Please put name of ae composition in entry");
       return;
@@ -1634,6 +1784,9 @@ window.addEventListener("load", async () => {
   registerClick("close-project", closeProjectClicked);
 
   //sequence events registering
+  registerClick("get-sequence-settings", getSequenceSettingsClicked);
+  registerClick("set-sequence-settings", setSequencePixelAspectRatioClicked);
+  registerClick("set-sequence-in-out-point", setSequenceInOutPointClicked);
   registerClick("get-sequence-from-id", getSequenceClicked);
   registerClick("set-active-sequence", setActiveSequenceClicked);
   registerClick("create-sequence", createSequenceClicked);
@@ -1650,6 +1803,10 @@ window.addEventListener("load", async () => {
   registerClick("remove-selected-items", removeSelectedItemClicked);
   registerClick("trim-selected-item", trimSelectedItemClicked);
   registerClick("trim-handles", trimHandlesClicked);
+  registerClick(
+    "rename-first-selected-trackItem",
+    renameFirstSelectedTrackItemClicked
+  );
 
   //marker events registering
   registerClick("marker-comment", createMarkerCommentClicked);
@@ -1658,6 +1815,7 @@ window.addEventListener("load", async () => {
   registerClick("marker-flashcuepoint", createMarkerFlashCuePointClicked);
   registerClick("marker-movemarker", moveMarkerClicked);
   registerClick("marker-removemarker", removeMarkerClicked);
+  registerClick("marker-info-sequence", getSequenceMarkerInfoClicked);
 
   //metadata events registering
   registerClick("get-project-metadata", getProjectMetadataClicked);
@@ -1695,6 +1853,8 @@ window.addEventListener("load", async () => {
   registerClick("get-project-items", getProjectItemsClicked);
   registerClick("get-selected-project-items", getSelectedProjectItemsClicked);
   registerClick("get-media-path", getMediaFilePathClicked);
+  registerClick("get-media-info", getMediaInfoClicked);
+  registerClick("set-media-start", setMediaStartClicked);
   registerClick("create-bin", createBinClicked);
   registerClick("create-smart-bin", createSmartBinClicked);
   registerClick("rename-bin", renameBinClicked);
@@ -1716,6 +1876,10 @@ window.addEventListener("load", async () => {
   registerClick("get-view-ids", getProjectViewIdsClicked);
   registerClick("get-project-from-view-id", getProjectFromViewIdClicked);
   registerClick("get-selection-from-view-id", getSelectionFromViewIdClicked);
+  registerClick(
+    "rename-first-selected-projectItem",
+    renameFirstSelectedProjectItemClicked
+  );
 
   //Effects & transitions
   registerClick("get-effect-names", getEffectsNameClicked);

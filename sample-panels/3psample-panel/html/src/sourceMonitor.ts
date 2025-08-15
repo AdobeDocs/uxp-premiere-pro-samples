@@ -75,8 +75,9 @@ export async function getProjectItemAtSourceMonitor() {
  * open projectItem [clip] in the file user selected
  */
 export async function openFilePath() {
+  // @ts-ignore
   const file = await uxp.storage.localFileSystem.getFileForOpening();
-  if (file && file.isFile && file.nativePath) {
+  if (file?.isFile && file.nativePath) {
     return ppro.SourceMonitor.openFilePath(file.nativePath);
   }
 }

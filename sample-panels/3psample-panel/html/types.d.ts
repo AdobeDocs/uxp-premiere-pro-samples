@@ -2,6 +2,8 @@ export declare type premierepro = {
   AppPreference: AppPreferenceStatic
   AudioClipTrackItem: AudioClipTrackItemStatic
   AudioComponentChain: AudioComponentChainStatic
+  AudioFilterComponent: AudioFilterComponentStatic
+  AudioFilterFactory: AudioFilterFactoryStatic
   AudioTrack: AudioTrackStatic
   CaptionTrack: CaptionTrackStatic
   ClipProjectItem: ClipProjectItemStatic
@@ -14,6 +16,7 @@ export declare type premierepro = {
   Marker: MarkerStatic
   Markers: MarkersStatic
   Metadata: MetadataStatic
+  OperationCompleteEvent: OperationCompleteEventStatic
   Project: ProjectStatic
   ProjectClosedEvent: ProjectClosedEventStatic
   ProjectEvent: ProjectEventStatic
@@ -22,8 +25,11 @@ export declare type premierepro = {
   ProjectUtils: ProjectUtilsStatic
   Properties: PropertiesStatic
   ScratchDiskSettings: ScratchDiskSettingsStatic
+  Sequence: SequenceStatic
   SequenceEditor: SequenceEditorStatic
+  SequenceSettings: SequenceSettingsStatic
   SequenceUtils: SequenceUtilsStatic
+  SnapEvent: SnapEventStatic
   SourceMonitor: SourceMonitorStatic
   TickTime: TickTimeStatic
   TrackItemSelection: TrackItemSelectionStatic
@@ -35,26 +41,29 @@ export declare type premierepro = {
   VideoFilterFactory: VideoFilterFactoryStatic
   VideoTrack: VideoTrackStatic
   VideoTransition: VideoTransitionStatic
-  Constants: Constants
+  EventManager: EventManagerStatic
+  AddTransitionOptions: AddTransitionOptions
+  Constants: typeof Constants
 }
 
 export declare type Action = {
 }
 
 export declare type AddTransitionOptions = {
+  (): AddTransitionOptions
   setApplyToStart(applyToStart: boolean): AddTransitionOptions	//Set whether to apply transition to the start or end of trackitem
-  setForceSingleSided(forceSingleSided: boolean): AddTransitionOptions	//Set whether transition should be applied one/both sides
-  setTransitionAlignment(transitionAlignment: number): AddTransitionOptions	//Sets the transitionAlignment of transition
+  setForceSingleSided(forceSingleSided: boolean): AddTransitionOptions	//Set whether transition should be applied to one/both sides
+  setTransitionAlignment(transitionAlignment: number): AddTransitionOptions	//Sets the transitionAlignment of the transition
   setDuration(tickTime: TickTime): AddTransitionOptions	//Sets the duration of transition
   applyToStart: boolean	//Get whether to apply transition to the start or end of trackitem
-  forceSingleSided: boolean	//Get whether transition should be applied one/both sides
+  forceSingleSided: boolean	//Get whether transition should be applied to one/both sides
   transitionAlignment: number	//Gets the transitionAlignment of transition
   duration: TickTime	//Gets the duration of transition
 }
 
 export declare type AppPreferenceStatic = {
-  setValue(): boolean	//Set backend preference using given list of property keys. The parameters are <key, value (number, boolean or string), persistence flag>
-  getValue(preferenceKey: string): string	//Get preference value in native string form
+  setValue(key: Constants.PreferenceKey, value: boolean | string | number, persistenceFlag: Constants.PropertyType): boolean	//Set backend preference using given list of property keys. The parameters are <key, value (number, boolean or string), persistence flag>
+  getValue(preferenceKey: Constants.PreferenceKey): string	//Get preference value in native string form
   KEY_AUTO_PEAK_GENERATION: string	//Preference string key used to modify auto-peak generation settings
   KEY_IMPORT_WORKSPACE: string	//Preference string key used to modify import workspace settings
   KEY_SHOW_QUICKSTART_DIALOG: string	//Preference string key used to modify show quickstart dialog settings
@@ -84,22 +93,23 @@ export declare type AudioClipTrackItem = {
   getSpeed(): Promise<number>	//Returns the value of speed of the trackItem
   isAdjustmentLayer(): Promise<boolean>	//Returns true if the trackitem is an adjustment layer
   isSpeedReversed(): Promise<number>	//Returns true if the trackitem is reversed
-  createMoveAction(tickTime: TickTime): Action	//Returns an action moves the inPoint of the track item to a new time, by shifting it by a number of seconds.
-  getInPoint(): Promise<TickTime>	//Get timecode representing the inPoint of sequence.
-  getOutPoint(): Promise<TickTime>	//Get timecode representing the outPoint of sequence.
-  createSetInPointAction(tickTime: TickTime): Action	//Create SetInPointAction for sequence
-  createSetOutPointAction(tickTime: TickTime): Action	//Create SetInPointAction for sequence
-  getStartTime(): Promise<TickTime>	//Timecode representing the start of this track item relative to the sequence start.
-  getEndTime(): Promise<TickTime>	//Timecode representing the end of this track item relative to the sequence start.
+  createMoveAction(tickTime: TickTime): Action	//Returns an action that moves the inPoint of the track item to a new time, by shifting it by a number of seconds.
+  getInPoint(): Promise<TickTime>	//Returns a TickTime object representing the track item in point relative to the start time of the project item referenced by this track item.
+  getOutPoint(): Promise<TickTime>	//Returns a TickTime object representing the track item out point relative to the start time of the project item referenced by this track item.
+  createSetInPointAction(tickTime: TickTime): Action	//Create SetInPointAction for setting the track item in point relative to the start time of the project item referenced by this track item
+  createSetOutPointAction(tickTime: TickTime): Action	//Create SetOutPointAction for setting the track item out point relative to the start time of the project item referenced by this track item
+  getStartTime(): Promise<TickTime>	//Returns a TickTime object representing the starting sequence time of this track item relative to the sequence start time.
+  getEndTime(): Promise<TickTime>	//Returns a TickTime object representing the ending sequence time of this track item relative to the sequence start time.
   createSetStartAction(tickTime: TickTime): Action	//Create set start time action for sequence
   createSetEndAction(tickTime: TickTime): Action	//Create set end time action for sequence
-  getDuration(): Promise<TickTime>	//Timecode representing the duration of this track item relative to the sequence start.
+  getDuration(): Promise<TickTime>	//Returns timecode representing the duration of this track item relative to the sequence start.
   getType(): Promise<number>	//Index representing the type of this track item.
-  isDisabled(): Promise<boolean>	//Returns true if rackitem is muted/disabled
+  isDisabled(): Promise<boolean>	//Returns true if trackitem is muted/disabled
   createSetDisabledAction(disabled: boolean): Action	//Returns an action that enables/disables the trackItem 
-  getMediaType(): Promise<Guid>	//UUID representing the underlying media type of this track item
+  createSetNameAction(inName: string): Action	//Returns an action that renames the trackItem
+  getMediaType(): Promise<Guid>	//Returns UUID representing the underlying media type of this track item
   getTrackIndex(): Promise<number>	//Index representing the track index of the track this track item belongs to
-  getProjectItem(): Promise<ProjectItem>	//The project item for this track item.
+  getProjectItem(): Promise<ProjectItem>	//Returns the project item for this track item.
   getComponentChain(): Promise<AudioComponentChain>	//Returns AudioComponentChain
 }
 
@@ -107,11 +117,25 @@ export declare type AudioComponentChainStatic = {
 }
 
 export declare type AudioComponentChain = {
-  createInsertComponentAction(component: object, componentInsertionIndex: number): Action	//Creates and returns an insert component action
-  createAppendComponentAction(component: object): Action	//Creates and returns an append component action
-  createRemoveComponentAction(component: object): Action	//Creates and returns an remove component action
-  getComponentAtIndex(componentIndex: number): VideoComponentChain	//Returns the component at the given index
+  createInsertComponentAction(component: Component | AudioFilterComponent, componentInsertionIndex: number): Action	//Creates and returns an insert component action
+  createAppendComponentAction(component: Component | AudioFilterComponent): Action	//Creates and returns an append component action
+  createRemoveComponentAction(component: Component | AudioFilterComponent): Action	//Creates and returns an remove component action
+  getComponentAtIndex(componentIndex: number): Component	//Returns the component at the given index
   getComponentCount(): number	//Gets the number of components in the component chain
+}
+
+export declare type AudioFilterComponentStatic = {
+}
+
+export declare type AudioFilterComponent = {
+}
+
+export declare type AudioFilterFactoryStatic = {
+  createComponentByDisplayName(displayName: string, inAudioClipTrackItem: AudioClipTrackItem): Promise<AudioFilterComponent>	//Creates a new audio filter component based on the input display name and trackItem for applying the audio filter
+  getDisplayNames(): Promise<string[]>	//Returns an array of audio filter displayNames
+}
+
+export declare type AudioFilterFactory = {
 }
 
 export declare type AudioTrackStatic = {
@@ -125,7 +149,7 @@ export declare type AudioTrack = {
   getMediaType(): Promise<Guid>	//UUID representing the underlying media type of this track
   getIndex(): Promise<number>	//Index representing the track index of this track within the track group.
   isMuted(): Promise<boolean>	//Get mute state of the track
-  getTrackItems(trackItemType: number, includeEmptyTrackItems: boolean): any	//Returns array of AudioClipTrackItem from the track item type
+  getTrackItems(trackItemType: Constants.TrackItemType, includeEmptyTrackItems: boolean): AudioClipTrackItem[]	//Returns array of AudioClipTrackItem from the track item type
   name: string	//Get the name of the track
   id: number	//The ID of the track within the TrackGroup
 }
@@ -138,28 +162,26 @@ export declare type CaptionTrack = {
   getMediaType(): Promise<Guid>	//UUID representing the underlying media type of this track
   getIndex(): Promise<number>	//Index representing the track index of this track within the track group.
   isMuted(): Promise<boolean>	//Get mute state of the track
-  getTrackItems(trackItemType: number, includeEmptyTrackItems: boolean): []	//This returns the track items of the specified media type from the given track
+  getTrackItems(trackItemType: number, includeEmptyTrackItems: boolean): []	//Returns the track items of the specified media type from the given track
   name: string	//Get the name of the track
   id: number	//The ID of the track within the TrackGroup
 }
 
 export declare type ClipProjectItemStatic = {
-  cast(projectItem: any): any
+  cast(projectItem: ProjectItem): ClipProjectItem	//Cast ProjectItem in to ClipProjectItem
 }
 
 export declare type ClipProjectItem = {
-  getColorSpace(): Promise<ColorSpace>	//Get color space object of the project item
-  getOverrideColorSpaceList(): Promise<[]>	//Get the override color space list
   getInputLUTID(): Promise<string>	//Get Guid of Input LUT overridden on media
   createSetInputLUTIDAction(stringLUTID: string): Action	//Create action for setting Guid of Input LUT on media. This applies for Video Clips only.
-  isSequence(): Promise<boolean>	//Returns true if the project item is sequence
-  canChangeMediaPath(): Promise<boolean>	//Returns true if Premiere Pro can change the path, associated with this project item; otherwise, returns false
+  isSequence(): Promise<boolean>	//Returns true if the project item is a sequence
+  canChangeMediaPath(): Promise<boolean>	//Returns true if Premiere Pro can change the path associated with this project item; otherwise, returns false
   isOffline(): Promise<boolean>	//Returns true if the media is offline
-  canProxy(): Promise<boolean>	//Indicates whether it is possible to attach a proxy, to this project item.
+  canProxy(): Promise<boolean>	//Indicates whether it is possible to attach a proxy to this project item.
   getProxyPath(): Promise<string>	//Returns the proxy path if the project item has a proxy attached
-  hasProxy(): Promise<boolean>	//Indicates whether a proxy has already been attached, to the project item.
+  hasProxy(): Promise<boolean>	//Indicates whether a proxy has already been attached to the project item.
   attachProxy(mediaPath: string, isHiRes: boolean, inMakeAlternateLinkInTeamProjects?: boolean): Promise<boolean>	//Attach proxy or high resolution footage to projectItem and returns true if successful. Not undoable.
-  findItemsMatchingMediaPath(matchString: string, ignoreSubclips?: boolean): Promise<[]>	//Returns array of projects items with media paths containing match string
+  findItemsMatchingMediaPath(matchString: string, ignoreSubclips?: boolean): Promise<ProjectItem[]>	//Returns array of project's items with media paths containing match string
   refreshMedia(): Promise<boolean>	//Updates representation of the media associated with the project item
   createSetOfflineAction(): Action	//Returns an action which sets the media offline
   getFootageInterpretation(): Promise<FootageInterpretation>	//Get the footage interpretation object for project item
@@ -169,24 +191,27 @@ export declare type ClipProjectItem = {
   isMulticamClip(): Promise<boolean>	//Returns true if the clip Project item is a multicam clip
   getEmbeddedLUTID(): Promise<string>	//Get GUID of LUT embedded in media
   createSetScaleToFrameSizeAction(): Action	//Returns an action which sets the scale to frame to true
-  getParent(): Promise<ProjectItem>	//Get the root item of the project which contains all items of the project on the lowest level
-  getProject(): Promise<Project>	//Get the root item of the project which contains all items of the project on the lowest level.
-  getContentType(): Promise<any>	//Get content type of the Project item
+  createSetNameAction(inName: string): Action	//Returns action that renames projectItem
+  getParent(): Promise<ProjectItem>	//Get the parent project item of this project item.
+  getProject(): Promise<Project>	//Get the parent Project of this projectItem.
+  getContentType(): Promise<Constants.ContentType>	//Get content type of the Project item
   getSequence(): Promise<Sequence>	//Get the sequence of the Project item
   getInPoint(mediaType: Constants.MediaType): Promise<TickTime>	//Get the in point of the Project item
   getOutPoint(mediaType: Constants.MediaType): Promise<TickTime>	//Get the out point of the Project item
   getMediaFilePath(): Promise<string>	//Get the media file path of the Project item.
   getComponentChain(mediaType: Constants.MediaType): Promise<string>	//Get the media file path of the Project item.
-  createSetInPointAction(tickTime: any): Action	//Returns an action which Sets the in point of the Project item
-  createSetOverridePixelAspectRatioAction(inNumerator: any, inDenominator: any): Action	//Returns an action which sets Override pixel aspect ratio
-  createSetOverrideFrameRateAction(inOverriddenFrameRateValue: any): Action	//Returns an action which sets the override frame rate
-  createSetOutPointAction(tickTime: any): Action	//Returns an action which Sets the in point of the Project item
-  createSetInOutPointsAction(inPoint: TickTime, outPoint: TickTime): any	//Set the in or out point of the Project item
+  createSetInPointAction(tickTime: TickTime): Action	//Returns an action which Sets the in point of the Project item
+  createSetOverridePixelAspectRatioAction(inNumerator: number, inDenominator: number): Action	//Returns an action which sets Override pixel aspect ratio
+  createSetOverrideFrameRateAction(inOverriddenFrameRateValue: number): Action	//Returns an action which sets the override frame rate
+  createSetOutPointAction(tickTime: TickTime): Action	//Returns an action which Sets the in point of the Project item
+  createSetInOutPointsAction(inPoint: TickTime, outPoint: TickTime): Action	//Set the in or out point of the Project item
   createClearInOutPointsAction(): Action	//Create Clear the in or out point of the Project item action
-  name: string	//Get name of project item object
+  getMedia(): Promise<Media>	//Return media associated with clipProjectItem
+  name: string	//The name of this project item.
 }
 
 export declare type CloseProjectOptions = {
+  (): CloseProjectOptions
   setPromptIfDirty(promptIfDirty: boolean): CloseProjectOptions	//Set whether to prompt if a project is dirty on project open/close
   setShowCancelButton(showCancelButton: boolean): CloseProjectOptions	//Set whether to show the cancel button on project open/close
   setIsAppBeingPreparedToQuit(isAppBeingPreparedToQuit: boolean): CloseProjectOptions	//Set whether the app should be prepared to quit when open/closing a project
@@ -197,22 +222,38 @@ export declare type CloseProjectOptions = {
   saveWorkspace: boolean	//Get whether your workspaces are saved when opening/closing a project
 }
 
+export declare type Color = {
+  (red?: number, green?: number, blue?: number, alpha?: number): Color
+  equals(colorObject: Color): boolean	//Returns true if the given ColorObject is equal to this ColorObject
+  red: number	//Read/Write property to get/set red value of color object
+  green: number	//Read/Write property to get/set green value of color object
+  blue: number	//Read/Write property to get/set blue value of color object
+  alpha: number	//Read/Write property to get/set alpha value of color object
+}
+
+export declare type Component = {
+  getParam(paramIndex?: number): ComponentParam	//Get a parameter from the component based on the given input index. Parameter indexes are zero-based, and the actual is defined exclusively by the component itself.
+  getMatchName(): Promise<string>	//Returned Promise will be fullfilled with the value of internal matchname for this component
+  getDisplayName(): Promise<string>	//Returned Promise will be fullfilled with the value of display name for this component
+  getParamCount(): number	//Gets the number of param in the component
+}
+
 export declare type ComponentParam = {
-  createKeyframe(): object	//Creates and returns a keyframe initialised with the ComponentParam's type and passed in value. This throws if the passed in value is not compatible with the component param type
-  getValueAtTime(): Promise<object>	//Gets the value of component Param at the given time
-  findNearestKeyframe(TickTime: object, TickTime: object): Keyframe	//Find sthe nearest key for the given time
-  findNextKeyframe(TickTime: object): Keyframe	//find the next keyframe for the given time
-  findPreviousKeyframe(TickTime: object): Keyframe	//find the previous keyframe for the given time
-  createRemoveKeyframeAction(TickTime: object, UpdateUI?: boolean): Action	//Returns an action which removes keyframe at specific time
-  createRemoveKeyframeRangeAction(TickTime: object, TickTime: object, UpdateUI?: boolean): Action	//Returns an action which removes keyframe at specific time range
-  createSetValueAction(Keyframe: object, inSafeForPlayback?: boolean): Action	//Creates and returns an action object which can be used to set the value of a non-time varying component
-  createAddKeyframeAction(Keyframe: object): Action	//Creates and returns an action object which can be used to add a keyframe component
+  createKeyframe(inValue: number | string | boolean | PointF | Color): Keyframe	//Creates and returns a keyframe initialised with the ComponentParam's type and passed in value. This throws if the passed in value is not compatible with the component param type
+  getValueAtTime(time: TickTime): Promise<number | string | boolean | PointF | Color>	//Gets the value of component Param at the given time
+  findNearestKeyframe(inTime: TickTime, outTime: TickTime): Keyframe	//Find sthe nearest key for the given time
+  findNextKeyframe(inTime: TickTime): Keyframe	//find the next keyframe for the given time
+  findPreviousKeyframe(inTime: TickTime): Keyframe	//find the previous keyframe for the given time
+  createRemoveKeyframeAction(inTime: TickTime, UpdateUI?: boolean): Action	//Returns an action which removes keyframe at specific time
+  createRemoveKeyframeRangeAction(inTime: TickTime, outTime: TickTime, UpdateUI?: boolean): Action	//Returns an action which removes keyframe at specific time range
+  createSetValueAction(inKeyFrame: Keyframe, inSafeForPlayback?: boolean): Action	//Creates and returns an action object which can be used to set the value of a non-time varying component
+  createAddKeyframeAction(inKeyFrame: Keyframe): Action	//Creates and returns an action object which can be used to add a keyframe component
   createSetTimeVaryingAction(inTimeVarying: boolean): Action	//Creates and returns an action object to set the component to be time varying
   getStartValue(): Promise<Keyframe>	//Returned promise will be fullfilled with the start value (keyframe) of the component param
-  getKeyframeListAsTickTimes(): []	//Get a list of tickTime for the keyframes of this component param
+  getKeyframeListAsTickTimes(): TickTime[]	//Get a list of tickTime for the keyframes of this component param
   getKeyframePtr(time?: TickTime): Keyframe	//Get the Keyframe at the given tickTime postion
   isTimeVarying(): boolean	//Returns true if the parameter value varies over time (for the duration of the item)
-  createSetInterpolationAtKeyframeAction(TickTime: object, InterpolationMode: number, UpdateUI?: boolean): Action	//Returns an action which sets the interpolation mode of keyframe at the given time
+  createSetInterpolationAtKeyframeAction(inTime: TickTime, InterpolationMode: number, UpdateUI?: boolean): Action	//Returns an action which sets the interpolation mode of keyframe at the given time
   areKeyframesSupported(): Promise<boolean>	//Returns bool whether keyframes are supported for this component parameter
   displayName: string	//Returns the display name of the component param
 }
@@ -236,60 +277,59 @@ export declare type EncoderManagerStatic = {
 }
 
 export declare type EncoderManager = {
-  exportSequence(sequence: object, exportType: Constants.ExportType, outputFile?: string, presetFile?: string, exportFull?: boolean): Promise<boolean>	//Export a sequence. If no output file and preset is specified, the sequence will be exported with the applied export settings or standard export rules will be applied.
+  exportSequence(sequence: Sequence, exportType: Constants.ExportType, outputFile?: string, presetFile?: string, exportFull?: boolean): Promise<boolean>	//Export a sequence. If no output file and preset is specified, the sequence will be exported with the applied export settings or standard export rules will be applied.
   isAMEInstalled: boolean	//Check if AME is installed.
 }
 
 export declare type ExporterStatic = {
-  exportSequenceFrame(sequence: object, time: TickTime, filename: string, filepath: string, width: number, height: number): Promise<boolean>	//Exports from a sequence. Supported formats are bmp, dpx, gif, jpg, exr, png, tga and tif
+  exportSequenceFrame(sequence: Sequence, time: TickTime, filename: string, filepath: string, width: number, height: number): Promise<boolean>	//Exports from a sequence. Supported formats are bmp, dpx, gif, jpg, exr, png, tga and tif
 }
 
 export declare type Exporter = {
 }
 
 export declare type FolderItemStatic = {
-  cast(projectItem: any): any
+  cast(projectItem: ProjectItem): FolderItem	//Cast ProjectItem in to FolderItem
 }
 
 export declare type FolderItem = {
   createBinAction(name: string, makeUnique: boolean): Action	//Returns an action that lets users create a new bin.
   createSmartBinAction(name: string, searchQuery: string): Action	//Creates a smart bin with given name and returns the Folder object
-  createRenameBinAction(arg0: string): Action	//Rename the Bin and return true if it's successful
-  getItems(): Promise<[]>	//Collection of child items of this folder.
+  createRenameBinAction(name: string): Action	//Rename the Bin and return true if it's successful
+  getItems(): Promise<ProjectItem[]>	//Collection of child items of this folder.
   createRemoveItemAction(item: ProjectItem): Action	//Creates an action that removes the given item from this folder.
   createMoveItemAction(item: ProjectItem, newParent: FolderItem): Action	//Creates an action that moves the given item to the provided folder item newParent.
-  getParent(): Promise<ProjectItem>	//Get the root item of the project which contains all items of the project on the lowest level
-  getProject(): Promise<Project>	//Get the root item of the project which contains all items of the project on the lowest level.
-  name: string	//Get name of project item object
+  createSetNameAction(inName: string): Action	//Returns action that renames projectItem
+  getParent(): Promise<ProjectItem>	//Get the parent project item of this project item.
+  getProject(): Promise<Project>	//Get the parent Project of this projectItem.
+  name: string	//The name of this project item.
 }
 
 export declare type FootageInterpretation = {
   getFrameRate(): number	//Get frame rate of footage
-  setFrameRate(arg0: number): boolean	//Set frame rate of footage
+  setFrameRate(frameRate: number): boolean	//Set frame rate of footage
   getPixelAspectRatio(): number	//Get pixel aspect ratio of footage
-  setPixelAspectRatio(arg0: number): boolean	//Set pixel aspect ratio of footage
+  setPixelAspectRatio(pixelAspectRatio: number): boolean	//Set pixel aspect ratio of footage
   getFieldType(): number	//Get field type of footage
-  setFieldType(arg0: number): boolean	//Set field type of footage
+  setFieldType(fieldType: number): boolean	//Set field type of footage
   getRemovePullDown(): boolean	//Get removePullDown property of footage
-  setRemovePullDown(arg0: boolean): boolean	//Set removePullDown property of footage
+  setRemovePullDown(removePulldown: boolean): boolean	//Set removePullDown property of footage
   getAlphaUsage(): number	//Get alpha usage type property of footage
-  setAlphaUsage(arg0: number): boolean	//Set alpha usage type property of footage
+  setAlphaUsage(alphaUsage: number): boolean	//Set alpha usage type property of footage
   getIgnoreAlpha(): boolean	//Get ignore alpha property of footage
-  setIgnoreAlpha(arg0: boolean): boolean	//Set ignore alpha property of footage
+  setIgnoreAlpha(ignoreAlpha: boolean): boolean	//Set ignore alpha property of footage
   getInvertAlpha(): boolean	//Get invert alpha property of footage
-  setInvertAlpha(arg0: boolean): boolean	//Set invert alpha property of footage
+  setInvertAlpha(invertAlpha: boolean): boolean	//Set invert alpha property of footage
   getVrConform(): number	//Get vr conform projection type of footage
-  setVrConform(arg0: number): boolean	//Set vr conform projection type of footage
+  setVrConform(vrConform: number): boolean	//Set vr conform projection type of footage
   getVrLayout(): number	//Get vr layout type of footage
-  setVrLayout(arg0: number): boolean	//Set vr layout type of footage
+  setVrLayout(vrLayOut: number): boolean	//Set vr layout type of footage
   getVrHorzView(): number	//Get vr horizontal view of footage
-  setVrHorzView(arg0: number): boolean	//Set vr horizontal view of footage
+  setVrHorzView(vrHorzView: number): boolean	//Set vr horizontal view of footage
   getVrVertView(): number	//Get vr vertical view of footage
-  setVrVertView(arg0: number): boolean	//Set vr horizontal view of footage
+  setVrVertView(vrVertView: number): boolean	//Set vr horizontal view of footage
   getInputLUTID(): string	//Get input LUTID of footage
-  setInputLUTID(arg0: string): boolean	//Set input LUTID of footage
-  getColorSpace(): ColorSpace	//Get colorspace of footage
-  setColorSpace(ColorSpace: object): boolean	//Set colorspace of footage
+  setInputLUTID(inputLUTID: string): boolean	//Set input LUTID of footage
   ALPHACHANNEL_NONE: number	//alpha channel none
   ALPHACHANNEL_STRAIGHT: number	//alpha channel straight
   ALPHACHANNEL_PREMULTIPLIED: number	//alpha channel premultiplied
@@ -305,6 +345,7 @@ export declare type FrameRateStatic = {
 }
 
 export declare type FrameRate = {
+  (): FrameRate
   equals(frameRate: FrameRate): boolean	//Returns true if the given FrameRate is equal to this FrameRate object
   ticksPerFrame: number	//Read/Write property to get/set ticks per frame.
   value: number	//Get the number of frames per second.
@@ -315,6 +356,7 @@ export declare type GuidStatic = {
 }
 
 export declare type Guid = {
+  (): Guid
   toString(): string	//Return string representation of the GUID
 }
 
@@ -335,8 +377,8 @@ export declare type KeyframeStatic = {
 export declare type Keyframe = {
   getTemporalInterpolationMode(): Promise<number>	//Gets temporal interpolation mode of a keyframe
   setTemporalInterpolationMode(temporalInterpolationMode: number): Promise<boolean>	//Sets temporal interpolation mode of a keyframe
-  value: object
-  position: object	//Get/Set position of a keyframe
+  value: {value: string | number | boolean | Color | PointF}
+  position: TickTime	//Get/Set position of a keyframe
 }
 
 export declare type MarkerStatic = {
@@ -347,39 +389,46 @@ export declare type MarkerStatic = {
 }
 
 export declare type Marker = {
+  getColor(): Color	//Get color code of the marker.
   getComments(): string	//Get comments of the marker.
-  getDuration(): object	//Get duration time of the marker.
+  getDuration(): TickTime	//Get duration time of the marker.
   getName(): string	//Get name of the marker.
   getUrl(): string	//Get url of the marker.
   getTarget(): string	//Get target of the marker. Used together with url for web targets.
   getType(): string	//Get type of the marker. e.g. Cue / Track / Subclip / Cart
-  getStart(): object	//Get start time of the marker.
-  createSetNameAction(name: string): object	//Return an action to set the name of the marker.
-  createSetDurationAction(tickTime: TickTime): object	//Return an action to set the duration of the marker.
-  createSetTypeAction(markerType: string): object	//Return an action to set the type of the marker.
-  createSetCommentsAction(comments: string): object	//Return an action to set the comments of the marker.
+  getStart(): TickTime	//Get start time of the marker.
+  createSetNameAction(name: string): Action	//Return an action to set the name of the marker.
+  createSetDurationAction(tickTime: TickTime): Action	//Return an action to set the duration of the marker.
+  createSetTypeAction(markerType: string): Action	//Return an action to set the type of the marker.
+  createSetCommentsAction(comments: string): Action	//Return an action to set the comments of the marker.
 }
 
 export declare type MarkersStatic = {
-  getMarkers(markerOwnerObject: any): Promise<Markers>	//Returns the Markers object for Sequence Or ProjectItem
+  getMarkers(markerOwnerObject: Sequence | ProjectItem): Promise<Markers>	//Returns the Markers object for Sequence Or ProjectItem
 }
 
 export declare type Markers = {
-  getMarkers(filters?: []): []	//Get all markers
-  createRemoveMarkerAction(marker: Marker): object	//Remove the given marker
-  createMoveMarkerAction(marker: Marker, tickTime: TickTime): object	//Move the given marker at new time value
-  createAddMarkerAction(Name: string, markerType?: string, startTime?: TickTime, duration?: TickTime, comments?: string): object	//Add a new marker
+  getMarkers(filters?: string[]): Marker[]	//Get all markers
+  createRemoveMarkerAction(marker: Marker): Action	//Remove the given marker
+  createMoveMarkerAction(marker: Marker, tickTime: TickTime): Action	//Move the given marker at new time value
+  createAddMarkerAction(Name: string, markerType?: string, startTime?: TickTime, duration?: TickTime, comments?: string): Action	//Add a new marker
+}
+
+export declare type Media = {
+  createSetStartAction(time: TickTime): Action	//Returns action that set start of media
+  start: TickTime	//Get the media start time
+  duration: TickTime	//Get the media duration
 }
 
 export declare type MetadataStatic = {
   getProjectMetadata(projectItem: ProjectItem): Promise<string>	//Get project metadata
   getXMPMetadata(projectItem: ProjectItem): Promise<string>	//Get project XMP metadata
-  createSetProjectMetadataAction(projectItem: ProjectItem, metadata: string, updatedFields: []): Action	//Get set project metadata action
+  createSetProjectMetadataAction(projectItem: ProjectItem, metadata: string, updatedFields: string[]): Action	//Get set project metadata action
   createSetXMPMetadataAction(projectItem: ProjectItem, metadata: string): Action	//Get set project XMP metadata action
   addPropertyToProjectMetadataSchema(name: string, label: string, type: number): Promise<boolean>	//Add name and label property to project metadata schema
   getProjectColumnsMetadata(projectItem: ProjectItem): Promise<string>	//Get project column metadata from project item
   getProjectPanelMetadata(): Promise<string>	//Get project panel metadata
-  setProjectPanelMetadata(arg0: string): Promise<boolean>	//Set project panel metadata
+  setProjectPanelMetadata(metadata: string): Promise<boolean>	//Set project panel metadata
   METADATA_TYPE_INTEGER: number	//Metadata Type: INTEGER
   METADATA_TYPE_REAL: number	//Metadata Type: REAL
   METADATA_TYPE_TEXT: number	//Metadata Type: TEXT
@@ -400,15 +449,32 @@ export declare type OpenProjectOptions = {
   addToMRUList: boolean	//Get whether to add project changes to MRU list
 }
 
+export declare type OperationCompleteEventStatic = {
+  OPERATION_STATE_SUCCESS: number	//Represents the state when an operation completes successfully.
+  OPERATION_STATE_CANCELLED: number	//Represents the state when an operation is cancelled.
+  OPERATION_STATE_FAILED: number	//Represents the state when an operation is failed.
+  EVENT_IMPORT_MEDIA_COMPLETE: string	//Event occurs when a media import operation is complete.
+  EVENT_EXPORT_MEDIA_COMPLETE: string	//Event occurs when a media export operation is complete.
+  EVENT_EFFECT_DROP_COMPLETE: string	//Event occurs when an effect is dropped on a trackitem
+  EVENT_EFFECT_DRAG_OVER: string	//Event occurs when an effect is drag over a trackitem
+  EVENT_CLIP_EXTEND_REACHED: string	//Event occurs when a clip reached its maximum extend limit.
+  EVENT_GENERATIVE_EXTEND_COMPLETE: string	//Event occurs when a generative extend operation is complete.
+}
+
+export declare type OperationCompleteEvent = {
+  state: number	//Indicates the outcome of a completed operation: Success, Cancelled, or Failed.
+}
+
 export declare type PointF = {
-  distanceTo(point: object): number	//Get the distance from one point to another point
+  (x?: number, y?: number): PointF
+  distanceTo(point: PointF): number	//Get the distance from one point to another point
   x: number	//Get/Set the x value of a point
   y: number	//Get/Set the y value of a point
 }
 
 export declare type PointKeyframe = {
-  value: object
-  position: object	//Get/Set position of a keyframe
+  value: {value: PointF}
+  position: TickTime	//Get/Set position of a keyframe
 }
 
 export declare type ProjectStatic = {
@@ -422,24 +488,24 @@ export declare type Project = {
   getActiveSequence(): Promise<Sequence>	//Get the active sequence of the project
   setActiveSequence(sequence: Sequence): Promise<boolean>	//Set the active sequence of the project
   createSequence(name: string, presetPath?: string): Promise<Sequence>	//Create a new sequence with the default preset path - Parameter presetPath is deprecated, instead use createSequenceWithPresetPath()
-  createSequenceFromMedia(name: string, clipProjectItems: [], targetBin?: ProjectItem): Promise<Sequence>	//Create a new sequence with a given name and medias
+  createSequenceFromMedia(name: string, clipProjectItems?: ClipProjectItem[], targetBin?: ProjectItem): Promise<Sequence>	//Create a new sequence with a given name and medias
   getColorSettings(): Promise<ProjectColorSettings>	//Get project color settings object
   deleteSequence(sequence: Sequence): Promise<boolean>	//Delete a given sequence from the project
   getInsertionBin(): Promise<ProjectItem>	//Get current insertion bin
   openSequence(sequence: Sequence): Promise<boolean>	//Open a sequence and return true if successful.
-  importSequences(projectPath: string, sequenceIds: []): Promise<boolean>
-  importAEComps(aepPath: string, compNames: [], TargetBin?: ProjectItem): Promise<boolean>
+  importSequences(projectPath: string, sequenceIds?: Guid[]): Promise<boolean>
+  importAEComps(aepPath: string, compNames: string[], TargetBin?: ProjectItem): Promise<boolean>
   importAllAEComps(aepPath: string, TargetBin?: ProjectItem): Promise<boolean>
-  importFiles(filePaths: [], suppressUI?: boolean, targetBin?: ProjectItem, asNumberedStills?: boolean): Promise<boolean>	//Import files in root/target bin of the project
+  importFiles(filePaths: string[], suppressUI?: boolean, targetBin?: ProjectItem, asNumberedStills?: boolean): Promise<boolean>	//Import files in root/target bin of the project
   close(closeProjectOptions?: CloseProjectOptions): Promise<boolean>	//Close a project
   save(): Promise<boolean>	//Save the project
   saveAs(path: string): Promise<boolean>	//Save the project at the provided path
   getSequence(guid: Guid): Sequence	//Get sequence by id from the project
-  getSequences(): Promise<[]>	//Get an array of all sequences in this project.
+  getSequences(): Promise<Sequence[]>	//Get an array of all sequences in this project.
   getRootItem(): Promise<FolderItem>	//The root item of the project which contains all items of the project on the lowest level.
   pauseGrowing(pause: boolean): Promise<boolean>	//Pause growing of files instead swap the files
-  executeTransaction(callback: any, undoString?: any): any	//Execute undoable transaction by passing compound action
-  lockedAccess(callback: any): any	//Get a read/upgrade locked access to Project, project state will not change during the execution of callback function. Can call executeTransaction while having locked access.
+  executeTransaction(callback: (compoundAction: CompoundAction) => void, undoString?: string): boolean	//Execute undoable transaction by passing compound action
+  lockedAccess(callback: () => void): void	//Get a read/upgrade locked access to Project, project state will not change during the execution of callback function. Can call executeTransaction while having locked access.
   guid: Guid	//The unique identifier of the project.
   name: string	//The project name.
   path: string	//The absolute file path to the project file.
@@ -456,7 +522,7 @@ export declare type ProjectClosedEvent = {
 }
 
 export declare type ProjectColorSettings = {
-  getSupportedGraphicsWhiteLuminances(): Promise<[]>	//Get all the graphics white luminance as array of values
+  getSupportedGraphicsWhiteLuminances(): Promise<number[]>	//Get all the graphics white luminance as array of values
   getGraphicsWhiteLuminance(): Promise<number>	//Get the graphics white luminance value
 }
 
@@ -470,21 +536,22 @@ export declare type ProjectEvent = {
   name: string	//The project name.
   path: string	//The absolute file path to the project file.
   id: string	//The unique identifier of the project.
-  project: object	//The project object.
+  project: Project	//The project object.
 }
 
 export declare type ProjectItemStatic = {
-  cast(item: any): any
+  cast(item: FolderItem | ClipProjectItem): ProjectItem	//Cast FolderItem or ClipProjectItem in to ProjectItem
 }
 
 export declare type ProjectItem = {
-  getParent(): Promise<ProjectItem>	//Get the root item of the project which contains all items of the project on the lowest level
-  getProject(): Promise<Project>	//Get the root item of the project which contains all items of the project on the lowest level.
-  name: string	//Get name of project item object
+  createSetNameAction(inName: string): Action	//Returns action that renames projectItem
+  getParent(): Promise<ProjectItem>	//Get the parent project item of this project item.
+  getProject(): Promise<Project>	//Get the parent Project of this projectItem.
+  name: string	//The name of this project item.
 }
 
 export declare type ProjectItemSelection = {
-  getItems(): Promise<[]>	//Get the project items that is represented by this selection.
+  getItems(): Promise<ProjectItem[]>	//Get the project items that is represented by this selection.
 }
 
 export declare type ProjectSettingsStatic = {
@@ -499,8 +566,8 @@ export declare type ProjectSettings = {
 
 export declare type ProjectUtilsStatic = {
   getSelection(project: Project): Promise<ProjectItemSelection>	//Get array of selected project items in project view
-  getProjectViewIds(): Promise<[]>	//Get array of project view ids
-  getProjectFromViewId(guid: Guid): Promise<object>	//Get project based on input view guid
+  getProjectViewIds(): Promise<Guid[]>	//Get array of project view ids
+  getProjectFromViewId(guid: Guid): Promise<Project>	//Get project based on input view guid
   getSelectionFromViewId(guid: Guid): Promise<ProjectItemSelection>	//Get array of selected projectItem based on input view guid
 }
 
@@ -508,7 +575,7 @@ export declare type ProjectUtils = {
 }
 
 export declare type PropertiesStatic = {
-  getProperties(propertyOwnerObject: any): Promise<Properties>	//Return Property Owner Object
+  getProperties(propertyOwnerObject: Project | Sequence): Promise<Properties>	//Return Property Owner Object
   PROPERTY_PERSISTENT: number	//Property is persistent in backend and shared across cloud project.
   PROPERTY_NON_PERSISTENT: number	//Property is not persisted and will be cleared when the project closes.
 }
@@ -518,12 +585,13 @@ export declare type Properties = {
   getValueAsFloat(name: string): number	//Get named value as float number
   getValueAsBool(name: string): boolean	//Get named value as boolean
   getValue(name: string): string	//Get named value in native string form
-  createSetValueAction(): object	//Create an action to set a named value through scripting. The parameters are <name, value (number, boolean or string), persistence flag>. This method can fail if e.g. the underlying properties object does not support action based setting of properties.
+  createSetValueAction(name: string, value: boolean | string | number, persistenceFlag: Constants.PropertyType): Action	//Create an action to set a named value through scripting. The parameters are <name, value (number, boolean or string), persistence flag>. This method can fail if e.g. the underlying properties object does not support action based setting of properties.
   hasValue(name: string): boolean	//Check if a named value exists under this name.
-  createClearValueAction(name: string): object	//Create an action to clear the value with the given name. This method can fail if e.g. the underlying properties object does not support action based setting of properties.
+  createClearValueAction(name: string): Action	//Create an action to clear the value with the given name. This method can fail if e.g. the underlying properties object does not support action based setting of properties.
 }
 
 export declare type RectF = {
+  (): RectF
   width: number	//Get/Set the width of a rect
   height: number	//Get/Set the height of a rect
 }
@@ -542,8 +610,11 @@ export declare type ScratchDiskSettingsStatic = {
 }
 
 export declare type ScratchDiskSettings = {
-  setScratchDiskPath(ScratchDiskType: string, ScratchDiskValue: string): boolean	//Sets project ScratchDisk Path
-  getScratchDiskPath(ScratchDiskType: string): string	//Gets the scratchDisk location for specific disktype
+  setScratchDiskPath(ScratchDiskType: Constants.ScratchDiskFolderType, ScratchDiskValue: Constants.ScratchDiskFolder): boolean	//Sets project ScratchDisk Path
+  getScratchDiskPath(ScratchDiskType: Constants.ScratchDiskFolderType): string	//Gets the scratchDisk location for specific disktype - may return symbolic paths for reserved types like 'MyDocuments'
+}
+
+export declare type SequenceStatic = {
 }
 
 export declare type Sequence = {
@@ -560,7 +631,7 @@ export declare type Sequence = {
   getAudioTrack(trackIndex: number): Promise<AudioTrack>	//Get audio track from track index
   getCaptionTrack(trackIndex: number): Promise<CaptionTrack>	//Get caption track from track index
   getSettings(): Promise<SequenceSettings>	//Get sequence settings object
-  setSettings(sequenceSettings: SequenceSettings): Promise<boolean>	//Set sequence settings
+  createSetSettingsAction(sequenceSettings: SequenceSettings): Action	//Returns action that set sequence settings
   createCloneAction(): Action	//Creates an action to clone the given sequence
   createSubsequence(ignoreTrackTargeting?: boolean): Promise<Sequence>	//Returns a new sequence, which is a sub-sequence of the existing sequence
   isDoneAnalyzingForVideoEffects(): Promise<boolean>	//Returns whether or not the sequence is done analyzing for video effects
@@ -568,7 +639,9 @@ export declare type Sequence = {
   getEndTime(): Promise<TickTime>	//Time representing the end of the sequence
   getInPoint(): Promise<TickTime>	//Get time representing the inPoint of sequence.
   getOutPoint(): Promise<TickTime>	//Get time representing the inPoint of sequence.
+  createSetInPointAction(tickTime: TickTime): Action	//Create SetInPointAction for sequence
   createSetZeroPointAction(tickTime: TickTime): Action	//Create an action to set an InPoint for the sequence
+  createSetOutPointAction(tickTime: TickTime): Action	//Create SetOutPointAction for sequence
   getProjectItem(): Promise<ProjectItem>	//Get the associated projectItem of the sequence.
   getSelection(): Promise<TrackItemSelection>	//Returns the current selection group of the sequence.
   getFrameSize(): Promise<RectF>	//Gets the size of the frame
@@ -578,14 +651,75 @@ export declare type Sequence = {
 }
 
 export declare type SequenceEditorStatic = {
-  getEditor(sequenceObject: any): SequenceEditor	//Get Sequence Editor reference for editing the sequence timeline
+  getEditor(sequenceObject: Sequence): SequenceEditor	//Get Sequence Editor reference for editing the sequence timeline
+  getInstalledMogrtPath(): Promise<string>	//Get local directory path to adobe mogrt files
 }
 
 export declare type SequenceEditor = {
-  createRemoveItemsAction(trackItemSelection: object, ripple: boolean, mediaType: object, shiftOverLapping?: boolean): action	//Create remove action for sequence
+  createRemoveItemsAction(trackItemSelection: TrackItemSelection, ripple: boolean, mediaType: Constants.MediaType, shiftOverLapping?: boolean): Action	//Create remove action for sequence
   createInsertProjectItemAction(projectItem: ProjectItem, time: TickTime, videoTrackIndex: number, audioTrackIndex: number, limitShift: boolean): Action	//Create insert ProjectItem into Sequence Action
   createOverwriteItemAction(projectItem: ProjectItem, time: TickTime, videoTrackIndex: number, audioTrackIndex: number): Action	//Create overwrite Sequence with ProjectItem Action
-  createCloneTrackItemAction(trackItem: any, timeOffset: any, videoTrackVerticalOffset: number, audioTrackVerticalOffset: number, alignToVideo: boolean, isInsert: boolean): Action	//Duplicate trackItem using an insert or overwrite edit method to a destination track. Target track and start time of trackItem is determined using an offset value from the original trackItem position.
+  createCloneTrackItemAction(trackItem: VideoClipTrackItem | AudioClipTrackItem, timeOffset: TickTime, videoTrackVerticalOffset: number, audioTrackVerticalOffset: number, alignToVideo: boolean, isInsert: boolean): Action	//Duplicate trackItem using an insert or overwrite edit method to a destination track. Target track and start time of trackItem is determined using an offset value from the original trackItem position.
+  insertMogrtFromPath(inMGTPath: string, inTime: TickTime, inVideoTrackIndex: number, inAudioTrackIndex: number): (VideoClipTrackItem | AudioClipTrackItem)[]	//Insert input MGT into sequence with time and index defined
+  insertMogrtFromLibrary(inLibraryName: string, inElementName: string, inTime: TickTime, inVideoTrackIndex: number, inAudioTrackIndex: number): (VideoClipTrackItem | AudioClipTrackItem)[]	//Insert input MGT into sequence with time and index defined
+}
+
+export declare type SequenceSettingsStatic = {
+  PAR_SQUARE: string	//Square Pixels (1.0)
+  PAR_DVNTSC: string	//DV NTSC (0.9091)
+  PAR_DVNTSCWide: string	//DV NTSC Widescreen 16:9 (1.2121)
+  PAR_DVPAL: string	//DV PAL (1.0940)
+  PAR_DVPALWide: string	//DV PAL Widescreen 16:9 (1.4587)
+  PAR_Anamorphic: string	//Anamorphic 2:1 (2.0)
+  PAR_HDAnamorphic1080: string	//HD Anamorphic 1080 (1.333)
+  PAR_DVCProHD: string	//DVCPRO HD (1.5)
+  VIDEO_FIELDTYPE_PROGRESSIVE: number	//Video field type progressive
+  VIDEO_FIELDTYPE_UPPER_FIRST: number	//Video field type upper first
+  VIDEO_FIELDTYPE_LOWER_FIRST: number	//Video field type lower first
+  VIDEO_DISPLAY_FORMAT_23976: number	//23.976 fps TimeCode
+  VIDEO_DISPLAY_FORMAT_25: number	//25 fps TimeCode
+  VIDEO_DISPLAY_FORMAT_2997: number	//29.97 fps TimeCode
+  VIDEO_DISPLAY_FORMAT_2997_NON_DROP: number	//29.97 fps Non-Drop-Frame TimeCode
+  VIDEO_DISPLAY_FORMAT_16mm: number	//Feet+Frame 16mm
+  VIDEO_DISPLAY_FORMAT_35mm: number	//Feet+Frame 35mm
+  VIDEO_DISPLAY_FORMAT_FRAMES: number	//Frames
+  AUDIO_CHANNEL_TYPE_MONO: number	//Audio Channel Type Mono
+  AUDIO_CHANNEL_TYPE_STEREO: number	//Audio Channel Type Stereo
+  AUDIO_CHANNEL_TYPE_51: number	//Audio Channel Type 5.1
+  AUDIO_CHANNEL_TYPE_MULTI: number	//Audio Channel Type Multi
+  AUDIO_DISPLAY_FORMAT_SAMPLE_RATE: number	//Audio Display format: Audio Sample Timecode
+  AUDIO_DISPLAY_FORMAT_MILISECONDS: number	//Audio Display format miliseconds
+}
+
+export declare type SequenceSettings = {
+  getMaximumBitDepth(): Promise<boolean>	//Find if maximum bit depth is set
+  setMaximumBitDepth(useMaxBitDepth: boolean): Promise<boolean>	//Set maximum bit depth to true/false
+  getMaxRenderQuality(): Promise<boolean>	//Find if maximum render quality is set
+  setMaxRenderQuality(useMaxRenderQuality: boolean): Promise<boolean>	//Set maximum render quality to true/false
+  getAudioChannelCount(): Promise<number>	//Get number of channels in the sequence
+  getAudioChannelType(): Promise<number>	//Get Audio channel type of sequence. Could be 0 (Mono), 1 (Stereo), 2 (5.1), or 3 (multichannel)
+  getAudioDisplayFormat(): Promise<TimeDisplay>	//Get Audio display format
+  setAudioDisplayFormat(audioDisplay: TimeDisplay): Promise<boolean>	//Set audio display format of sequence.
+  getAudioSampleRate(): Promise<FrameRate>	//Get audio sample rate
+  setAudioSampleRate(inRate: FrameRate): Promise<boolean>	//Set audio sample rate
+  getVideoDisplayFormat(): Promise<TimeDisplay>	//Get Video display format
+  setVideoDisplayFormat(audioDisplay: TimeDisplay): Promise<boolean>	//Set video display format of sequence
+  getVideoFieldType(): Promise<number>	//Get video field type in the sequence
+  setVideoFieldType(videoFiledType: number): Promise<boolean>	//Set video field type in sequence
+  getVideoFrameRect(): Promise<RectF>	//Get video frame rect in the sequence
+  setVideoFrameRect(inVideoFrameRect: RectF): Promise<boolean>	//Set video frame rect in sequence
+  getVideoPixelAspectRatio(): Promise<string>	//Get Video display format
+  setVideoPixelAspectRatio(inPixelAspectRatio: string): Promise<boolean>	//Set video display format of sequence
+  getCompositeInLinearColor(): Promise<boolean>	//Get if composite in linear color is checked
+  setCompositeInLinearColor(useCompositeInLinearColor: boolean): Promise<boolean>	//Set if composite in linear color is checked
+  getEditingMode(): Promise<string>	//Get editing mode of sequence
+  setEditingMode(inEditingModeName: string): Promise<boolean>	//Set editing mode of sequence
+  getPreviewFileFormat(): Promise<string>	//Get preview file format of sequence
+  setPreviewFileFormat(inPreviewCodec: string): Promise<boolean>	//Set preview file format of sequence
+  getPreviewCodec(): Promise<string>	//Get preview codec of sequence
+  setPreviewCodec(inPreviewCodec: string): Promise<boolean>	//Set preview codec of sequence
+  getPreviewFrameRect(): Promise<RectF>	//Get preview video frame rect in the sequence
+  setPreviewFrameRect(inPreviewVideoRect: RectF): Promise<boolean>	//Set preview video frame rect in sequence
 }
 
 export declare type SequenceUtilsStatic = {
@@ -598,14 +732,25 @@ export declare type SequenceUtilsStatic = {
 export declare type SequenceUtils = {
 }
 
+export declare type SnapEventStatic = {
+  EVENT_SNAP_TO_KEYFRAME: string	//Event occurs a user scrub on timeline over keyframes when shift key is applied.
+  EVENT_SNAP_TO_TRACKITEM: string	//Event occurs a user scrub on timeline and snaps to various track item alignments.
+  EVENT_SNAP_TO_GUIDES: string	//Event occurs object is snapped to guildelines when holding the Cmd/Ctrl key.
+  EVENT_SNAP_RAZOR_TO_PLAYHEAD: string	//Event occurs when the razor tool hovers over the playhead and snaps into position for a cut.
+  EVENT_SNAP_RAZOR_TO_MARKER: string	//Event occurs when the razor tool hovers over the all types of markers and snaps into position for a cut.
+}
+
+export declare type SnapEvent = {
+}
+
 export declare type SourceMonitorStatic = {
   openFilePath(filePath: string): Promise<boolean>	//Open the item at the specified path and send to the Source Monitor for preview
   openProjectItem(projectItem: ProjectItem): Promise<boolean>	//Open input projectItem on Source Monitor
   closeClip(): Promise<boolean>	//Close clip on Source Monitor
   closeAllClips(): Promise<boolean>	//Close all clips on Source Monitor
   getPosition(): Promise<TickTime>	//Get position of source monitor in time
-  play(arg0?: number): Promise<boolean>	//Play clip at source monitor with input speed
-  getProjectItem(): Promise<object>	//Get projectItem at source monitor
+  play(speed?: number): Promise<boolean>	//Play clip at source monitor with input speed
+  getProjectItem(): Promise<ProjectItem>	//Get projectItem at source monitor
 }
 
 export declare type SourceMonitor = {
@@ -615,17 +760,24 @@ export declare type TickTimeStatic = {
   createWithFrameAndFrameRate(frameCount: number, frameRate: FrameRate): TickTime	//Constructs a TickTime object with a frame and a frame rate.
   createWithSeconds(seconds: number): TickTime	//Constructs a TickTime object with seconds.
   createWithTicks(ticks: string): TickTime	//Constructs a TickTime object with ticks as a string.
-  TIME_ZERO: object	//Zero Tick Time Constant
-  TIME_ONE_SECOND: object	//One Second Tick Time Constant
-  TIME_ONE_MINUTE: object	//One Second Tick Time Constant
-  TIME_ONE_HOUR: object	//One Hour Tick Time Constant
-  TIME_MAX: object	//Max Tick Time Constant
-  TIME_MIN: object	//Min Tick Time Constant
-  TIME_INVALID: object	//Invalid Tick Time Constant
+  TIME_ZERO: TickTime	//Zero Tick Time Constant
+  TIME_ONE_SECOND: TickTime	//One Second Tick Time Constant
+  TIME_ONE_MINUTE: TickTime	//One Second Tick Time Constant
+  TIME_ONE_HOUR: TickTime	//One Hour Tick Time Constant
+  TIME_MAX: TickTime	//Max Tick Time Constant
+  TIME_MIN: TickTime	//Min Tick Time Constant
+  TIME_INVALID: TickTime	//Invalid Tick Time Constant
 }
 
 export declare type TickTime = {
+  (): TickTime
   equals(tickTime: TickTime): boolean	//Returns true if the given TickTime is equal to the TickTime object
+  alignToNearestFrame(frameRate: FrameRate): TickTime	//AlignToNearestFrame will return a TickTime that is aligned to the nearest frame boundary greater than or less than the given time, for a given frame rate by rounding any fractional portion.
+  alignToFrame(frameRate: FrameRate): TickTime	//alignToFrame will return a TickTime that is aligned to the nearest frame boundary less than the given time, for a given frame rate by rounding any fractional portion.
+  add(tickTime: TickTime): TickTime	//Add another TickTime to this one and return it. This TickTime is not modified.
+  subtract(tickTime: TickTime): TickTime	//Subtract another TickTime from this one and return it. This TickTime is not modified.
+  multiply(factor: number): TickTime	//Multiply this TickTime with a factor and return it. This TickTime is not modified.
+  divide(divisor: number): TickTime	//Divide this TickTime by a divisor and return it. In case of a division by zero, TIME_INVALID is returned. This TickTime is not modified.
   seconds: number	//Get the TickTime in seconds
   ticks: string	//Get the TickTime in ticks as a string
   ticksNumber: number	//Get the TickTime in ticks as a number
@@ -640,14 +792,14 @@ export declare type TrackItemSelectionStatic = {
 }
 
 export declare type TrackItemSelection = {
-  addItem(trackItem: object, skipDuplicateCheck?: boolean): boolean	//Add a track item to this selection
-  removeItem(trackItem: object): boolean	//Remove a track item from this selection
-  getTrackItems(): Promise<[]>	//return list of trackItems inside of trackItemSelection
+  addItem(trackItem: VideoClipTrackItem | AudioClipTrackItem, skipDuplicateCheck?: boolean): boolean	//Add a track item to this selection
+  removeItem(trackItem: VideoClipTrackItem | AudioClipTrackItem): boolean	//Remove a track item from this selection
+  getTrackItems(): Promise<(VideoClipTrackItem | AudioClipTrackItem)[]>	//return list of trackItems inside of trackItemSelection
 }
 
 export declare type TransitionFactoryStatic = {
   createVideoTransition(matchName: string): VideoTransition	//Creates a new video filter component based on the input matchName
-  getVideoTransitionMatchNames(): Promise<[]>	//Return a promise which will be fullfilled with an array of video transition matchnames
+  getVideoTransitionMatchNames(): Promise<string[]>	//Return a promise which will be fullfilled with an array of video transition matchnames
 }
 
 export declare type TransitionFactory = {
@@ -670,29 +822,30 @@ export declare type VideoClipTrackItemStatic = {
 
 export declare type VideoClipTrackItem = {
   createAddVideoTransitionAction(videoTransition: VideoTransition, addTransitionOptionsProperties?: AddTransitionOptions): Action	//Create add transition action for sequence
-  createRemoveVideoTransitionAction(transitionPosition?: number): Action	//Returns true if trackItem has transition
+  createRemoveVideoTransitionAction(transitionPosition?: Constants.TransitionPosition): Action	//Returns true if trackItem has transition
   getMatchName(): Promise<string>	//Returns the value of internal matchname for this trackItem
   getName(): Promise<string>	//Returns the display name for trackItem
   getIsSelected(): Promise<boolean>	//Returns if trackItem is selected or not
   getSpeed(): Promise<number>	//Returns the value of speed of the trackItem
   isAdjustmentLayer(): Promise<boolean>	//Returns true if the trackitem is an adjustment layer
   isSpeedReversed(): Promise<number>	//Returns true if the trackitem is reversed
-  createMoveAction(tickTime: TickTime): Action	//Returns an action moves the inPoint of the track item to a new time, by shifting it by a number of seconds.
-  getInPoint(): Promise<TickTime>	//Get timecode representing the inPoint of sequence.
-  getOutPoint(): Promise<TickTime>	//Get timecode representing the outPoint of sequence.
-  createSetInPointAction(tickTime: TickTime): Action	//Create SetInPointAction for sequence
-  createSetOutPointAction(tickTime: TickTime): Action	//Create SetInPointAction for sequence
-  getStartTime(): Promise<TickTime>	//Timecode representing the start of this track item relative to the sequence start.
-  getEndTime(): Promise<TickTime>	//Timecode representing the end of this track item relative to the sequence start.
+  createMoveAction(tickTime: TickTime): Action	//Returns an action that moves the inPoint of the track item to a new time, by shifting it by a number of seconds.
+  getInPoint(): Promise<TickTime>	//Returns a TickTime object representing the track item in point relative to the start time of the project item referenced by this track item.
+  getOutPoint(): Promise<TickTime>	//Returns a TickTime object representing the track item out point relative to the start time of the project item referenced by this track item.
+  createSetInPointAction(tickTime: TickTime): Action	//Create SetInPointAction for setting the track item in point relative to the start time of the project item referenced by this track item
+  createSetOutPointAction(tickTime: TickTime): Action	//Create SetOutPointAction for setting the track item out point relative to the start time of the project item referenced by this track item
+  getStartTime(): Promise<TickTime>	//Returns a TickTime object representing the starting sequence time of this track item relative to the sequence start time.
+  getEndTime(): Promise<TickTime>	//Returns a TickTime object representing the ending sequence time of this track item relative to the sequence start time.
   createSetStartAction(tickTime: TickTime): Action	//Create set start time action for sequence
   createSetEndAction(tickTime: TickTime): Action	//Create set end time action for sequence
-  getDuration(): Promise<TickTime>	//Timecode representing the duration of this track item relative to the sequence start.
+  getDuration(): Promise<TickTime>	//Returns timecode representing the duration of this track item relative to the sequence start.
   getType(): Promise<number>	//Index representing the type of this track item.
-  isDisabled(): Promise<boolean>	//Returns true if rackitem is muted/disabled
+  isDisabled(): Promise<boolean>	//Returns true if trackitem is muted/disabled
   createSetDisabledAction(disabled: boolean): Action	//Returns an action that enables/disables the trackItem 
-  getMediaType(): Promise<Guid>	//UUID representing the underlying media type of this track item
+  createSetNameAction(inName: string): Action	//Returns an action that renames the trackItem
+  getMediaType(): Promise<Guid>	//Returns UUID representing the underlying media type of this track item
   getTrackIndex(): Promise<number>	//Index representing the track index of the track this track item belongs to
-  getProjectItem(): Promise<ProjectItem>	//The project item for this track item.
+  getProjectItem(): Promise<ProjectItem>	//Returns the project item for this track item.
   getComponentChain(): Promise<VideoComponentChain>	//Returns VideoComponentChain
 }
 
@@ -700,10 +853,10 @@ export declare type VideoComponentChainStatic = {
 }
 
 export declare type VideoComponentChain = {
-  createInsertComponentAction(component: object, componentInsertionIndex: number): Action	//Creates and returns an insert component action
-  createAppendComponentAction(component: object): Action	//Creates and returns an append component action
-  createRemoveComponentAction(component: object): Action	//Creates and returns an remove component action
-  getComponentAtIndex(componentIndex: number): VideoComponentChain	//Returns the component at the given index
+  createInsertComponentAction(component: Component | VideoFilterComponent, componentInsertionIndex: number): Action	//Creates and returns an insert component action
+  createAppendComponentAction(component: Component | VideoFilterComponent): Action	//Creates and returns an append component action
+  createRemoveComponentAction(component: Component | VideoFilterComponent): Action	//Creates and returns an remove component action
+  getComponentAtIndex(componentIndex: number): Component	//Returns the component at the given index
   getComponentCount(): number	//Gets the number of components in the component chain
 }
 
@@ -715,7 +868,8 @@ export declare type VideoFilterComponent = {
 
 export declare type VideoFilterFactoryStatic = {
   createComponent(matchName: string): Promise<VideoFilterComponent>	//Creates a new video filter component based on the input matchName
-  getMatchNames(): Promise<[]>	//Returns an array of video filter matchNames
+  getMatchNames(): Promise<string[]>	//Returns an array of video filter matchNames
+  getDisplayNames(): Promise<string[]>	//Returns an array of video filter display names
 }
 
 export declare type VideoFilterFactory = {
@@ -732,7 +886,7 @@ export declare type VideoTrack = {
   getMediaType(): Promise<Guid>	//UUID representing the underlying media type of this track
   getIndex(): Promise<number>	//Index representing the track index of this track within the track group.
   isMuted(): Promise<boolean>	//Get mute state of the track
-  getTrackItems(trackItemType: number, includeEmptyTrackItems: boolean): any	//Returns array of VideoClipTrackItem from the track item type
+  getTrackItems(trackItemType: Constants.TrackItemType, includeEmptyTrackItems: boolean): VideoClipTrackItem[]	//Returns array of VideoClipTrackItem from the track item type
   name: string	//Get the name of the track
   id: number	//The ID of the track within the TrackGroup
 }
@@ -743,6 +897,16 @@ export declare type VideoTransitionStatic = {
 }
 
 export declare type VideoTransition = {
+}
+
+export declare type EventManagerStatic = {
+  addEventListener(target: Project | Sequence | VideoTrack | AudioTrack | EncoderManager, eventName: string | Constants.SnapEvent | Constants.ProjectEvent | Constants.SequenceEvent | Constants.OperationCompleteEvent, eventHandler: (event?: Object) => void, inCapturePhase?: boolean): void	//add event listener to target object
+  removeEventListener(target: Project | Sequence | VideoTrack | AudioTrack | EncoderManager, eventName: string | Constants.SnapEvent | Constants.ProjectEvent | Constants.SequenceEvent | Constants.OperationCompleteEvent, eventHandler: (event?: Object) => void): void	//remove event listener from target object
+  addGlobalEventListener(eventName: string | Constants.SnapEvent | Constants.ProjectEvent | Constants.SequenceEvent | Constants.OperationCompleteEvent, eventHandler: (event?: Object) => void, inCapturePhase?: boolean): void	//add global event listener
+  removeGlobalEventListener(eventName: string | Constants.SnapEvent | Constants.ProjectEvent | Constants.SequenceEvent | Constants.OperationCompleteEvent, eventHandler: (event?: Object) => void): void	//remove global event listener
+}
+
+export declare type EventManager = {
 }
 
 
@@ -807,6 +971,26 @@ export namespace Constants {
 		SELECTION_CHANGED
 	}
 
+	export enum VideoTrackEvent {
+		TRACK_CHANGED,
+		INFO_CHANGED,
+		LOCK_CHANGED
+	}
+
+	export enum AudioTrackEvent {
+		TRACK_CHANGED,
+		INFO_CHANGED,
+		LOCK_CHANGED
+	}
+
+	export enum EncoderEvent {
+		RENDER_COMPLETE,
+		RENDER_ERROR,
+		RENDER_CANCEL,
+		RENDER_QUEUE,
+		RENDER_PROGRESS
+	}
+
 	export enum ScratchDiskFolderType {
 		CAPTURE,
 		AUDIO_CAPTURE,
@@ -840,6 +1024,67 @@ export namespace Constants {
 		AUTO_PEAK_GENERATION,
 		IMPORT_WORKSPACE,
 		SHOW_QUICKSTART_DIALOG
+	}
+
+	export enum SnapEvent {
+		KEYFRAME,
+		RAZOR_PLAYHEAD,
+		RAZOR_MARKER,
+		TRACKITEM,
+		GUIDES
+	}
+
+	export enum OperationCompleteEvent {
+		CLIP_EXTEND_REACHED,
+		EFFECT_DROP_COMPLETE,
+		EXPORT_MEDIA_COMPLETE,
+		GENERATIVE_EXTEND_COMPLETE,
+		IMPORT_MEDIA_COMPLETE
+	}
+
+	export enum OperationCompleteState {
+		SUCCESS,
+		CANCELLED,
+		FAILED
+	}
+
+	export enum PixelAspectRatio {
+		SQUARE,
+		DVNTSC,
+		DVNTSCWide,
+		DVPAL,
+		DVPALWide,
+		Anamorphic,
+		HDAnamorphic1080,
+		DVCProHD
+	}
+
+	export enum VideoFieldType {
+		PROGRESSIVE,
+		UPPER_FIRST,
+		LOWER_FIRST
+	}
+
+	export enum VideoDisplayFormatType {
+		FPS_23_976,
+		FPS_25,
+		FPS_29_97,
+		FPS_29_97_NON_DROP,
+		FEET_FRAME_16mm,
+		FEET_FRAME_35mm,
+		FRAMES
+	}
+
+	export enum AudioChannelType {
+		MONO,
+		STEREO,
+		SURROUND_51,
+		MULTI
+	}
+
+	export enum AudioDisplayFormatType {
+		SAMPLE_RATE,
+		MILLISECONDS
 	}
 }
 
