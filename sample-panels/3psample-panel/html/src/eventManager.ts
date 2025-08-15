@@ -150,6 +150,22 @@ export async function addEncoderListeners() {
 }
 
 /**
+ * Callback function for effect drop event
+ * Log Effect dropped when new effect is dropped to trackItem
+ */
+export async function onEffectDropped() {
+  console.log("Effect dropped");
+}
+
+/**
+ * Callback function for snap trackItem event
+ * Log trackItem snapped when trackItem is snapped in timeline
+ */
+async function onSnapTrackItem() {
+  console.log("TrackItem snapped");
+}
+
+/**
  * Add project and sequence event listeners
  */
 export async function addProjSeqListeners() {
@@ -190,5 +206,17 @@ export async function addProjSeqListeners() {
   ppro.EventManager.addGlobalEventListener(
     ppro.Constants.SequenceEvent.SELECTION_CHANGED,
     onSequenceSelectionChange
+  );
+
+  // add operation complete event listeners
+  ppro.EventManager.addGlobalEventListener(
+    ppro.Constants.OperationCompleteEvent.EFFECT_DROP_COMPLETE,
+    onEffectDropped
+  );
+
+  // add snap event listeners
+  ppro.EventManager.addGlobalEventListener(
+    ppro.Constants.SnapEvent.TRACKITEM,
+    onSnapTrackItem
   );
 }
