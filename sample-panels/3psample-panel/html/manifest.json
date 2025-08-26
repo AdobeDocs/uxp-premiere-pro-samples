@@ -7,7 +7,7 @@
   "host": {
       "app": "premierepro",
       "minVersion": "25.1.0"
-    },
+  },
   "manifestVersion": 5,
   "requiredPermissions": {
     "localFileSystem": "request",
