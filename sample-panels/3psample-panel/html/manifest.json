@@ -4,12 +4,10 @@
   "shortname": "3psample",
   "version": "1.0.0",
   "main": "index.html",
-  "host": [
-    {
+  "host": {
       "app": "premierepro",
       "minVersion": "25.1.0"
-    }
-  ],
+    },
   "manifestVersion": 5,
   "requiredPermissions": {
     "localFileSystem": "request",
