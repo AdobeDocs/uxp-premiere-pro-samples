@@ -82,10 +82,10 @@ export async function insertTrackItem(project: Project) {
         success = project.executeTransaction((compoundAction) => {
           const insertItemAction = sequenceEditor.createInsertProjectItemAction(
             projectItems[0], // reference for creating trackItem for overwrite
-            ppro.TickTime.TIME_ZERO, // time
+            ppro.TickTime.TIME_ONE_SECOND, // time
             1, // video track index
             1, // audio track index
-            true // limitedShift, don't shift non-input track for this insert
+            false // limitedShift, don't shift non-input track for this insert
           );
           compoundAction.addAction(insertItemAction);
         }, "TrackItem Inserted");

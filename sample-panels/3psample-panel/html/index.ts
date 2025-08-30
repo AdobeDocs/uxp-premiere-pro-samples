@@ -168,6 +168,7 @@ import type {
   Sequence,
   VideoClipTrackItem,
   AudioClipTrackItem,
+  TrackItemSelection,
 } from "./types.d.ts";
 const ppro = require("premierepro") as premierepro;
 const uxp = require("uxp") as typeof import("uxp");
@@ -1570,6 +1571,148 @@ async function importAllAeComponentsClicked() {
   }
 }
 
+async function sliceButtonClicked(clickParams, numSlices: number = 20){
+  const ticksPerSec = 254016000000;
+  let userSliceValue = document.getElementById("numSlices").value;
+  if (userSliceValue != null){
+    try{
+      numSlices = parseInt(userSliceValue);
+    }catch (err){
+      log(`Cannot Slice User Value: ${err}`, "red");
+    }
+  }
+
+  let success = false;
+  const project = await getProject();
+  // const projRootItem = await project.getRootItem();
+  const activeSequence = await project.getActiveSequence();
+  const activeSequenceFrameRate = await activeSequence.getTimebase();
+  const activeSequenceEditor = await ppro.SequenceEditor.getEditor(activeSequence);
+
+  const projectItems: Array<ProjectItem> = await getSelectedProjectItems(project);
+
+  let vidTrackZero = await activeSequence.getVideoTrack(0);
+  let v1_trackItems = await vidTrackZero.getTrackItems(1, false);
+  
+  // split up the track item in V1
+  if (
+      v1_trackItems.length >= 1 && projectItems.length == 1
+    ){
+      // get project item to cut in
+      let projItem = await v1_trackItems[0].getProjectItem();
+      let clipProjItem = await ppro.ClipProjectItem.cast(projItem);
+
+      let trackItemStartTime = await v1_trackItems[0].getStartTime();
+      let trackItemEndTime = await v1_trackItems[0].getEndTime();
+
+      let trackItemTimeDelta = await trackItemEndTime.subtract(trackItemStartTime);
+      try{
+        var ticksStep = await trackItemTimeDelta.divide(numSlices);
+      } catch (err) {
+        log(`${err}`, "red");
+        return false;
+      }
+
+      // TODO would validate here what tracks have content, and make new tracks if necessary for insert operations
+
+
+      // Add Gaps
+      let mediaInsertActionsQueue = [];
+      let tickStepCounter = ticksStep;
+
+      // project.lockedAccess(() => {});
+      let seqFrameRateTicks = ticksPerSec/parseInt(activeSequenceFrameRate);
+      let seqFrameRate = ppro.FrameRate.createWithValue(seqFrameRateTicks);
+
+
+        try{
+            project.lockedAccess(() => {
+              // slice up the sequence trackItem
+              for (let step = 1; step < numSlices; step++){ // starts at 1 since tickStepCounter starts offset, not at 0
+                let nearestFrameToStep = tickStepCounter.alignToNearestFrame(seqFrameRate);
+
+                let insertItemAction1 = activeSequenceEditor.createInsertProjectItemAction(
+                  projectItems[0],
+                  nearestFrameToStep, //tickStepCounter
+                  1, // video track index (V2)
+                  1, // audio track index (A2)
+                  false
+                );
+
+                let insertItemAction2 = activeSequenceEditor.createInsertProjectItemAction(
+                    projectItems[0],
+                    nearestFrameToStep,
+                    1, // video track index (V2)
+                    1, // audio track index (A2)
+                    false
+                  );
+
+                // BUG Add action twice to force add edit to the V1 trackItem
+                mediaInsertActionsQueue.push(insertItemAction1);
+                mediaInsertActionsQueue.push(insertItemAction2);
+
+                tickStepCounter = tickStepCounter.add(ticksStep);
+              }
+              success = project.executeTransaction((compoundAction) => {
+
+                // build compound action from action array
+                for (const individualAction of mediaInsertActionsQueue){
+                  compoundAction.addAction(individualAction);
+                }
+                // compoundAction.addAction(insertItemAction1);
+                // compoundAction.addAction(insertItemAction2);
+              }, "Slice Up Track");
+            });
+
+            // Clean Up the trackItems used to make the slices
+            // let trackItemsRemoveActionsQueue = [];
+            // let selectedItemsToRemove = ppro.TrackItemSelection.createEmptySelection();
+
+            let v2_track = await activeSequence.getVideoTrack(1);
+            let v2_contents = v2_track.getTrackItems(1, false);
+            let a2_track = await activeSequence.getAudioTrack(1);
+            let a2_contents = a2_track.getTrackItems(1, false);
+
+            project.lockedAccess(() => {
+
+            let removeTrackItemsAction;
+            ppro.TrackItemSelection.createEmptySelection((trackItemSelection) => { 
+              for (const trackItemFound of v2_contents){
+                trackItemSelection.addItem(trackItemFound);
+              }
+              for (const trackItemFound of a2_contents){
+                trackItemSelection.addItem(trackItemFound);
+              }
+              removeTrackItemsAction = activeSequenceEditor.createRemoveItemsAction(
+                trackItemSelection,
+                false,
+                ppro.Constants.MediaType.VIDEO,
+                false
+              )
+            });
+
+            success = project.executeTransaction((compoundAction) => {
+                compoundAction.addAction(removeTrackItemsAction);
+              }, "Clean Up Track");
+
+            });
+        }
+      catch (err) {
+        log(`${err}`, "red");
+        return false;
+      }
+
+        
+        
+    // clean up inserted frames
+
+  }else {
+    // thrown an error that there must be a video track item present
+  }
+
+  return true;
+}
+
 async function testButtonClicked(){ // for testing Sequence.getSettings() - remove __testing_getSettings from function name to use
   let success = false;
 
@@ -1597,11 +1740,10 @@ async function testButtonClicked(){ // for testing Sequence.getSettings() - remo
       log(`...Not a Sequence or Mutlicam`);
     }
     // let isMC = await folderItems[i].isMulticamClip();
- 
       
     }
   }
-}
+
 
 async function testButtonClicked__testing_tickTimeMath(){ // for testing ticktime math - remove __testing_ticktimeMath from function name to use
   // log("Test Button Clicked!")
@@ -1839,6 +1981,7 @@ window.addEventListener("load", async () => {
 
   // Test Buttons
   registerClick("test-button", testButtonClicked);
+  registerClick("slice-up-button", sliceButtonClicked);
 
   document
     .querySelector(".clear-btn")!
