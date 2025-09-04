@@ -416,8 +416,8 @@ export declare type Markers = {
 
 export declare type Media = {
   createSetStartAction(time: TickTime): Action	//Returns action that set start of media
-  start: TickTime	//Get the media start time
-  duration: TickTime	//Get the media duration
+  start: Promise<TickTime>	//Get the media start time
+  duration: Promise<TickTime>	//Get the media duration
 }
 
 export declare type MetadataStatic = {

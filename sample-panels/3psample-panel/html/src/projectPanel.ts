@@ -505,7 +505,8 @@ export async function setMediaStart(project: Project) {
     if (!media) {
       log("Failed to access media");
     }
-    if (media.duration < ppro.TickTime.TIME_ONE_SECOND) {
+    const duration = await media.duration;
+    if (duration < ppro.TickTime.TIME_ONE_SECOND) {
       log("Media Duration is smaller than 1 second");
     }
 
