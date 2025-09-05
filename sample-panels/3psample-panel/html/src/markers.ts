@@ -12,7 +12,13 @@
  * written permission of Adobe.
  **************************************************************************/
 
-import type { Marker, premierepro, Project } from "../types.d.ts";
+import type {
+  Color,
+  Marker,
+  premierepro,
+  Project,
+  Sequence,
+} from "../types.d.ts";
 import { getClipProjectItem } from "./projectPanel.js";
 const ppro = require("premierepro") as premierepro;
 import { log } from "./utils";
@@ -191,4 +197,26 @@ export async function removeMarker(project: Project) {
   }
 
   return success;
+}
+
+export async function getSequenceMarkerInfo(sequence: Sequence) {
+  let markerInfos = [];
+  try {
+    const sequenceMarkersOwner = await ppro.Markers.getMarkers(sequence);
+    const markers = sequenceMarkersOwner.getMarkers();
+    for (let marker of markers) {
+      let markerInfoObj: { name: string; type: string; color: Color } = {
+      name: "",
+      type: "",
+      color: null
+    };
+      markerInfoObj.name = marker.getName();
+      markerInfoObj.type = marker.getType();
+      markerInfoObj.color = marker.getColor();
+      markerInfos.push(markerInfoObj);
+    }
+  } catch (error) {
+    log(error, "red");
+  }
+  return markerInfos;
 }

@@ -409,7 +409,7 @@ export async function setOverridePixelAspectRatio(project: Project) {
  * If inHighRes is set to true, we will attach input file as high resolution footage.
  * If inHighRes is set to false, we will attach input file as proxy to projectItem without changing its media content.
  */
-export async function attachProxy(project: Project, proxyFile: String) {
+export async function attachProxy(project: Project, proxyFile: string) {
   const clipProjectItem = await getClipProjectItem(project);
   let success = false;
   try {
@@ -424,7 +424,7 @@ export async function attachProxy(project: Project, proxyFile: String) {
   return success;
 }
 
-export async function changeMediaFilePath(project: Project, mediaFile: String) {
+export async function changeMediaFilePath(project: Project, mediaFile: string) {
   const clipProjectItem = await getClipProjectItem(project);
   let success = false;
   try {
@@ -449,4 +449,77 @@ export async function getSelectedProjectItemsFromViewId(viewId) {
     viewId
   );
   return projectItemSelection.getItems();
+}
+
+export async function renameFirstSelectedProjectItem(project: Project) {
+  const selectedItems = await getSelectedProjectItems(project);
+  if (selectedItems.length == 0) {
+    log("No ProjectItem selected for rename");
+    return false;
+  }
+  let success = false;
+  try {
+    project.lockedAccess(() => {
+      const renameAction = selectedItems[0].createSetNameAction("Item 1");
+      success = project.executeTransaction((compoundAction) => {
+        compoundAction.addAction(renameAction);
+      }, "rename projectItem to Item 1");
+    });
+  } catch (error) {
+    log(error, "red");
+  }
+  return success;
+}
+
+export async function getMediaInfo(project: Project) {
+  try {
+    const clipProjectItem = await getClipProjectItem(project);
+    if (!clipProjectItem) {
+      log("No ClipProjectItem found in project panel");
+    }
+    const media = await clipProjectItem.getMedia();
+    if (!media) {
+      log("Failed to access media");
+    }
+    const start = await media.start;
+    const duration = await media.duration;
+    return {
+      name: clipProjectItem.name,
+      start: start.seconds,
+      duration: duration.seconds,
+    };
+  } catch (error) {
+    log(error, "red");
+  }
+  return null;
+}
+
+export async function setMediaStart(project: Project) {
+  let success = false;
+  try {
+    const clipProjectItem = await getClipProjectItem(project);
+    if (!clipProjectItem) {
+      log("No ClipProjectItem found in project panel");
+    }
+    const media = await clipProjectItem.getMedia();
+    if (!media) {
+      log("Failed to access media");
+    }
+    const duration = await media.duration;
+    if (duration < ppro.TickTime.TIME_ONE_SECOND) {
+      log("Media Duration is smaller than 1 second");
+    }
+
+    project.lockedAccess(() => {
+      const mediaSetStartAction = media.createSetStartAction(
+        ppro.TickTime.TIME_ONE_SECOND
+      );
+      success = project.executeTransaction((compoundAction) => {
+        compoundAction.addAction(mediaSetStartAction);
+      });
+    });
+  } catch (error) {
+    log(error, "red");
+  }
+  return success;
 }

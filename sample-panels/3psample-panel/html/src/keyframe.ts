@@ -161,7 +161,7 @@ export async function addKeyframe() {
 //Gets all the keyframes of componentParam stream.
 export async function getKeyframes() {
   const { componentParam } = await getComponentParam();
-  return await componentParam.getKeyframeListAsTickTimes();
+  return componentParam.getKeyframeListAsTickTimes();
 }
 
 //Gets all the keyframes of a componentParam at specific time.

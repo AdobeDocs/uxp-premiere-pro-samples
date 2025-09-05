@@ -21,6 +21,7 @@ import { log } from "./utils";
  * Export current active sequence's current frame as PNG file
  */
 export async function exportSequenceFrame(sequence: Sequence) {
+  // @ts-ignore
   const folder = await uxp.storage.localFileSystem.getFolder();
   let folderDir = await folder.nativePath;
 
@@ -46,10 +47,11 @@ export async function exportSequence(sequence: Sequence) {
   // let user select preset file
   let presetFile;
   log("Please select a preset file for export");
+  // @ts-ignore
   const file = await uxp.storage.localFileSystem.getFileForOpening({
     types: ["epr"],
   });
-  if (file && file.isFile && file.nativePath) {
+  if (file?.isFile && file.nativePath) {
     presetFile = file.nativePath;
   } else {
     log("Selection of preset file failed. Please try again");
@@ -57,6 +59,7 @@ export async function exportSequence(sequence: Sequence) {
   }
 
   log("Please select folder for export");
+  // @ts-ignore
   // let user choose dir for export output mpg file into
   const folder = await uxp.storage.localFileSystem.getFolder();
   let folderDir = await folder.nativePath;

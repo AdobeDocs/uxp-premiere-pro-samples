@@ -20,6 +20,7 @@ import type {
   Project,
   ProjectItem,
   Sequence,
+  SequenceSettings,
   VideoClipTrackItem,
 } from "../types.d.ts";
 import { getClipProjectItem } from "./projectPanel.js";
@@ -28,6 +29,105 @@ import { log } from "./utils";
 
 const MEDIA_START_COLUMN_ID = "Column.Intrinsic.MediaStart";
 const MEDIA_END_COLUMN_ID = "Column.Intrinsic.MediaEnd";
+
+async function getInfoFromSettings(settings: SequenceSettings) {
+  const frameRect = await settings.getVideoFrameRect();
+  const par = await settings.getVideoPixelAspectRatio();
+  const field = await settings.getVideoFieldType();
+  const displayFormat = await settings.getVideoDisplayFormat();
+
+  let fieldType = "No Fields";
+  if (field == ppro.Constants.VideoFieldType.LOWER_FIRST) {
+    fieldType = "Lower Field First";
+  } else if (field == ppro.Constants.VideoFieldType.UPPER_FIRST) {
+    fieldType = "Upper Field First";
+  }
+
+  let displayFormatType = "";
+  switch (displayFormat.type) {
+    case ppro.Constants.VideoDisplayFormatType.FEET_FRAME_16mm:
+      displayFormatType = "Feet+Frames 16mm";
+      break;
+    case ppro.Constants.VideoDisplayFormatType.FEET_FRAME_35mm:
+      displayFormatType = "Feet+Frames 35mm";
+      break;
+    case ppro.Constants.VideoDisplayFormatType.FPS_23_976:
+      displayFormatType = "23.976 fps";
+      break;
+    case ppro.Constants.VideoDisplayFormatType.FPS_25:
+      displayFormatType = "25 fps";
+      break;
+    case ppro.Constants.VideoDisplayFormatType.FPS_29_97:
+      displayFormatType = "29.97 fps";
+      break;
+    case ppro.Constants.VideoDisplayFormatType.FPS_29_97_NON_DROP:
+      displayFormatType = "29.97 fps Non-Drop-Frame Timecode";
+      break;
+    case ppro.Constants.VideoDisplayFormatType.FRAMES:
+      displayFormatType = "Frames";
+      break;
+    default:
+      displayFormatType = `Format Code: ${displayFormat.type}`;
+      break;
+  }
+
+  return [
+    `Video Frame Size: ${frameRect.height}; Horizontal ${frameRect.width}`,
+    `Pixel Aspect Ratio: ${par}`,
+    `Fields: ${fieldType}`,
+    `Display Format: ${displayFormatType}`,
+  ];
+}
+
+export async function getVideoSettingsInfo(sequence: Sequence) {
+  const settings = await sequence.getSettings();
+  return getInfoFromSettings(settings);
+}
+
+export async function setSequencePixelAsepctRatio(
+  project: Project,
+  sequence: Sequence
+) {
+  const settings = await sequence.getSettings();
+  let success = false;
+  try {
+    success = await settings.setVideoPixelAspectRatio(
+      ppro.Constants.PixelAspectRatio.SQUARE.toString()
+    );
+    project.lockedAccess(() => {
+      success = project.executeTransaction((compoundAction) => {
+        const setSettingsAction = sequence.createSetSettingsAction(settings);
+        compoundAction.addAction(setSettingsAction);
+      }, "set sequence pixel aspect ratio to square");
+    });
+  } catch (err) {
+    log(err.toString(), "red");
+  }
+  return success;
+}
+
+export async function setSequenceInOutPoint(
+  project: Project,
+  sequence: Sequence
+) {
+  let success = false;
+  try {
+    const sequenceEnd = await sequence.getEndTime();
+    project.lockedAccess(() => {
+      success = project.executeTransaction((compoundAction) => {
+        const setInPointAction = sequence.createSetInPointAction(
+          ppro.TickTime.TIME_ZERO
+        );
+        const setOutPoitAction = sequence.createSetOutPointAction(sequenceEnd);
+        compoundAction.addAction(setInPointAction);
+        compoundAction.addAction(setOutPoitAction);
+      }, "set sequence in point to 0 and out point to sequence end");
+    });
+  } catch (err) {
+    log(err.toString(), "red");
+  }
+  return success;
+}
 
 export async function getSequence(project: Project, sequenceGuid: Guid) {
   if (project) {
@@ -64,7 +164,7 @@ export async function createSequenceFromMedia(
       return;
     }
 
-    return await project.createSequenceFromMedia(sequenceName, mediaItem);
+    return project.createSequenceFromMedia(sequenceName, [mediaItem]);
   } else {
     log("No project found.");
   }
@@ -316,6 +416,30 @@ export async function addHandlesToTrackItem(
     }
   } else {
     log("No track item provided.", "red");
+  }
+  return success;
+}
+
+export async function renameFirstSelectedTrackItem(
+  project: Project,
+  sequence: Sequence
+) {
+  const selection = await sequence.getSelection();
+  const items = await selection.getTrackItems();
+  if (items.length == 0) {
+    log("No trackItem is selected for rename");
+    return false;
+  }
+  let success = false;
+  try {
+    project.lockedAccess(() => {
+      const renameAction = items[0].createSetNameAction("TrackItem 1");
+      success = project.executeTransaction((compoundAction) => {
+        compoundAction.addAction(renameAction);
+      }, "rename trackItem to TrackItem 1");
+    });
+  } catch (error) {
+    log(error, "red");
   }
   return success;
 }

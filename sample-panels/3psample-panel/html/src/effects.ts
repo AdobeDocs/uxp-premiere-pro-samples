@@ -18,7 +18,9 @@ const ppro = require("premierepro") as premierepro;
 
 let matchnames;
 let videoComponentChain;
+let audioComponentChain;
 const filterFactory = ppro.VideoFilterFactory;
+const audioFilterFactory = ppro.AudioFilterFactory;
 
 export async function getVideoComponentChain() {
   const proj = await ppro.Project.getActiveProject();
@@ -51,6 +53,43 @@ export async function getVideoComponentChain() {
     }
   }
   return videoComponentChain;
+}
+
+async function getAudioClipTrackItem() {
+  const proj = await ppro.Project.getActiveProject();
+  if (!proj) {
+    log("No active project", "red");
+  } else {
+    const sequence = await proj.getActiveSequence();
+    if (!sequence) {
+      log("No sequence found", "red");
+    } else {
+      const audioTrack = await sequence.getAudioTrack(0);
+      if (!audioTrack) {
+        log("No videoTrack found", "red");
+      } else {
+        const trackItems = await audioTrack.getTrackItems(
+          ppro.Constants.TrackItemType.CLIP,
+          false
+        );
+        if (trackItems.length === 0) {
+          log("No trackItems found", "red");
+        } else {
+          return trackItems[0];
+        }
+      }
+    }
+  }
+  return null;
+}
+
+export async function getAudioComponentChain() {
+  const audioTrackItem = await getAudioClipTrackItem();
+  let audioComponentChain = undefined;
+  if (audioTrackItem) {
+    audioComponentChain = await audioTrackItem.getComponentChain();
+  }
+  return audioComponentChain;
 }
 
 //Gets all the effects matchNames.
@@ -124,11 +163,37 @@ export async function addMultipleEffects(project) {
       log(`Error: ${err}`, "red");
       return false;
     }
-
     return success;
   } else {
     log(`No project found.`, "red");
   }
+}
+
+export async function addVocalEnhancerEffect(project) {
+  let audioComponentChain = await getAudioComponentChain();
+  if (!audioComponentChain) {
+    return false;
+  }
+  let success = false;
+  try {
+    const trackItem = await getAudioClipTrackItem();
+    const newComponent = await audioFilterFactory.createComponentByDisplayName(
+      "Vocal Enhancer",
+      trackItem
+    );
+    project.lockedAccess(() => {
+      success = project.executeTransaction((compoundAction) => {
+        let action1 = audioComponentChain.createInsertComponentAction(
+          newComponent,
+          2
+        );
+        compoundAction.addAction(action1);
+      }, "createInsertComponentAction");
+    });
+  } catch (err) {
+    log(`Error: ${err}`, "red");
+  }
+  return success;
 }
 
 export async function removeEffects(project) {

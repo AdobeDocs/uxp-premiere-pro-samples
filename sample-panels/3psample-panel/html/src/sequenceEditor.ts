@@ -178,3 +178,30 @@ export async function removeSelectedTrackItems(project: Project) {
   }
   return success;
 }
+
+/**
+ * Insert mogrt at active sequence V2
+ */
+export async function insertMogrt(project: Project, mogrtPath: string) {
+  let mogrtItems = [];
+  const sequence = await project.getActiveSequence();
+  if (sequence) {
+    try {
+      const sequenceEditor = ppro.SequenceEditor.getEditor(sequence);
+      project.lockedAccess(() => {
+        mogrtItems = sequenceEditor.insertMogrtFromPath(
+          mogrtPath, // path to mogrt file
+          ppro.TickTime.TIME_ZERO, // time to insert at
+          1, // video track index
+          1 // audio track index
+        );
+      });
+    } catch (err) {
+      log(`${err}`, "red");
+      return false;
+    }
+  } else {
+    log("No sequence available for edits", "red");
+  }
+  return mogrtItems.length > 0;
+}
