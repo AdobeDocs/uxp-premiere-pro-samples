@@ -718,7 +718,7 @@ async function createMarkerCommentClicked() {
 
   const success = await createMarkerComment(project);
   log(
-    success ? "Add comment marker successfull" : "Failed to add comment marker"
+    success ? "Add comment marker successful" : "Failed to add comment marker"
   );
 }
 
@@ -728,7 +728,7 @@ async function createMarkerChapterClicked() {
 
   const success = await createMarkerChapter(project);
   log(
-    success ? "Add chapter marker successfull" : "Failed to add chapter marker"
+    success ? "Add chapter marker successful" : "Failed to add chapter marker"
   );
 }
 
@@ -738,7 +738,7 @@ async function createMarkerWeblinkClicked() {
 
   const success = await createMarkerWeblink(project);
   log(
-    success ? "Add weblink marker successfull" : "Failed to add weblink marker"
+    success ? "Add weblink marker successful" : "Failed to add weblink marker"
   );
 }
 
@@ -749,7 +749,7 @@ async function createMarkerFlashCuePointClicked() {
   const success = await createMarkerFlashCuePoint(project);
   log(
     success
-      ? "Add flash cue point marker successfull"
+      ? "Add flash cue point marker successful"
       : "Failed to add flash cue point marker"
   );
 }
@@ -759,7 +759,7 @@ async function moveMarkerClicked() {
   if (!project) return;
 
   const success = await moveMarker(project);
-  log(success ? "Move marker successfull" : "Failed to move marker");
+  log(success ? "Move marker successful" : "Failed to move marker");
 }
 
 async function removeMarkerClicked() {
@@ -767,7 +767,7 @@ async function removeMarkerClicked() {
   if (!project) return;
 
   const success = await removeMarker(project);
-  log(success ? "Remove marker successfull" : "Failed to remove marker");
+  log(success ? "Remove marker successful" : "Failed to remove marker");
 }
 
 async function getSequenceMarkerInfoClicked() {
@@ -804,7 +804,7 @@ async function getProjectItemsClicked() {
     log("No project items found", "red");
     return;
   }
-  log("Project Item read is successfull");
+  log("Project Item read is successful");
   projectItems.forEach((item, index) => {
     log(`   ${index + 1}: ${item.name}`);
   });
@@ -821,7 +821,7 @@ async function getSelectedProjectItemsClicked() {
     log("No project items found", "red");
     return;
   }
-  log("Project Item read is successfull");
+  log("Project Item read is successful");
   projectItems.forEach((item, index) => {
     log(`   ${index + 1}: ${item.name}`);
   });
