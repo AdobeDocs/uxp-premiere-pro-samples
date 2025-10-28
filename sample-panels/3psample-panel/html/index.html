@@ -208,6 +208,9 @@
         <sp-button id="marker-info-sequence"
           >Get Sequence Marker Info</sp-button
         >
+        <sp-button id="set-first-sequence-marker-color">
+          Set First Sequence Marker Color to BLUE
+        </sp-button>
       </div>
       <div class="section">
         <h4>Project Panel Item Manipulation</h4>
@@ -219,6 +222,18 @@
         <sp-button id="get-media-info"> Get Media Info</sp-button>
         <sp-button id="set-media-start">
           Set Media Start to 1 second
+        </sp-button>
+        <sp-button id="get-first-project-item-id">
+          Get Id of First Project Item
+        </sp-button>
+        <sp-button id="get-first-project-item-type">
+          Get Type of First Project Item
+        </sp-button>
+        <sp-button id="get-first-project-item-color-label">
+          Get Color Label of First Project Item
+        </sp-button>
+        <sp-button id="set-first-project-item-color-label">
+          Set Color Label of First Project Item to MAGNETA
         </sp-button>
         <sp-button id="create-bin"> Create Bin</sp-button>
         <sp-button id="create-smart-bin"> Create Smart Bin</sp-button>
@@ -363,6 +378,15 @@
         </sp-button>
       </div>
       <div class="section">
+        <h4>Encoder Controls</h4>
+        <sp-button id="encode-first-selected-project-item">
+          Queue First Selected ProjectItem To Adobe Media Encoder</sp-button
+        >
+        <sp-button id="encode-file"
+          >Queue Media File To Adobe Media Encoder</sp-button
+        >
+      </div>
+      <div class="section">
         <h4>Import Controls</h4>
         <sp-button id="import-ae-component">Import AE Composition</sp-button>
         <input
@@ -375,6 +399,13 @@
           >Import All AE Composition</sp-button
         >
         <sp-button id="import-sequences">Import Sequences From Disk</sp-button>
+      </div>
+      <div class="section">
+        <h4>Transcript Controls</h4>
+        <sp-button id="import-transcript"
+          >Import Transcript from JSON</sp-button
+        >
+        <sp-button id="export-transcript">Export Transcript to JSON</sp-button>
       </div>
     </footer>
   </body>

@@ -23,8 +23,7 @@ import { getClipProjectItem } from "./projectPanel.js";
 const ppro = require("premierepro") as premierepro;
 import { log } from "./utils";
 
-//Returning the sequence markers and clip markers objects from sequence and project root items respectivily
-
+//Returning the sequence markers and clip markers objects from sequence and clip project items respectively
 export async function getMarkerObjects(project: Project) {
   const projectItem = await getClipProjectItem(project);
   if (!projectItem) {
@@ -205,18 +204,52 @@ export async function getSequenceMarkerInfo(sequence: Sequence) {
     const sequenceMarkersOwner = await ppro.Markers.getMarkers(sequence);
     const markers = sequenceMarkersOwner.getMarkers();
     for (let marker of markers) {
-      let markerInfoObj: { name: string; type: string; color: Color } = {
-      name: "",
-      type: "",
-      color: null
-    };
+      let markerInfoObj: {
+        name: string;
+        type: string;
+        color: Color;
+        colorIndex: number;
+      } = {
+        name: "",
+        type: "",
+        color: null,
+        colorIndex: -1,
+      };
       markerInfoObj.name = marker.getName();
       markerInfoObj.type = marker.getType();
       markerInfoObj.color = marker.getColor();
+      markerInfoObj.colorIndex = marker.getColorIndex();
       markerInfos.push(markerInfoObj);
     }
   } catch (error) {
     log(error, "red");
   }
   return markerInfos;
+}
+
+export async function setFirstSequenceMarkerColor(
+  project: Project,
+  sequence: Sequence
+) {
+  try {
+    const sequenceMarkersOwner = await ppro.Markers.getMarkers(sequence);
+    const markers = sequenceMarkersOwner.getMarkers();
+    if (markers.length == 0) {
+      log("No markers found in the sequence", "red");
+      return false;
+    }
+    let firstMarker = markers[0];
+    let success = project.lockedAccess(() => {
+      project.executeTransaction((compoundAction) => {
+        const setMarkerColorAction = firstMarker.createSetColorByIndexAction(
+          ppro.Constants.MarkerColor.BLUE
+        );
+        compoundAction.addAction(setMarkerColorAction);
+      }, "Set Marker Color to blue");
+    });
+    return success;
+  } catch (error) {
+    log(error, "red");
+    return false;
+  }
 }

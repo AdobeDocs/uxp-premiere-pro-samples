@@ -12,7 +12,12 @@
  * written permission of Adobe.
  **************************************************************************/
 
-import type { premierepro, Project, ProjectItem } from "../types.d.ts";
+import type {
+  ClipProjectItem,
+  premierepro,
+  Project,
+  ProjectItem,
+} from "../types.d.ts";
 const ppro = require("premierepro") as premierepro;
 import { log } from "./utils";
 
@@ -33,20 +38,24 @@ export async function getSelectedProjectItems(project: Project) {
   return projectItems;
 }
 
-export async function getClipProjectItem(project: Project) {
+export async function getClipProjectItem(
+  project: Project,
+  includeSequence = false
+) {
   const rootItem = await getRootItem(project);
   const projectItems: Array<ProjectItem> = await rootItem.getItems();
 
-  let mediaItem;
+  let clipProjectItem: ClipProjectItem | null = null;
   for (let projectItem of projectItems) {
-    const clipProjectItem = ppro.ClipProjectItem.cast(projectItem);
+    const clipProjectItemCandidate = ppro.ClipProjectItem.cast(projectItem);
     if (
-      clipProjectItem &&
-      (await clipProjectItem.getContentType()) ===
-        ppro.Constants.ContentType.MEDIA
+      clipProjectItemCandidate && includeSequence
+        ? true
+        : (await clipProjectItemCandidate.getContentType()) ===
+          ppro.Constants.ContentType.MEDIA
     ) {
       // Take the first media found.
-      mediaItem = clipProjectItem;
+      clipProjectItem = clipProjectItemCandidate;
       break;
     } else {
       const folderProjectItem = ppro.FolderItem.cast(projectItem);
@@ -56,11 +65,16 @@ export async function getClipProjectItem(project: Project) {
       }
     }
   }
-  if (!mediaItem) {
-    log("No media project item found.", "red");
-    return;
+  if (!clipProjectItem) {
+    log(
+      includeSequence
+        ? "No clip project item found."
+        : "No media clip project item found.",
+      "red"
+    );
+    return null;
   }
-  return ppro.ClipProjectItem.cast(mediaItem);
+  return clipProjectItem;
 }
 
 export async function getMediaFilePath(project: Project) {
@@ -186,9 +200,8 @@ export async function removeItem(project: Project) {
     try {
       project.lockedAccess(() => {
         success = project.executeTransaction((compoundAction) => {
-          const createRemoveItemAction = rootItem.createRemoveItemAction(
-            ppro.FolderItem.cast(newBin)
-          );
+          const createRemoveItemAction =
+            rootItem.createRemoveItemAction(newBin);
           compoundAction.addAction(createRemoveItemAction);
         });
       });
@@ -241,7 +254,7 @@ export async function moveItem(project: Project) {
       project.lockedAccess(() => {
         success = project.executeTransaction((compoundAction) => {
           const createMoveItemAction = rootItem.createMoveItemAction(
-            ppro.FolderItem.cast(newBin1),
+            newBin1,
             ppro.FolderItem.cast(newBin2)
           );
           compoundAction.addAction(createMoveItemAction);
@@ -265,7 +278,7 @@ export async function setInOutPoint(project: Project) {
   }
   const inPoint = ppro.TickTime.createWithSeconds(2);
   const outPoint = ppro.TickTime.createWithSeconds(4);
-  const clipProjectItem = await getClipProjectItem(project);
+  const clipProjectItem = await getClipProjectItem(project, true);
 
   let success = false;
   try {
@@ -291,7 +304,7 @@ export async function clearInOutPoint(project: Project) {
     log(`No project found.`, "red");
     return;
   }
-  const clipProjectItem = await getClipProjectItem(project);
+  const clipProjectItem = await getClipProjectItem(project, true);
 
   let success = false;
   try {
@@ -522,4 +535,106 @@ export async function setMediaStart(project: Project) {
     log(error, "red");
   }
   return success;
+}
+
+export async function getFirstProjectItemId(project: Project) {
+  try {
+    const rootItem = await getRootItem(project);
+    const projectItems: Array<ProjectItem> = await rootItem.getItems();
+    return projectItems.length > 0
+      ? projectItems[0].getId()
+      : (() => {
+          throw new Error("No ProjectItem found in project panel");
+        })();
+  } catch (error) {
+    log(error, "red");
+  }
+}
+
+export async function getFirstProjectItemType(project: Project) {
+  try {
+    const rootItem = await getRootItem(project);
+    const projectItems: Array<ProjectItem> = await rootItem.getItems();
+    const type =
+      projectItems.length > 0
+        ? projectItems[0].type
+        : (() => {
+            throw new Error("No ProjectItem found in project panel");
+          })();
+
+    // Return type as string for better readability in the log panel
+    if (type == ppro.ProjectItem.TYPE_CLIP) {
+      return "CLIP";
+    } else if (type == ppro.ProjectItem.TYPE_BIN) {
+      return "BIN";
+    } else if (type == ppro.ProjectItem.TYPE_FILE) {
+      return "FILE";
+    } else if (type == ppro.ProjectItem.TYPE_COMPOUND) {
+      return "COMPOUND";
+    } else if (type == ppro.ProjectItem.TYPE_ROOT) {
+      return "ROOT";
+    } else if (type == ppro.ProjectItem.TYPE_STYLE) {
+      return "STYLE";
+    } else {
+      return "UNKNOWN";
+    }
+  } catch (error) {
+    log(error, "red");
+  }
+}
+
+export async function getFirstProjectItemColorLabel(project: Project) {
+  try {
+    const rootItem = await getRootItem(project);
+    const projectItems: Array<ProjectItem> = await rootItem.getItems();
+    let colorLabelIndex: number;
+    if (projectItems.length > 0) {
+      colorLabelIndex = await projectItems[0].getColorLabelIndex();
+    } else {
+      throw new Error("No ProjectItem found in project panel");
+    }
+
+    let colorLabelDict = {
+      [ppro.Constants.ProjectItemColorLabel.VIOLET]: "VIOLET",
+      [ppro.Constants.ProjectItemColorLabel.BLUE]: "BLUE",
+      [ppro.Constants.ProjectItemColorLabel.GREEN]: "GREEN",
+      [ppro.Constants.ProjectItemColorLabel.YELLOW]: "YELLOW",
+      [ppro.Constants.ProjectItemColorLabel.CERULEAN]: "CERULEAN",
+      [ppro.Constants.ProjectItemColorLabel.BROWN]: "BROWN",
+      [ppro.Constants.ProjectItemColorLabel.FOREST]: "FOREST",
+      [ppro.Constants.ProjectItemColorLabel.IRIS]: "IRIS",
+      [ppro.Constants.ProjectItemColorLabel.LAVENDER]: "LAVENDER",
+      [ppro.Constants.ProjectItemColorLabel.MAGENTA]: "MAGENTA",
+      [ppro.Constants.ProjectItemColorLabel.MANGO]: "MANGO",
+      [ppro.Constants.ProjectItemColorLabel.PURPLE]: "PURPLE",
+      [ppro.Constants.ProjectItemColorLabel.ROSE]: "ROSE",
+      [ppro.Constants.ProjectItemColorLabel.TAN]: "TAN",
+      [ppro.Constants.ProjectItemColorLabel.TEAL]: "TEAL",
+    };
+    return colorLabelDict[colorLabelIndex] || "NONE";
+  } catch (error) {
+    log(error, "red");
+  }
+}
+
+export async function setFirstProjectItemColorLabel(project: Project) {
+  try {
+    const rootItem = await getRootItem(project);
+    const projectItems: Array<ProjectItem> = await rootItem.getItems();
+    if (projectItems.length == 0) {
+      throw new Error("No ProjectItem found in project panel");
+    }
+    const success = project.lockedAccess(() => {
+      project.executeTransaction((compoundAction) => {
+        const setColorLabelAction = projectItems[0].createSetColorLabelAction(
+          ppro.Constants.ProjectItemColorLabel.MAGENTA
+        );
+        compoundAction.addAction(setColorLabelAction);
+      }, "set ProjectItem Color Label to MAGENTA");
+    });
+    return success;
+  } catch (error) {
+    log(error, "red");
+    return false;
+  }
 }

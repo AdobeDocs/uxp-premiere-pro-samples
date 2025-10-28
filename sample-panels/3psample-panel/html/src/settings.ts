@@ -26,7 +26,7 @@ export async function getScratchDiskSetting(project: Project) {
     project
   );
   return scratchDiskSettings.getScratchDiskPath(
-    ppro.Constants.ScratchDiskFolderType.VIDEO_CAPTURE
+    ppro.Constants.ScratchDiskFolderType.CAPTURE
   );
 }
 
@@ -41,7 +41,7 @@ export async function setScratchDiskSettings(project: Project) {
   );
   // set to documents
   await scratchDiskSettings.setScratchDiskPath(
-    ppro.Constants.ScratchDiskFolderType.VIDEO_CAPTURE,
+    ppro.Constants.ScratchDiskFolderType.CAPTURE,
     ppro.Constants.ScratchDiskFolder.MY_DOCUMENTS
   );
 

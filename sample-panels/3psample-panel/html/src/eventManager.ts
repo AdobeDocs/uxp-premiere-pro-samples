@@ -158,6 +158,14 @@ export async function onEffectDropped() {
 }
 
 /**
+ * Callback function for effect dragged over completion event
+ * Log effect dragged over when effect is dragged over trackItem
+ */
+async function onEffectDraggedOver() {
+  console.log("Effect dragged over");
+}
+
+/**
  * Callback function for snap trackItem event
  * Log trackItem snapped when trackItem is snapped in timeline
  */
@@ -165,6 +173,13 @@ async function onSnapTrackItem() {
   console.log("TrackItem snapped");
 }
 
+/**
+ * Callback function for snap trackItem playhead event
+ * Log playhead snapped when playhead is snapped to trackItem edges
+ */
+async function onSnapTrackItemPlayhead() {
+  console.log("Playhead snapped to trackItem edges");
+}
 /**
  * Add project and sequence event listeners
  */
@@ -214,9 +229,19 @@ export async function addProjSeqListeners() {
     onEffectDropped
   );
 
+  ppro.EventManager.addGlobalEventListener(
+    ppro.Constants.OperationCompleteEvent.EFFECT_DRAG_OVER,
+    onEffectDraggedOver
+  );
+
   // add snap event listeners
   ppro.EventManager.addGlobalEventListener(
     ppro.Constants.SnapEvent.TRACKITEM,
     onSnapTrackItem
+  );
+
+  ppro.EventManager.addGlobalEventListener(
+    ppro.Constants.SnapEvent.PLAYHEAD_TRACKITEM,
+    onSnapTrackItemPlayhead
   );
 }

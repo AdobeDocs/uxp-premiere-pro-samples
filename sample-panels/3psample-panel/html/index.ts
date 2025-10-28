@@ -57,6 +57,7 @@ import {
   moveMarker,
   removeMarker,
   getSequenceMarkerInfo,
+  setFirstSequenceMarkerColor,
 } from "./src/markers";
 import {
   getProjectItems,
@@ -82,6 +83,10 @@ import {
   renameFirstSelectedProjectItem,
   getMediaInfo,
   setMediaStart,
+  getFirstProjectItemId,
+  getFirstProjectItemType,
+  getFirstProjectItemColorLabel,
+  setFirstProjectItemColorLabel,
 } from "./src/projectPanel";
 
 import {
@@ -179,8 +184,78 @@ import type {
   VideoClipTrackItem,
   AudioClipTrackItem,
 } from "./types.d.ts";
+import {
+  encodeFile,
+  encodeFirstSelectedProjectItem,
+} from "./src/encoderManager";
+import { register } from "module";
+import { exportTranscript, importTranscript } from "./src/transcript";
 const ppro = require("premierepro") as premierepro;
 const uxp = require("uxp") as typeof import("uxp");
+const PREMIERE_MEDIA_EXTENSIONS = [
+  "aac",
+  "aif",
+  "aiff",
+  "asf",
+  "asnd",
+  "avi",
+  "3g2",
+  "3gp",
+  "bmp",
+  "dib",
+  "rle",
+  "braw",
+  "bwf",
+  "chproj",
+  "cine",
+  "crm",
+  "dng",
+  "dpx",
+  "dv",
+  "exr",
+  "f4v",
+  "gif",
+  "heic",
+  "heif",
+  "jpe",
+  "jpeg",
+  "jfif",
+  "jpg",
+  "m4a",
+  "m4v",
+  "m2t",
+  "m2ts",
+  "m2v",
+  "mov",
+  "mp3",
+  "mp4",
+  "mpe",
+  "mpeg",
+  "mpg",
+  "mts",
+  "mxf",
+  "mxr",
+  "png",
+  "prproj",
+  "psd",
+  "r3d",
+  "rush",
+  "scc",
+  "srt",
+  "sxr",
+  "tga",
+  "icb",
+  "vda",
+  "vst",
+  "tif",
+  "tiff",
+  "vob",
+  "wav",
+  "webm",
+  "wma",
+  "wmv",
+  "xml",
+];
 
 //project button events
 async function openProjectClicked() {
@@ -792,9 +867,29 @@ async function getSequenceMarkerInfoClicked() {
     log(
       `Marker Color: RGBA(${markerInfo.color.red}, ${markerInfo.color.green}, ${markerInfo.color.blue}, ${markerInfo.color.alpha})`
     );
+    log(`Marker Color Index: ${markerInfo.colorIndex}`);
   }
 }
 
+async function setFirstSequenceMarkerColorClicked() {
+  const project = await getProject();
+  if (!project) return;
+
+  const sequence = await project.getActiveSequence();
+  if (!sequence) {
+    log("No sequences found");
+    return;
+  }
+
+  const success = await setFirstSequenceMarkerColor(project, sequence);
+  log(
+    success
+      ? "Set color of first sequence marker to BLUE successfully"
+      : "Failed to set color of first sequence marker to BLUE"
+  );
+}
+
+// Project panel button events
 async function getProjectItemsClicked() {
   const project = await getProject();
   if (!project) return;
@@ -837,6 +932,42 @@ async function getMediaFilePathClicked() {
   } else {
     log(`Path of project item is ${path}`);
   }
+}
+
+async function getFirstProjectItemIdClicked() {
+  const project = await getProject();
+  if (!project) return;
+
+  const firstItemId = await getFirstProjectItemId(project);
+  log(`Id of first project item is ${firstItemId}`);
+}
+
+async function getFirstProjectItemTypeClicked() {
+  const project = await getProject();
+  if (!project) return;
+
+  const firstItemType = await getFirstProjectItemType(project);
+  log(`Type of first project item is ${firstItemType}`);
+}
+
+async function getFirstProjectItemColorLabelClicked() {
+  const project = await getProject();
+  if (!project) return;
+
+  const firstItemColorLabel = await getFirstProjectItemColorLabel(project);
+  log(`Color label of first project item is ${firstItemColorLabel}`);
+}
+
+async function setFirstProjectItemColorLabelClicked() {
+  const project = await getProject();
+  if (!project) return;
+
+  const success = await setFirstProjectItemColorLabel(project);
+  log(
+    success
+      ? "Set color label of first project item to MAGNETA successfully"
+      : "Failed to set color label of first project item to MAGNETA"
+  );
 }
 
 async function createBinClicked() {
@@ -1720,7 +1851,7 @@ async function importAeComponentClicked() {
       project,
       file.nativePath,
       aeCompName,
-      rootItem
+      ppro.ProjectItem.cast(rootItem)
     );
   }
 
@@ -1752,12 +1883,152 @@ async function importAllAeComponentsClicked() {
     types: ["aep"],
   });
   if (file?.isFile && file.nativePath) {
-    success = await importAllAeComponents(project, file.nativePath, rootItem);
+    success = await importAllAeComponents(
+      project,
+      file.nativePath,
+      ppro.ProjectItem.cast(rootItem)
+    );
   }
   if (success) {
     log(`Import all ae composition succeed`);
   } else {
     log(`Failed to import ae composition`);
+  }
+}
+
+// Encode button events
+async function encodeFileClicked() {
+  const project = await getProject();
+  if (!project) return;
+  let mediaPath = null;
+  log("Please select media file to encode");
+  // @ts-ignore
+  const mediaFile = await uxp.storage.localFileSystem.getFileForOpening({
+    types: PREMIERE_MEDIA_EXTENSIONS,
+  });
+  if (mediaFile?.isFile && mediaFile.nativePath) {
+    mediaPath = mediaFile.nativePath;
+  } else {
+    throw new Error("Selection of media file failed. Please try again");
+  }
+
+  log("Please select output directory for the encoded file");
+  // @ts-ignore
+  const outputFolder = await uxp.storage.localFileSystem.getFolder();
+  if (!outputFolder?.nativePath) {
+    throw new Error("Selection of output folder failed. Please try again");
+  }
+
+  log("Please select preset file for the encoded file");
+  let presetPath = null;
+  // @ts-ignore
+  const presetFile = await uxp.storage.localFileSystem.getFileForOpening({
+    types: ["epr"],
+  });
+  if (presetFile?.isFile && presetFile.nativePath) {
+    presetPath = presetFile.nativePath;
+  } else {
+    throw new Error("Selection of preset file failed. Please try again");
+  }
+  const success = await encodeFile(
+    mediaPath,
+    outputFolder.nativePath + "output",
+    presetPath
+  );
+  log(
+    success
+      ? "Successfully queued the file to AME"
+      : "Failed to queue the file to AME"
+  );
+}
+
+async function encodeFirstSelectedProjectItemClicked() {
+  const project = await getProject();
+  if (!project) return;
+
+  log("Please select output directory for the encoded file");
+  // @ts-ignore
+  const outputFolder = await uxp.storage.localFileSystem.getFolder();
+  if (!outputFolder?.nativePath) {
+    throw new Error("Selection of output folder failed. Please try again");
+  }
+
+  log("Please select preset file for the encoded file");
+  let presetPath = null;
+  // @ts-ignore
+  const presetFile = await uxp.storage.localFileSystem.getFileForOpening({
+    types: ["epr"],
+  });
+  if (presetFile?.isFile && presetFile.nativePath) {
+    presetPath = presetFile.nativePath;
+  } else {
+    throw new Error("Selection of preset file failed. Please try again");
+  }
+  const success = await encodeFirstSelectedProjectItem(
+    project,
+    outputFolder.nativePath + "output",
+    presetPath
+  );
+  log(
+    success
+      ? "Successfully queued the first selected project item to AME"
+      : "Failed to queue the first selected project item to AME"
+  );
+}
+
+// Transcript button events
+async function importTranscriptClicked() {
+  const project = await getProject();
+  if (!project) return;
+
+  let transcriptFileContent;
+  log("Please select transcript file to import");
+  // @ts-ignore
+  const file = await uxp.storage.localFileSystem.getFileForOpening({
+    types: ["json"],
+  });
+  if (file?.isFile && file.nativePath) {
+    transcriptFileContent = await file.read();
+  } else {
+    log("Selection of transcript file failed. Please try again");
+    return;
+  }
+  const success = await importTranscript(transcriptFileContent, project);
+  log(
+    success
+      ? "Successfully imported transcript to clipProjectItem"
+      : "Failed to import transcript"
+  );
+}
+
+async function exportTranscriptClicked() {
+  const project = await getProject();
+  if (!project) return;
+
+  const jsonContent = await exportTranscript(project);
+  if (!jsonContent) {
+    log("Failed to export transcript from clipProjectItem");
+    return;
+  }
+
+  log("Please select output directory for the transcript file");
+  // @ts-ignore
+  const outputFolder = await uxp.storage.localFileSystem.getFolder();
+  if (!outputFolder?.nativePath) {
+    throw new Error("Selection of output folder failed. Please try again");
+  }
+
+  const fileName = "exported_transcript.json";
+  try {
+    const file = await outputFolder.createFile(fileName, {
+      overwrite: true,
+    });
+    await file.write(jsonContent);
+    log(
+      `Successfully exported transcript to ${outputFolder.nativePath}/${fileName}`
+    );
+  } catch (err) {
+    log(`Failed to write transcript file: ${err}`, "red");
   }
 }
 
@@ -1816,6 +2087,10 @@ window.addEventListener("load", async () => {
   registerClick("marker-movemarker", moveMarkerClicked);
   registerClick("marker-removemarker", removeMarkerClicked);
   registerClick("marker-info-sequence", getSequenceMarkerInfoClicked);
+  registerClick(
+    "set-first-sequence-marker-color",
+    setFirstSequenceMarkerColorClicked
+  );
 
   //metadata events registering
   registerClick("get-project-metadata", getProjectMetadataClicked);
@@ -1855,6 +2130,16 @@ window.addEventListener("load", async () => {
   registerClick("get-media-path", getMediaFilePathClicked);
   registerClick("get-media-info", getMediaInfoClicked);
   registerClick("set-media-start", setMediaStartClicked);
+  registerClick("get-first-project-item-id", getFirstProjectItemIdClicked);
+  registerClick("get-first-project-item-type", getFirstProjectItemTypeClicked);
+  registerClick(
+    "get-first-project-item-color-label",
+    getFirstProjectItemColorLabelClicked
+  );
+  registerClick(
+    "set-first-project-item-color-label",
+    setFirstProjectItemColorLabelClicked
+  );
   registerClick("create-bin", createBinClicked);
   registerClick("create-smart-bin", createSmartBinClicked);
   registerClick("rename-bin", renameBinClicked);
@@ -1912,11 +2197,22 @@ window.addEventListener("load", async () => {
   registerClick("export-sequence", exportSequenceClicked);
   registerClick("get-export-file-extension", getExportFileExtensionClicked);
 
+  // Encode
+  registerClick("encode-file", encodeFileClicked);
+  registerClick(
+    "encode-first-selected-project-item",
+    encodeFirstSelectedProjectItemClicked
+  );
+
   // Import controls
   registerClick("import-ae-component", importAeComponentClicked);
   registerClick("import-files", importFilesClicked);
   registerClick("import-all-ae-components", importAllAeComponentsClicked);
   registerClick("import-sequences", importSequencesClicked);
+
+  // Transcript controls
+  registerClick("import-transcript", importTranscriptClicked);
+  registerClick("export-transcript", exportTranscriptClicked);
 
   document
     .querySelector(".clear-btn")!
