@@ -965,8 +965,8 @@ async function setFirstProjectItemColorLabelClicked() {
   const success = await setFirstProjectItemColorLabel(project);
   log(
     success
-      ? "Set color label of first project item to MAGNETA successfully"
-      : "Failed to set color label of first project item to MAGNETA"
+      ? "Set color label of first project item to MAGENTA successfully"
+      : "Failed to set color label of first project item to MAGENTA"
   );
 }
 
