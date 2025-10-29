@@ -8,11 +8,11 @@ The Premiere Pro UXP API documentation is available here: <https://developer.ado
 
 - Premiere Pro BETA build, available through Creative Cloud Desktop.
 - UXP Developer Tool, also available for download through Creative Cloud Desktop.
-- Adobe third-party sample panel - **3psample-panel** directory from this Git repository.
+- Adobe third-party sample panel - **premiere-api** directory from this Git repository.
 
 ## Build the sample
 
-- Open your console / terminal / command prompt, into ```sample-panels/3psample-panel/html```.
+- Open your console / terminal / command prompt, into ```sample-panels/premiere-api/html```.
 - Install dependencies with ```npm i```
 - Bulid the project with ```npm run build```
 
@@ -23,7 +23,7 @@ The plugin is now built in the ```/build-html``` directory.
 - Launch Premiere Pro Beta.
 - Load UDT. *On first launch it will be blank*.
 - Click **Add Plugin**.
-- Navigate to the ```3psample-panel/build-html/manifest.json```, and click **Open**.
+- Navigate to the ```premiere-api/build-html/manifest.json```, and click **Open**.
 
 ![UXP Developer Tool UDT](payloads/UDT_load_panel.png)
 
