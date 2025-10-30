@@ -1,0 +1,181 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://schemas.adobe.com/transcript/v1.0.0",
+  "title": "Premiere Pro Audio Transcript Format Specification",
+  "description": "JSON schema for audio transcription files with speaker identification, word-level timing, and confidence scores.",
+  "type": "object",
+  "required": ["language", "segments", "speakers"],
+  "additionalProperties": false,
+  "properties": {
+    "language": {
+      "$ref": "#/definitions/LanguageCode",
+      "description": "Primary language of the transcript. Must be one of the supported Premiere Pro language codes. Use '??-??' for unknown/undetermined language."
+    },
+    "segments": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Array of speech segments, typically grouped by speaker or pause boundaries",
+      "items": {
+        "$ref": "#/definitions/Segment"
+      }
+    },
+    "speakers": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Array of speaker identification objects",
+      "items": {
+        "$ref": "#/definitions/Speaker"
+      }
+    }
+  },
+  "definitions": {
+    "LanguageCode": {
+      "type": "string",
+      "enum": [
+        "en-us", "en-gb", "zh-hk", "cmn-hans", "cmn-hant", "es-es", "de-de",
+        "fr-fr", "ja-jp", "pt-pt", "pt-br", "ko-kr", "it-it", "ru-ru", "hi-in",
+        "nb-no", "sv-se", "nl-nl", "da-dk", "id-id", "th-th", "vi-vn", "ms-my",
+        "tr-tr", "pl-pl", "fil-ph", "te-in", "ml-in", "pa-in", "??-??"
+      ],
+      "description": "Supported Premiere Pro language codes. '??-??' represents unknown/undetermined language."
+    },
+    "Segment": {
+      "type": "object",
+      "required": ["duration", "language", "speaker", "start", "words"],
+      "additionalProperties": false,
+      "description": "A continuous speech segment from a single speaker",
+      "properties": {
+        "duration": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Total duration of the segment in seconds (floating point precision)"
+        },
+        "language": {
+          "$ref": "#/definitions/LanguageCode",
+          "description": "Language of this specific segment (may differ from root language for multilingual content). Must be one of the supported Premiere Pro language codes."
+        },
+        "speaker": {
+          "type": "string",
+          "format": "uuid",
+          "description": "UUID reference to the speaker who spoke this segment in version 4 (8-4-4-4-12) format. Has to be referenced in the speaker array.",
+          "examples": ["631fbbc0-9c02-47c4-bb8c-732c020fa24f"]
+        },
+        "start": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Start time of the segment in seconds from the beginning of the audio"
+        },
+        "words": {
+          "type": "array",
+          "minItems": 1,
+          "description": "Array of individual words within this segment",
+          "items": {
+            "$ref": "#/definitions/Word"
+          }
+        }
+      }
+    },
+    "Word": {
+      "type": "object",
+      "required": ["confidence", "duration", "eos", "start", "tags", "text", "type"],
+      "additionalProperties": false,
+      "description": "Individual word with timing and confidence information",
+      "properties": {
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Confidence score for this word recognition (0.0 to 1.0, where 1.0 is highest confidence)"
+        },
+        "duration": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Duration of the word in seconds (floating point precision)"
+        },
+        "eos": {
+          "type": "boolean",
+          "description": "End of sentence marker - true if this word ends a sentence or phrase"
+        },
+        "start": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Start time of the word in seconds from the beginning of the audio"
+        },
+        "tags": {
+          "type": "array",
+          "description": "Optional semantic tags or annotations for this word",
+          "items": {
+            "type": "string",
+            "enum": ["profanity", "filler"]
+          }
+        },
+        "text": {
+          "type": "string",
+          "description": "The transcribed text of the word, including punctuation"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["word", "punctuation"],
+          "description": "Type classification of this word"
+        }
+      }
+    },
+    "Speaker": {
+      "type": "object",
+      "required": ["id", "name"],
+      "additionalProperties": false,
+      "description": "Speaker identification and metadata",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Unique identifier for the speaker in UUID v4 (8-4-4-4-12) format"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Human-readable name or label for the speaker"
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "language": "en-us",
+      "segments": [
+        {
+          "duration": 3.79,
+          "language": "en-us",
+          "speaker": "631fbbc0-9c02-47c4-bb8c-732c020fa24f",
+          "start": 1.74,
+          "words": [
+            {
+              "confidence": 1.0,
+              "duration": 0.63,
+              "eos": false,
+              "start": 1.74,
+              "tags": [],
+              "text": "Hello",
+              "type": "word"
+            },
+            {
+              "confidence": 0.95,
+              "duration": 0.42,
+              "eos": true,
+              "start": 2.37,
+              "tags": [],
+              "text": "world.",
+              "type": "word"
+            }
+          ]
+        }
+      ],
+      "speakers": [
+        {
+          "id": "631fbbc0-9c02-47c4-bb8c-732c020fa24f",
+          "name": "Jane Doe"
+        }
+      ]
+    }
+  ]
+}
