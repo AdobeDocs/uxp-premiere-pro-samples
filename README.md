@@ -47,4 +47,4 @@ You can now see and use TypeScript definitions for Premiere Pro's UXP APIs, in V
 
 ## Transcript definition
 
-We have included the definition of the JSON Premiere Pro uses for transcripts, in the ```assets``` directory, within the ```premiere-api``` sample plugin.
+We have included [Premiere Pro's transcript JSON definition](./sample-panels/premiere-api/html/assets/transcript_format_spec.json), in the ```assets``` directory, within the ```premiere-api``` sample plugin.
