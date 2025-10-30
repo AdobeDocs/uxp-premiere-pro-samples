@@ -44,3 +44,7 @@ Add this line to the top of ```index.js```:
 You can now see and use TypeScript definitions for Premiere Pro's UXP APIs, in Visual Studio Code.
 
 ![UXP typescript autocomplete](payloads/ts_def_demo.png)
+
+## Transcript definition
+
+We have included [Premiere Pro's transcript JSON definition](./sample-panels/premiere-api/html/assets/transcript_format_spec.json), in the ```assets``` directory, within the ```premiere-api``` sample plugin.
