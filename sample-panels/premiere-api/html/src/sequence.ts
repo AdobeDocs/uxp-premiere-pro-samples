@@ -84,7 +84,7 @@ export async function getVideoSettingsInfo(sequence: Sequence) {
   return getInfoFromSettings(settings);
 }
 
-export async function setSequencePixelAsepctRatio(
+export async function setSequencePixelAspectRatio(
   project: Project,
   sequence: Sequence
 ) {
