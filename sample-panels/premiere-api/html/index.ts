@@ -44,7 +44,7 @@ import {
   trimSelectedItem,
   addHandlesToTrackItem,
   getVideoSettingsInfo,
-  setSequencePixelAsepctRatio,
+  setSequencePixelAspectRatio,
   setSequenceInOutPoint,
   renameFirstSelectedTrackItem,
 } from "./src/sequence";
@@ -473,7 +473,7 @@ async function setSequencePixelAspectRatioClicked() {
     log(`No sequences found`);
     return;
   }
-  const success = await setSequencePixelAsepctRatio(project, sequence);
+  const success = await setSequencePixelAspectRatio(project, sequence);
   log(
     success
       ? `Sequence ${sequence.name} pixel aspect ratio changed to Square`
