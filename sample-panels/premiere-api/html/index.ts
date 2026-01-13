@@ -922,6 +922,31 @@ async function getSelectedProjectItemsClicked() {
   });
 }
 
+/**
+ * Gets the proxy info for all project items.
+ */
+async function getProjectItemsProxyInfoClicked() {
+  const project = await getProject();
+  if (!project) return;
+
+  const projectItems: Array<ProjectItem> = await getProjectItems(project);
+  if (!projectItems.length) {
+    log("No project items found", "red");
+    return;
+  }
+
+  await Promise.all(projectItems.map(async (item) => {
+    const clipItem = ppro.ClipProjectItem.cast(item);
+
+    if (clipItem) {
+      const proxyPath = await clipItem.getProxyPath();
+      const hasProxy = await clipItem.hasProxy();
+      const canProxy = await clipItem.canProxy();
+      log(`${item.name}: Has Proxy: ${hasProxy}, Can Proxy: ${canProxy}, Proxy Path: "${proxyPath}"`);
+    }
+  }));
+}
+
 async function getMediaFilePathClicked() {
   const project = await getProject();
   if (!project) return;
@@ -2127,6 +2152,7 @@ window.addEventListener("load", async () => {
   //project panel item events registering
   registerClick("get-project-items", getProjectItemsClicked);
   registerClick("get-selected-project-items", getSelectedProjectItemsClicked);
+  registerClick("get-project-items-proxy-info", getProjectItemsProxyInfoClicked);
   registerClick("get-media-path", getMediaFilePathClicked);
   registerClick("get-media-info", getMediaInfoClicked);
   registerClick("set-media-start", setMediaStartClicked);
