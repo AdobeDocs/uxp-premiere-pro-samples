@@ -35,6 +35,7 @@ async function getInfoFromSettings(settings: SequenceSettings) {
   const par = await settings.getVideoPixelAspectRatio();
   const field = await settings.getVideoFieldType();
   const displayFormat = await settings.getVideoDisplayFormat();
+  const videoFrameRate = await settings.getVideoFrameRate();
 
   let fieldType = "No Fields";
   if (field == ppro.Constants.VideoFieldType.LOWER_FIRST) {
@@ -76,6 +77,7 @@ async function getInfoFromSettings(settings: SequenceSettings) {
     `Pixel Aspect Ratio: ${par}`,
     `Fields: ${fieldType}`,
     `Display Format: ${displayFormatType}`,
+    `Video Frame Rate: ${videoFrameRate.value} fps`,
   ];
 }
 
@@ -84,26 +86,28 @@ export async function getVideoSettingsInfo(sequence: Sequence) {
   return getInfoFromSettings(settings);
 }
 
-export async function setSequencePixelAsepctRatio(
+export async function setSequenceSettings(
   project: Project,
   sequence: Sequence
 ) {
   const settings = await sequence.getSettings();
-  let success = false;
+  let successPAR = false;
+  let successFrameRate = false;
+  const newFrameRate = ppro.FrameRate.createWithValue(32.987);
   try {
-    success = await settings.setVideoPixelAspectRatio(
+    successPAR = await settings.setVideoPixelAspectRatio(
       ppro.Constants.PixelAspectRatio.SQUARE.toString()
     );
-    project.lockedAccess(() => {
-      success = project.executeTransaction((compoundAction) => {
+    successFrameRate = await settings.setVideoFrameRate(newFrameRate);    project.lockedAccess(() => {
+      successPAR = project.executeTransaction((compoundAction) => {
         const setSettingsAction = sequence.createSetSettingsAction(settings);
         compoundAction.addAction(setSettingsAction);
-      }, "set sequence pixel aspect ratio to square");
+      }, "set sequence pixel aspect ratio to Square, and video frame rate to 32.987.");
     });
   } catch (err) {
     log(err.toString(), "red");
   }
-  return success;
+  return successPAR && successFrameRate;
 }
 
 export async function setSequenceInOutPoint(

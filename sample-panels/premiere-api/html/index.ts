@@ -44,7 +44,7 @@ import {
   trimSelectedItem,
   addHandlesToTrackItem,
   getVideoSettingsInfo,
-  setSequencePixelAsepctRatio,
+  setSequenceSettings,
   setSequenceInOutPoint,
   renameFirstSelectedTrackItem,
 } from "./src/sequence";
@@ -464,7 +464,7 @@ async function getSequenceSettingsClicked() {
   }
 }
 
-async function setSequencePixelAspectRatioClicked() {
+async function setSequenceSettingsClicked() {
   const project = await getProject();
   if (!project) return;
 
@@ -473,10 +473,10 @@ async function setSequencePixelAspectRatioClicked() {
     log(`No sequences found`);
     return;
   }
-  const success = await setSequencePixelAsepctRatio(project, sequence);
+  const success = await setSequenceSettings(project, sequence);
   log(
     success
-      ? `Sequence ${sequence.name} pixel aspect ratio changed to Square`
+      ? `Sequence ${sequence.name} pixel aspect ratio changed to Square; video frame rate changed to 32.987 fps.`
       : `Failed to set pixel asepct ratio of ${sequence.name}`
   );
 }
@@ -2056,7 +2056,7 @@ window.addEventListener("load", async () => {
 
   //sequence events registering
   registerClick("get-sequence-settings", getSequenceSettingsClicked);
-  registerClick("set-sequence-settings", setSequencePixelAspectRatioClicked);
+  registerClick("set-sequence-settings", setSequenceSettingsClicked);
   registerClick("set-sequence-in-out-point", setSequenceInOutPointClicked);
   registerClick("get-sequence-from-id", getSequenceClicked);
   registerClick("set-active-sequence", setActiveSequenceClicked);

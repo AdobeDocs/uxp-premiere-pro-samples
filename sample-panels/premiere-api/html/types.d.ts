@@ -289,8 +289,8 @@ export declare type EncoderManagerStatic = {
 
 export declare type EncoderManager = {
   exportSequence(sequence: Sequence, exportType: Constants.ExportType, outputFile?: string, presetFile?: string, exportFull?: boolean): Promise<boolean>	//Export a sequence. If no output file and preset is specified, the sequence will be exported with the applied export settings or standard export rules will be applied.
-  encodeProjectItem(clipProjectItem: ClipProjectItem, outputFile: string, presetFile: string, workArea?: number, removeUponCompletion?: boolean, startQueueImmediately?: boolean): Promise<boolean>	//Encode input clipProjectItem in AME
-  encodeFile(filePath: string, outputFile: string, presetFile: string, inPoint: TickTime, outPoint: TickTime, workArea?: number, removeUponCompletion?: boolean, startQueueImmediately?: boolean): Promise<boolean>	//Encode input media file in AME
+  encodeProjectItem(clipProjectItem: ClipProjectItem, outputFile?: string, presetFile?: string, workArea?: number, removeUponCompletion?: boolean, startQueueImmediately?: boolean): Promise<boolean>	//Encode input clipProjectItem in AME
+  encodeFile(filePath: string, outputFile?: string, presetFile?: string, inPoint: TickTime, outPoint: TickTime, workArea?: number, removeUponCompletion?: boolean, startQueueImmediately?: boolean): Promise<boolean>	//Encode input media file in AME
   isAMEInstalled: boolean	//Check if AME is installed.
 }
 
@@ -688,7 +688,7 @@ export declare type SequenceEditorStatic = {
 
 export declare type SequenceEditor = {
   createRemoveItemsAction(trackItemSelection: TrackItemSelection, ripple: boolean, mediaType: Constants.MediaType, shiftOverLapping?: boolean): Action	//Create remove action for sequence
-  createInsertProjectItemAction(projectItem: ProjectItem, time: TickTime, videoTrackIndex: number, audioTrackIndex: number, limitShift: boolean): Action	//Create insert ProjectItem into Sequence Action
+  createInsertProjectItemAction(projectItem: ProjectItem, time: TickTime, videoTrackIndex: number, audioTrackIndex: number, limitShift: boolean): Action	//Create insert ProjectItem into Sequence Action. Note: If you pass a track index greater than the number of existing tracks, a new track will be created.
   createOverwriteItemAction(projectItem: ProjectItem, time: TickTime, videoTrackIndex: number, audioTrackIndex: number): Action	//Create overwrite Sequence with ProjectItem Action
   createCloneTrackItemAction(trackItem: VideoClipTrackItem | AudioClipTrackItem, timeOffset: TickTime, videoTrackVerticalOffset: number, audioTrackVerticalOffset: number, alignToVideo: boolean, isInsert: boolean): Action	//Duplicate trackItem using an insert or overwrite edit method to a destination track. Target track and start time of trackItem is determined using an offset value from the original trackItem position.
   insertMogrtFromPath(inMGTPath: string, inTime: TickTime, inVideoTrackIndex: number, inAudioTrackIndex: number): (VideoClipTrackItem | AudioClipTrackItem)[]	//Insert input MGT into sequence with time and index defined
@@ -737,6 +737,8 @@ export declare type SequenceSettings = {
   setVideoDisplayFormat(audioDisplay: TimeDisplay): Promise<boolean>	//Set video display format of sequence
   getVideoFieldType(): Promise<number>	//Get video field type in the sequence
   setVideoFieldType(videoFiledType: number): Promise<boolean>	//Set video field type in sequence
+  getVideoFrameRate(): FrameRate	//Get video frame rate in the sequence
+  setVideoFrameRate(inVideoFrameRate: FrameRate): boolean	//Set video frame rate in the sequence
   getVideoFrameRect(): Promise<RectF>	//Get video frame rect in the sequence
   setVideoFrameRect(inVideoFrameRect: RectF): Promise<boolean>	//Set video frame rect in sequence
   getVideoPixelAspectRatio(): Promise<string>	//Get Video display format
