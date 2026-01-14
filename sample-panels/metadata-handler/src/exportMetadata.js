@@ -99,7 +99,7 @@ function secondToTimeCode(seconds, frameRate, isOutOrEnd = false) {
   let frames = Math.round(seconds * frameRate);
 
   if (isOutOrEnd) {
-    frames = frames--; // out frames need to be rolled back one frame for timecode notation
+    frames--; // out frames need to be rolled back one frame for timecode notation
   }
 
   const frameRateRounded = Math.round(frameRate);
@@ -147,16 +147,28 @@ async function getFrameRate(inProjectItem) {
 async function getClipMetadata(inProjectItem, timeType) {
   const metadata = await ppro.Metadata.getProjectColumnsMetadata(inProjectItem);
   const columnMetadata = JSON.parse(metadata);
-  let frameRate;
-  // now get each
+  
+  // Get frame rate first before processing time columns
+  let frameRate = 30; // default for audio clips
+  for (const currMetadata of columnMetadata) {
+    if (currMetadata.ColumnName == "Frame Rate") {
+      const match = currMetadata.ColumnValue.match(/^(\d+(\.\d+)?)\s*fps$/);
+      if (match) {
+        frameRate = parseFloat(match[1]);
+      }
+      break;
+    }
+  }
+  
   let clipColMetadata = {};
   for (const currMetadata of columnMetadata) {
     let colName = currMetadata.ColumnName;
     let colValue = currMetadata.ColumnValue;
-    if (colName == "Frame Rate") {
-      const match = currMetadata.ColumnValue.match(/^(\d+(\.\d+)?)\s*fps$/); // check if it matchs
-      frameRate = match ? parseFloat(match[1]) : 30; // for audio clip, use 30 fps
-    } else if (timeColKeys.includes(colName) && colValue != "") {
+    if (colName == "Video Codec" && currMetadata.ColumnID == "videoCodec"){
+      // Premiere Video Codec and AS-11 Structural Codec share the same Column Name
+      // Mark Column name as "AS-11 Structural Codec" for export
+      colName = "AS-11 Structural Codec";
+    }else if (timeColKeys.includes(colName) && colValue != "") {
       // convert ticks to timecode
       let ticktime = ppro.TickTime.createWithTicks(colValue);
       if (timeType == "smpte") {
@@ -177,7 +189,6 @@ async function getClipMetadata(inProjectItem, timeType) {
     }
     clipColMetadata[colName] = colValue;
   }
-  console.log(clipColMetadata);
   return clipColMetadata;
 }
 
