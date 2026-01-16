@@ -32,26 +32,34 @@
       </sp-body>
       <div class="section updater">
         <h4>Column to Column Changer</h4>
-        <sp-picker
-          placeholder="Select the Column for update"
-          id="column-picker-left"
-        >
-          <sp-menu slot="options" class="metadata-columns"> </sp-menu>
-        </sp-picker>
+        <div class="picker-row">
+          <div class="picker-container">
+            <sp-field-label for="column-picker-left">Source</sp-field-label>
+            <sp-picker
+              placeholder="Select the Column for update"
+              id="column-picker-left"
+            >
+              <sp-menu slot="options" class="metadata-columns"> </sp-menu>
+            </sp-picker>
+          </div>
 
-        <sp-picker
-          placeholder="Select the Column for update"
-          id="column-picker-right"
-        >
-          <sp-menu slot="options" class="metadata-columns"> </sp-menu>
-        </sp-picker>
+          <div class="picker-container">
+            <sp-field-label for="column-picker-right">Destination</sp-field-label>
+            <sp-picker
+              placeholder="Select the Column for update"
+              id="column-picker-right"
+            >
+              <sp-menu slot="options" class="metadata-columns"> </sp-menu>
+            </sp-picker>
+          </div>
+        </div>
 
         <sp-radio-group>
           <sp-radio value="copy" checked id="copy"
             >Copy Column to Column</sp-radio
           >
           <sp-radio value="exchange" id="exchange"
-            >Exchange Column Datas</sp-radio
+            >Exchange Column Data</sp-radio
           >
         </sp-radio-group>
 

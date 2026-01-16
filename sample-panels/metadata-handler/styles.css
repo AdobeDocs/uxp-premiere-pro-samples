@@ -68,6 +68,17 @@ sp-picker {
   margin-bottom: 8px;
 }
 
+.picker-row {
+  display: flex;
+  gap: 24px;
+}
+
+.picker-container {
+  display: flex;
+  flex-direction: column;
+  margin-right: 16px;
+}
+
 sp-textfield {
   margin-bottom: 6px;
   width: 230px;
