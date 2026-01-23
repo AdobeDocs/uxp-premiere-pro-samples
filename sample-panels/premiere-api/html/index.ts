@@ -282,6 +282,26 @@ entrypoints.setup({
           enabled: true,
           checked: false,
         },
+        {
+          id: "submenu1",
+          label: "Example Submenu",
+          enabled: true,
+          checked: false,
+          submenu: [
+            {
+              id: "submenu-item1",
+              label: "Submenu Item 1",
+              enabled: true,
+              checked: false,
+            },
+            {
+              id: "submenu-item2",
+              label: "Submenu Item 2",
+              enabled: false,
+              checked: false,
+            },
+          ],
+        },
         { id: "separator", "label": "-" },
         {
           id: "reload",
