@@ -188,10 +188,13 @@ import {
   encodeFile,
   encodeFirstSelectedProjectItem,
 } from "./src/encoderManager";
-import { register } from "module";
 import { exportTranscript, importTranscript } from "./src/transcript";
+
 const ppro = require("premierepro") as premierepro;
 const uxp = require("uxp") as typeof import("uxp");
+
+const { entrypoints } = uxp;
+
 const PREMIERE_MEDIA_EXTENSIONS = [
   "aac",
   "aif",
@@ -256,6 +259,68 @@ const PREMIERE_MEDIA_EXTENSIONS = [
   "wmv",
   "xml",
 ];
+
+// Configure entrypoints for use by UXP during different lifecycle events
+// for each of the panels or commands defined in the manifest.json file.
+entrypoints.setup({
+  panels: {
+    // @ts-ignore - entrypoints.setup is, unfortunately, incorrectly typed
+    // for panels and commands.
+    // See: https://github.com/adobe/cc-ext-uxp-types/issues/5
+    samplepanel: {
+      show() {
+        // Add custom initialization logic here when the panel is shown.
+      },
+      hide() {
+        // Add custom cleanup logic here when the panel is hidden.
+      },
+      menuItems: [
+        {
+          id: "open-project",
+          label: "Open Project...",
+          enabled: true,
+          checked: false,
+        },
+        { id: "separator", "label": "-" },
+        {
+          id: "reload",
+          label: "Reload Panel",
+          enabled: true,
+          checked: false,
+        },
+        "-",
+        {
+          id: "toggle-checked",
+          label: "Toggle Checked",
+          enabled: true,
+          checked: false,
+        },
+      ],
+      /** @this {UxpPanelInfo} */
+      invokeMenu(id: string) {
+        switch (id) {
+          case "open-project":
+            openProjectClicked();
+            break;
+
+          case "reload":
+            window.location.reload();
+            break;
+
+          case "toggle-checked":
+            // "this" refers to the (UxpPanelInfo) panel itself, allowing
+            // access the panel's menu items and other properties.
+            this.menuItems.getItem(id).checked = !this.menuItems.getItem(id).checked;
+            break;
+
+          default:
+            log(`Unknown menu item invoked: ${id}`, "red");
+            break;
+        }
+      },
+    },
+  },
+});
 
 //project button events
 async function openProjectClicked() {
