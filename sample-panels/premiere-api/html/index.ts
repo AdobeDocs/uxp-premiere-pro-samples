@@ -270,6 +270,7 @@ entrypoints.setup({
     samplepanel: {
       show() {
         // Add custom initialization logic here when the panel is shown.
+        log("Ready");
       },
       hide() {
         // Add custom cleanup logic here when the panel is hidden.
