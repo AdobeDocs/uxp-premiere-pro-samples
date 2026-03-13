@@ -17,8 +17,10 @@ export declare type premierepro = {
   Markers: MarkersStatic
   Metadata: MetadataStatic
   OperationCompleteEvent: OperationCompleteEventStatic
+  PRProduction: PRProductionStatic
   Project: ProjectStatic
   ProjectClosedEvent: ProjectClosedEventStatic
+  ProjectConverter: ProjectConverterStatic
   ProjectEvent: ProjectEventStatic
   ProjectItem: ProjectItemStatic
   ProjectSettings: ProjectSettingsStatic
@@ -172,12 +174,6 @@ export declare type CaptionTrack = {
 
 export declare type ClipProjectItemStatic = {
   cast(projectItem: ProjectItem): ClipProjectItem	//Cast ProjectItem in to ClipProjectItem
-  TYPE_CLIP: number	//Project item type for clips.
-  TYPE_BIN: number	//Project item type for bins/folders.
-  TYPE_ROOT: number	//Project item type for the root container.
-  TYPE_FILE: number	//Project item type for generic files.
-  TYPE_STYLE: number	//Project item type for styles.
-  TYPE_COMPOUND: number	//Project item type for compound clips.
 }
 
 export declare type ClipProjectItem = {
@@ -217,6 +213,7 @@ export declare type ClipProjectItem = {
   createSetInOutPointsAction(inPoint: TickTime, outPoint: TickTime): Action	//Set the in or out point of the Project item
   createClearInOutPointsAction(): Action	//Create Clear the in or out point of the Project item action
   getMedia(): Promise<Media>	//Return media associated with clipProjectItem
+  getOriginatingProjectPath(): Promise<string>	//Return originating project path associated with clipProjectItem
   type: number	//Get the type of the Project Item.
   name: string	//The name of this project item.
 }
@@ -303,12 +300,6 @@ export declare type Exporter = {
 
 export declare type FolderItemStatic = {
   cast(projectItem: ProjectItem): FolderItem	//Cast ProjectItem in to FolderItem
-  TYPE_CLIP: number	//Project item type for clips.
-  TYPE_BIN: number	//Project item type for bins/folders.
-  TYPE_ROOT: number	//Project item type for the root container.
-  TYPE_FILE: number	//Project item type for generic files.
-  TYPE_STYLE: number	//Project item type for styles.
-  TYPE_COMPOUND: number	//Project item type for compound clips.
 }
 
 export declare type FolderItem = {
@@ -488,6 +479,14 @@ export declare type OperationCompleteEvent = {
   state: number	//Indicates the outcome of a completed operation: Success, Cancelled, or Failed.
 }
 
+export declare type PRProductionStatic = {
+  getActiveProduction(): object	//Get an instance of the currently active production.
+}
+
+export declare type PRProduction = {
+  getScratchDiskSettings(): Promise<object>	//Get the scratch disk settings instance for this production.
+}
+
 export declare type PointF = {
   (x?: number, y?: number): PointF
   distanceTo(point: PointF): number	//Get the distance from one point to another point
@@ -502,6 +501,7 @@ export declare type PointKeyframe = {
 
 export declare type ProjectStatic = {
   createProject(path: string): Promise<Project>	//Create a new project
+  isProject(projectPath: string): boolean	//Returns true if the file at the given path is openable as a Premiere project
   open(path: string, openProjectOptions?: OpenProjectOptions): Promise<Project>	//Open a project
   getActiveProject(): Promise<Project>	//Currently active project.
   getProject(projectGuid: Guid): Project	//Get project referenced by given UID
@@ -516,6 +516,7 @@ export declare type Project = {
   deleteSequence(sequence: Sequence): Promise<boolean>	//Delete a given sequence from the project
   getInsertionBin(): Promise<ProjectItem>	//Get current insertion bin
   openSequence(sequence: Sequence): Promise<boolean>	//Open a sequence and return true if successful.
+  closeSequence(sequence: Sequence): Promise<boolean>	//Close a sequence and return true if successful.
   importSequences(projectPath: string, sequenceIds?: Guid[]): Promise<boolean>
   importAEComps(aepPath: string, compNames: string[], TargetBin?: ProjectItem): Promise<boolean>
   importAllAEComps(aepPath: string, TargetBin?: ProjectItem): Promise<boolean>
@@ -547,6 +548,16 @@ export declare type ProjectClosedEvent = {
 export declare type ProjectColorSettings = {
   getSupportedGraphicsWhiteLuminances(): Promise<number[]>	//Get all the graphics white luminance as array of values
   getGraphicsWhiteLuminance(): Promise<number>	//Get the graphics white luminance value
+}
+
+export declare type ProjectConverterStatic = {
+  exportAsFinalCutProXML(sequence: Sequence, outputFilePath: string, suppressUI?: boolean): Promise<boolean>	//Export a sequence as Final Cut Pro XML to the specified output file path.
+  exportAsOpenTimelineIO(sequence: Sequence, outputFilePath: string, suppressUI?: boolean): Promise<boolean>	//Export a sequence as OpenTimelineIO to the specified output file path.
+  importFromOpenTimelineIO(importPath: string, suppressUI?: boolean): Promise<boolean>	//Import an OpenTimelineIO file into the active project.
+  importFromFinalCutProXML(importPath: string, suppressUI?: boolean): Promise<boolean>	//Import a Final Cut Pro XML file into the active project.
+}
+
+export declare type ProjectConverter = {
 }
 
 export declare type ProjectEventStatic = {
