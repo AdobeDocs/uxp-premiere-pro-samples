@@ -1,43 +1,54 @@
-# ReadMe
-
-These instructions explain how to develop UXP plugins within Premiere Pro. [*As of August 2025, only Premiere Pro BETA builds support UXP plugins.*]
+# Sample UXP plugins for Premiere
 
 The Premiere Pro UXP API documentation is available here: <https://developer.adobe.com/premiere-pro/uxp/>.
 
-## Things you will need
+## Tools
 
-- Premiere Pro BETA build, available through Creative Cloud Desktop.
-- UXP Developer Tool, also available for download through Creative Cloud Desktop.
-- Adobe third-party sample panel - **premiere-api** directory from this Git repository.
+- Premiere or Premiere Beta 25.4 or greater
+- UXP Developer Tools 2.2 or greater
 
-## Build the sample
+### Premiere API
 
-- Open your console / terminal / command prompt, into ```sample-panels/premiere-api/html```.
-- Install dependencies with ```npm i```
-- Bulid the project with ```npm run build```
+The flagship sample, which exercises the Premiere UXP APIs.
 
-The plugin is now built in the ```/build-html``` directory.
+We also provide:
 
-## Display the sample
+#### Metadata Handler
 
-- Launch Premiere Pro Beta.
-- Load UDT. *On first launch it will be blank*.
-- Click **Add Plugin**.
-- Navigate to the ```premiere-api/build-html/manifest.json```, and click **Open**.
+Port of a popular CEP panel developed specifically for film turnovers; the [plugin](https://adobe.com/go/cc_plugins_discover_plugin?pluginId=1836f173&workflow=share) can be installed (free) via Creative Cloud Desktop.
+
+#### OAuth workflow example
+
+Here's everything we know about OAuth workflows in Premiere, which is not much.
+
+## Build
+
+From a command prompt in `sample-panels/premiere-api/html`:
+
+```bash
+npm i
+npm run build
+```
+
+The built plugin is in  `/premiere-api/build-html` .
+
+## Load and debug
+
+- Launch Premiere (or Premiere Beta).
+- Launch UXP Developer Tools (UDT).
+- Select **Add Plugin**, and navigate to `/premiere-api/build-html/manifest.json`.
 
 ![UXP Developer Tool UDT](payloads/UDT_load_panel.png)
 
-The UXP sample plugin displays in Premiere Pro Beta:
+Here's `premiere-api` in Premiere:
 
 ![UXP Sample Panel](payloads/UXP-sample-panel-loaded.png)
 
 ## Adding TypeScript Definitions in Visual Studio Code
 
-To see definitions, add typescript definitions to the .js file in which you are working.
+Copy the included `types.d.ts` to the root of the `html` directory.
 
-Copy ```types.d.ts``` to the root of the ```/html``` directory.
-
-Add this line to the top of ```index.js```:
+Add this line to the top of `index.js`:
 
 `/// <reference path="./types.d.ts" />`
 
@@ -47,4 +58,4 @@ You can now see and use TypeScript definitions for Premiere Pro's UXP APIs, in V
 
 ## Transcript definition
 
-We have included [Premiere Pro's transcript JSON definition](./sample-panels/premiere-api/html/assets/transcript_format_spec.json), in the ```assets``` directory, within the ```premiere-api``` sample plugin.
+We have included [Premiere Pro's transcript JSON definition](./sample-panels/premiere-api/html/assets/transcript_format_spec.json), in the `assets` directory, within the `premiere-api` sample plugin.
