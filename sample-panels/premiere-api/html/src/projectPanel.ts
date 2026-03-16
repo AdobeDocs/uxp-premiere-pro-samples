@@ -638,3 +638,22 @@ export async function setFirstProjectItemColorLabel(project: Project) {
     return false;
   }
 }
+
+/**
+ * Get the originating project path for the selected clip project item
+ * @param project - The project containing the clip
+ * @return [string | null] Originating project path or null if failed
+ */
+export async function getOriginatingProjectPath(project: Project): Promise<string | null> {
+  try {
+    const clipProjectItem = await getClipProjectItem(project);
+    if (!clipProjectItem) {
+      log("No clip project item found or selected", "red");
+      return null;
+    }
+    return await clipProjectItem.getOriginatingProjectPath();
+  } catch (e) {
+    log(`Error getting originating project path: ${e}`, "red");
+    return null;
+  }
+}

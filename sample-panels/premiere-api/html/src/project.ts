@@ -151,3 +151,21 @@ export async function closeProject(project: Project) {
     log("No project found.", "red");
   }
 }
+
+/**
+ * Check if a file path points to a valid Premiere project
+ * @param projectPath - Path to check
+ * @return [boolean] True if it's a valid project file
+ */
+export async function isProjectFile(projectPath: string): Promise<boolean> {
+  try {
+    if (!projectPath) {
+      log("No project path provided", "red");
+      return false;
+    }
+    return ppro.Project.isProject(projectPath);
+  } catch (e) {
+    log(`Error checking if file is project: ${e}`, "red");
+    return false;
+  }
+}
