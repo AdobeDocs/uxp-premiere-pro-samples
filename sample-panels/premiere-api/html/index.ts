@@ -194,6 +194,7 @@ import {
   exportAsOpenTimelineIO,
   importFromOpenTimelineIO,
   importFromFinalCutProXML,
+  exportAAF,
 } from "./src/projectConverter";
 
 const ppro = require("premierepro") as premierepro;
@@ -2179,6 +2180,56 @@ async function exportAsFinalCutProXMLClicked() {
   );
 }
 
+async function exportAAFClicked() {
+  const project = await getProject();
+  if (!project) return;
+
+  const activeSequence = await getActiveSequence(project);
+  if (!activeSequence) {
+    log("No active sequence found", "red");
+    return;
+  }
+
+  log("Please select output directory for AAF export");
+  // @ts-ignore
+  const outputFolder = await uxp.storage.localFileSystem.getFolder();
+  if (!outputFolder?.nativePath) {
+    log("Selection of output folder failed. Please try again", "red");
+    return;
+  }
+
+  const outputFilePath = `${outputFolder.nativePath}/${activeSequence.name}.aaf`;
+  
+  // Get AAF export parameters from user input
+  const omitConsumerEffects = true;
+  const omitMotionEffects =  false;
+  const sampleRate = 48000;
+  const bitsPerSample = 24;
+  const includePan = true;
+  const preludeLength = 0;
+  const includeClipNames = false;
+  const tailLength = 0;
+  
+  const success = await exportAAF(
+    activeSequence,
+    outputFilePath,
+    omitConsumerEffects,
+    omitMotionEffects,
+    sampleRate,
+    bitsPerSample,
+    includePan,
+    preludeLength,
+    includeClipNames,
+    tailLength
+  );
+  log(
+    success
+      ? `Successfully exported AAF to ${outputFilePath}`
+      : "Failed to export as AAF",
+    success ? undefined : "red"
+  );
+}
+
 async function exportAsOpenTimelineIOClicked() {
   const project = await getProject();
   if (!project) return;
@@ -2441,6 +2492,7 @@ window.addEventListener("load", async () => {
   registerClick("export-otio", exportAsOpenTimelineIOClicked);
   registerClick("import-otio", importFromOpenTimelineIOClicked);
   registerClick("import-fcpxml", importFromFinalCutProXMLClicked);
+  registerClick("export-aaf", exportAAFClicked);
 
   document
     .querySelector(".clear-btn")!

@@ -551,6 +551,7 @@ export declare type ProjectColorSettings = {
 }
 
 export declare type ProjectConverterStatic = {
+  exportAAF(sequence: Sequence, filePath: string, mixdownVideo: boolean, explodeToMono: boolean, sampleRate: number, bitsPerSample: number, embedAudio: boolean, audioFileFormat: number, trimSources: boolean, handleFrames: number, videoMixdownPresetPath: string, renderAudioEffects?: boolean, interleaveWithoutEffects?: boolean, preserveParentFolder?: boolean): Promise<boolean>	//Export a sequence as an AAF (Advanced Authoring Format) file to the specified output path.
   exportAsFinalCutProXML(sequence: Sequence, outputFilePath: string, suppressUI?: boolean): Promise<boolean>	//Export a sequence as Final Cut Pro XML to the specified output file path.
   exportAsOpenTimelineIO(sequence: Sequence, outputFilePath: string, suppressUI?: boolean): Promise<boolean>	//Export a sequence as OpenTimelineIO to the specified output file path.
   importFromOpenTimelineIO(importPath: string, suppressUI?: boolean): Promise<boolean>	//Import an OpenTimelineIO file into the active project.
