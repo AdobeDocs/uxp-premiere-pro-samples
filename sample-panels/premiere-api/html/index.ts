@@ -194,6 +194,7 @@ import {
   exportAsOpenTimelineIO,
   importFromOpenTimelineIO,
   importFromFinalCutProXML,
+  exportAAF,
 } from "./src/projectConverter";
 
 const ppro = require("premierepro") as premierepro;
@@ -2179,6 +2180,56 @@ async function exportAsFinalCutProXMLClicked() {
   );
 }
 
+async function exportAAFClicked() {
+  const project = await getProject();
+  if (!project) return;
+
+  const activeSequence = await getActiveSequence(project);
+  if (!activeSequence) {
+    log("No active sequence found", "red");
+    return;
+  }
+
+  log("Please select output directory for AAF export");
+  // @ts-ignore
+  const outputFolder = await uxp.storage.localFileSystem.getFolder();
+  if (!outputFolder?.nativePath) {
+    log("Selection of output folder failed. Please try again", "red");
+    return;
+  }
+
+  const outputFilePath = `${outputFolder.nativePath}/${activeSequence.name}.aaf`;
+  
+  // Get AAF export parameters from user input
+  const omitConsumerEffects = (document.getElementById("aaf-omit-effects") as HTMLInputElement)?.checked ?? true;
+  const omitMotionEffects = (document.getElementById("aaf-omit-motion") as HTMLInputElement)?.checked ?? false;
+  const sampleRate = parseInt((document.getElementById("aaf-sample-rate") as HTMLInputElement)?.value || "48000");
+  const bitsPerSample = parseInt((document.getElementById("aaf-bits-per-sample") as HTMLInputElement)?.value || "24");
+  const includePan = (document.getElementById("aaf-include-pan") as HTMLInputElement)?.checked ?? true;
+  const preludeLength = parseInt((document.getElementById("aaf-prelude-length") as HTMLInputElement)?.value || "0");
+  const includeClipNames = (document.getElementById("aaf-include-clip-names") as HTMLInputElement)?.checked ?? false;
+  const tailLength = parseInt((document.getElementById("aaf-tail-length") as HTMLInputElement)?.value || "0");
+  
+  const success = await exportAAF(
+    activeSequence,
+    outputFilePath,
+    omitConsumerEffects,
+    omitMotionEffects,
+    sampleRate,
+    bitsPerSample,
+    includePan,
+    preludeLength,
+    includeClipNames,
+    tailLength
+  );
+  log(
+    success
+      ? `Successfully exported AAF to ${outputFilePath}`
+      : "Failed to export as AAF",
+    success ? undefined : "red"
+  );
+}
+
 async function exportAsOpenTimelineIOClicked() {
   const project = await getProject();
   if (!project) return;
@@ -2441,6 +2492,7 @@ window.addEventListener("load", async () => {
   registerClick("export-otio", exportAsOpenTimelineIOClicked);
   registerClick("import-otio", importFromOpenTimelineIOClicked);
   registerClick("import-fcpxml", importFromFinalCutProXMLClicked);
+  registerClick("export-aaf", exportAAFClicked);
 
   document
     .querySelector(".clear-btn")!
