@@ -2201,14 +2201,14 @@ async function exportAAFClicked() {
   const outputFilePath = `${outputFolder.nativePath}/${activeSequence.name}.aaf`;
   
   // Get AAF export parameters from user input
-  const omitConsumerEffects = (document.getElementById("aaf-omit-effects") as HTMLInputElement)?.checked ?? true;
-  const omitMotionEffects = (document.getElementById("aaf-omit-motion") as HTMLInputElement)?.checked ?? false;
-  const sampleRate = parseInt((document.getElementById("aaf-sample-rate") as HTMLInputElement)?.value || "48000");
-  const bitsPerSample = parseInt((document.getElementById("aaf-bits-per-sample") as HTMLInputElement)?.value || "24");
-  const includePan = (document.getElementById("aaf-include-pan") as HTMLInputElement)?.checked ?? true;
-  const preludeLength = parseInt((document.getElementById("aaf-prelude-length") as HTMLInputElement)?.value || "0");
-  const includeClipNames = (document.getElementById("aaf-include-clip-names") as HTMLInputElement)?.checked ?? false;
-  const tailLength = parseInt((document.getElementById("aaf-tail-length") as HTMLInputElement)?.value || "0");
+  const omitConsumerEffects = true;
+  const omitMotionEffects =  false;
+  const sampleRate = 48000;
+  const bitsPerSample = 24;
+  const includePan = true;
+  const preludeLength = 0;
+  const includeClipNames = false;
+  const tailLength = 0;
   
   const success = await exportAAF(
     activeSequence,
