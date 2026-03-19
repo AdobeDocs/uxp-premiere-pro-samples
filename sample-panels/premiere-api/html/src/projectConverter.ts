@@ -49,31 +49,44 @@ export async function exportAsOpenTimelineIO(sequence: Sequence, outputFilePath:
 }
 
 /**
- * Import an OpenTimelineIO file into the active project.
+ * Export a sequence as AAF with specified options.
  */
-export async function importFromOpenTimelineIO(importPath: string) {
-  try {
-    return await ppro.ProjectConverter.importFromOpenTimelineIO(
-      importPath,
-      true // suppressUI
-    );
-  } catch (e) {
-    log(`Error importing from OpenTimelineIO: ${e}`, "red");
-    return false;
-  }
-}
 
-/**
- * Import a Final Cut Pro XML file into the active project.
- */
-export async function importFromFinalCutProXML(importPath: string) {
+export async function exportAAF(
+  sequence: Sequence,
+  outputFilePath: string,
+  mixdownVideo: boolean,
+  explodeToMono: boolean,
+  sampleRate: number,
+  bitsPerSample: number,
+  embedAudio: boolean,
+  audioFileFormat: number,
+  trimSources: boolean,
+  handleFrames: number,
+  videoMixdownPresetPath?: string,
+  renderAudioEffects: boolean = false,
+  interleaveWithoutEffects: boolean = false,
+  preserveParentFolder: boolean = false
+) {
   try {
-    return await ppro.ProjectConverter.importFromFinalCutProXML(
-      importPath,
-      true // suppressUI
+    return await ppro.ProjectConverter.exportAAF(
+      sequence,
+      outputFilePath,
+      false, // suppressUI
+      false, // useLegacyAAFExport
+      48000, // sampleRate
+      16,    // bitsPerSample
+      false,  // embedAudio
+      0,      // audioFileFormat: 0=AIFF, 1=WAVE
+      false,  // trimSources
+      0,      // handleFrames: 0–1000
+      "",     // videoMixdownPresetPath (optional)
+      false,  /* renderAudioEffects (optional) */
+      false,  /* interleaveWithoutEffects (optional) */
+      false   /* preserveParentFolder (optional) */
     );
   } catch (e) {
-    log(`Error importing from Final Cut Pro XML: ${e}`, "red");
+    log(`Error exporting as AAF: ${e}`, "red");
     return false;
   }
 }

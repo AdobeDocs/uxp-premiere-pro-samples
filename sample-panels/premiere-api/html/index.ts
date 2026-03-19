@@ -202,8 +202,7 @@ import { exportTranscript, importTranscript } from "./src/transcript";
 import {
   exportAsFinalCutProXML,
   exportAsOpenTimelineIO,
-  importFromOpenTimelineIO,
-  importFromFinalCutProXML,
+  exportAAF,
 } from "./src/projectConverter";
 
 const ppro = require("premierepro") as premierepro;
@@ -2282,6 +2281,56 @@ async function exportAsFinalCutProXMLClicked() {
   );
 }
 
+async function exportAAFClicked() {
+  const project = await getProject();
+  if (!project) return;
+
+  const activeSequence = await getActiveSequence(project);
+  if (!activeSequence) {
+    log("No active sequence found", "red");
+    return;
+  }
+
+  log("Please select output directory for AAF export");
+  // @ts-ignore
+  const outputFolder = await uxp.storage.localFileSystem.getFolder();
+  if (!outputFolder?.nativePath) {
+    log("Selection of output folder failed. Please try again", "red");
+    return;
+  }
+
+  const outputFilePath = `${outputFolder.nativePath}/${activeSequence.name}.aaf`;
+  
+  // Get AAF export parameters from user input
+  const omitConsumerEffects = true;
+  const omitMotionEffects =  false;
+  const sampleRate = 48000;
+  const bitsPerSample = 24;
+  const includePan = true;
+  const preludeLength = 0;
+  const includeClipNames = false;
+  const tailLength = 0;
+  
+  const success = await exportAAF(
+    activeSequence,
+    outputFilePath,
+    omitConsumerEffects,
+    omitMotionEffects,
+    sampleRate,
+    bitsPerSample,
+    includePan,
+    preludeLength,
+    includeClipNames,
+    tailLength
+  );
+  log(
+    success
+      ? `Successfully exported AAF to ${outputFilePath}`
+      : "Failed to export as AAF",
+    success ? undefined : "red"
+  );
+}
+
 async function exportAsOpenTimelineIOClicked() {
   const project = await getProject();
   if (!project) return;
@@ -2308,52 +2357,6 @@ async function exportAsOpenTimelineIOClicked() {
       : "Failed to export as OpenTimelineIO",
     success ? undefined : "red"
   );
-}
-
-async function importFromOpenTimelineIOClicked() {
-  const project = await getProject();
-  if (!project) return;
-
-  log("Please select an OpenTimelineIO file to import");
-  // @ts-ignore
-  const file = await uxp.storage.localFileSystem.getFileForOpening({
-    types: ["otio"],
-  });
-  if (!file?.isFile || !file.nativePath) {
-    log("Selection of OpenTimelineIO file failed. Please try again", "red");
-    return;
-  }
-
-  const success = await importFromOpenTimelineIO(file.nativePath);
-  if (!success) {
-    log("Failed to import OpenTimelineIO file", "red");
-    return;
-  }
-
-  log(`Successfully imported OpenTimelineIO from ${file.nativePath}`);
-}
-
-async function importFromFinalCutProXMLClicked() {
-  const project = await getProject();
-  if (!project) return;
-
-  log("Please select a Final Cut Pro XML file to import");
-  // @ts-ignore
-  const file = await uxp.storage.localFileSystem.getFileForOpening({
-    types: ["xml"],
-  });
-  if (!file?.isFile || !file.nativePath) {
-    log("Selection of Final Cut Pro XML file failed. Please try again", "red");
-    return;
-  }
-
-  const success = await importFromFinalCutProXML(file.nativePath);
-  if (!success) {
-    log("Failed to import Final Cut Pro XML file", "red");
-    return;
-  }
-
-  log(`Successfully imported Final Cut Pro XML from ${file.nativePath}`);
 }
 
 window.addEventListener("load", async () => {
@@ -2551,8 +2554,7 @@ window.addEventListener("load", async () => {
   // ProjectConverter controls
   registerClick("export-fcpxml", exportAsFinalCutProXMLClicked);
   registerClick("export-otio", exportAsOpenTimelineIOClicked);
-  registerClick("import-otio", importFromOpenTimelineIOClicked);
-  registerClick("import-fcpxml", importFromFinalCutProXMLClicked);
+  registerClick("export-aaf", exportAAFClicked);
 
   document
     .querySelector(".clear-btn")!
