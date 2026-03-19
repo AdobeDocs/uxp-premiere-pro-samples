@@ -49,35 +49,6 @@ export async function exportAsOpenTimelineIO(sequence: Sequence, outputFilePath:
 }
 
 /**
- * Import an OpenTimelineIO file into the active project.
- */
-export async function importFromOpenTimelineIO(importPath: string) {
-  try {
-    return await ppro.ProjectConverter.importFromOpenTimelineIO(
-      importPath,
-      true // suppressUI
-    );
-  } catch (e) {
-    log(`Error importing from OpenTimelineIO: ${e}`, "red");
-    return false;
-  }
-}
-
-/**
- * Import a Final Cut Pro XML file into the active project.
- */
-export async function importFromFinalCutProXML(importPath: string) {
-  try {
-    return await ppro.ProjectConverter.importFromFinalCutProXML(
-      importPath,
-      true // suppressUI
-    );
-  } catch (e) {
-    log(`Error importing from Final Cut Pro XML: ${e}`, "red");
-    return false;
-  }
-}
-/**
  * Export a sequence as AAF with specified options.
  */
 
