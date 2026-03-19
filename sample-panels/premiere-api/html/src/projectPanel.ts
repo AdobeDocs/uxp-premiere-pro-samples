@@ -38,30 +38,45 @@ export async function getSelectedProjectItems(project: Project) {
   return projectItems;
 }
 
+/**
+ * Finds and returns the first found media clip project item in the project.
+ *
+ * Performs a breadth-first search through the project items, starting from the
+ * root item. If `includeSequence` is true, it will also search for sequences.
+ *
+ * For a more targeted search, use {@link getSelectedProjectItems}.
+ *
+ * @param project - The project to search for a media clip project item.
+ * @param includeSequence - Whether to include sequences in the search.
+ * @returns The first found media clip project item or null if no media clip
+ * project item is found.
+ * @see getSelectedProjectItems
+ */
 export async function getClipProjectItem(
   project: Project,
   includeSequence = false
-) {
+): Promise<ClipProjectItem | null> {
   const rootItem = await getRootItem(project);
   const projectItems: Array<ProjectItem> = await rootItem.getItems();
 
   let clipProjectItem: ClipProjectItem | null = null;
   for (let projectItem of projectItems) {
     const clipProjectItemCandidate = ppro.ClipProjectItem.cast(projectItem);
-    if (
-      clipProjectItemCandidate && includeSequence
-        ? true
-        : (await clipProjectItemCandidate.getContentType()) ===
-          ppro.Constants.ContentType.MEDIA
-    ) {
-      // Take the first media found.
-      clipProjectItem = clipProjectItemCandidate;
-      break;
-    } else {
+    if (!clipProjectItemCandidate) {
+      // Not a clip — may be a folder; add its items to search.
       const folderProjectItem = ppro.FolderItem.cast(projectItem);
       if (folderProjectItem) {
         let items = await folderProjectItem.getItems();
         projectItems.push(...items);
+      }
+    } else {
+      const acceptClip =
+        includeSequence ||
+        (await clipProjectItemCandidate.getContentType()) ===
+          ppro.Constants.ContentType.MEDIA;
+      if (acceptClip) {
+        clipProjectItem = clipProjectItemCandidate;
+        break;
       }
     }
   }
