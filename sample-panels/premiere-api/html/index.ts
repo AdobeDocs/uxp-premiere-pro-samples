@@ -192,8 +192,6 @@ import { exportTranscript, importTranscript } from "./src/transcript";
 import {
   exportAsFinalCutProXML,
   exportAsOpenTimelineIO,
-  importFromOpenTimelineIO,
-  importFromFinalCutProXML,
   exportAAF,
 } from "./src/projectConverter";
 
@@ -2258,52 +2256,6 @@ async function exportAsOpenTimelineIOClicked() {
   );
 }
 
-async function importFromOpenTimelineIOClicked() {
-  const project = await getProject();
-  if (!project) return;
-
-  log("Please select an OpenTimelineIO file to import");
-  // @ts-ignore
-  const file = await uxp.storage.localFileSystem.getFileForOpening({
-    types: ["otio"],
-  });
-  if (!file?.isFile || !file.nativePath) {
-    log("Selection of OpenTimelineIO file failed. Please try again", "red");
-    return;
-  }
-
-  const success = await importFromOpenTimelineIO(file.nativePath);
-  if (!success) {
-    log("Failed to import OpenTimelineIO file", "red");
-    return;
-  }
-
-  log(`Successfully imported OpenTimelineIO from ${file.nativePath}`);
-}
-
-async function importFromFinalCutProXMLClicked() {
-  const project = await getProject();
-  if (!project) return;
-
-  log("Please select a Final Cut Pro XML file to import");
-  // @ts-ignore
-  const file = await uxp.storage.localFileSystem.getFileForOpening({
-    types: ["xml"],
-  });
-  if (!file?.isFile || !file.nativePath) {
-    log("Selection of Final Cut Pro XML file failed. Please try again", "red");
-    return;
-  }
-
-  const success = await importFromFinalCutProXML(file.nativePath);
-  if (!success) {
-    log("Failed to import Final Cut Pro XML file", "red");
-    return;
-  }
-
-  log(`Successfully imported Final Cut Pro XML from ${file.nativePath}`);
-}
-
 window.addEventListener("load", async () => {
   //project events registering
   registerClick("open-project", openProjectClicked);
@@ -2490,8 +2442,6 @@ window.addEventListener("load", async () => {
   // ProjectConverter controls
   registerClick("export-fcpxml", exportAsFinalCutProXMLClicked);
   registerClick("export-otio", exportAsOpenTimelineIOClicked);
-  registerClick("import-otio", importFromOpenTimelineIOClicked);
-  registerClick("import-fcpxml", importFromFinalCutProXMLClicked);
   registerClick("export-aaf", exportAAFClicked);
 
   document
