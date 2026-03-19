@@ -447,3 +447,74 @@ export async function renameFirstSelectedTrackItem(
   }
   return success;
 }
+
+/**
+ * Get the video frame rate of the active sequence
+ * @param sequence - The sequence to get frame rate from
+ * @return [string | null] Video frame rate or null if failed
+ */
+export async function getVideoFrameRate(sequence: Sequence): Promise<string | null> {
+  try {
+    const settings = await sequence.getSettings();
+    const frameRate = settings.getVideoFrameRate();
+    return frameRate.value.toString();
+  } catch (e) {
+    log(`Error getting video frame rate: ${e}`, "red");
+    return null;
+  }
+}
+
+/**
+ * Set the video frame rate of the active sequence
+ * @param project - The project containing the sequence
+ * @param sequence - The sequence to modify
+ * @param frameRate - The frame rate value to set
+ * @return [boolean] Success status
+ */
+export async function setVideoFrameRate(
+  project: Project,
+  sequence: Sequence,
+  frameRate: number
+): Promise<boolean> {
+  try {
+    const settings = await sequence.getSettings();
+    const newFrameRate = ppro.FrameRate.createWithValue(frameRate);
+    const frameRateSuccess = settings.setVideoFrameRate(newFrameRate);
+    
+    let success = false;
+    project.lockedAccess(() => {
+      success = project.executeTransaction((compoundAction) => {
+        const setSettingsAction = sequence.createSetSettingsAction(settings);
+        compoundAction.addAction(setSettingsAction);
+      }, `set video frame rate to ${frameRate}`);
+    });
+    
+    return success && frameRateSuccess;
+  } catch (e) {
+    log(`Error setting video frame rate: ${e}`, "red");
+    return false;
+  }
+}
+
+/**
+ * Close a specific sequence in the project
+ * @param project - The project containing the sequence
+ * @param sequence - The sequence to close
+ * @return [boolean] Success status
+ */
+export async function closeSequence(project: Project, sequence: Sequence): Promise<boolean> {
+  try {
+    if (!sequence) {
+      log("No sequence provided", "red");
+      return false;
+    }
+    if (!project) {
+      log("No project provided", "red");
+      return false;
+    }
+    return await project.closeSequence(sequence);
+  } catch (e) {
+    log(`Error closing sequence: ${e}`, "red");
+    return false;
+  }
+}
