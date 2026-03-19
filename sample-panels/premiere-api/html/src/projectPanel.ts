@@ -651,7 +651,14 @@ export async function getOriginatingProjectPath(project: Project): Promise<strin
       log("No clip project item found or selected", "red");
       return null;
     }
-    return await clipProjectItem.getOriginatingProjectPath();
+    
+    const path = await clipProjectItem.getOriginatingProjectPath();
+    
+    if (path === "") {
+      return "No originating project found";
+    }
+    
+    return path;
   } catch (e) {
     log(`Error getting originating project path: ${e}`, "red");
     return null;

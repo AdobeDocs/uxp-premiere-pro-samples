@@ -1163,10 +1163,8 @@ async function getOriginatingProjectPathClicked() {
   if (!project) return;
 
   const originatingPath = await getOriginatingProjectPath(project);
-  if (originatingPath) {
+  if (originatingPath !== null) {
     log(`Originating project path: ${originatingPath}`);
-  } else {
-    log("Failed to get originating project path", "red");
   }
 }
 
