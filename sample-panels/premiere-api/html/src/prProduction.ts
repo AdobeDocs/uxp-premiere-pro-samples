@@ -40,10 +40,8 @@ export async function getScratchDiskSettings(): Promise<string | null> {
       log("No active production found", "red");
       return null;
     }
-    const production = activeProduction as PRProduction;
-    const scratchDiskSettings = await production.getScratchDiskSettings();
-	const settings = scratchDiskSettings as ScratchDiskSettings;
-    const capturePath = settings.getScratchDiskPath(
+    const scratchDiskSettings = await activeProduction.getScratchDiskSettings();
+    const capturePath = scratchDiskSettings.getScratchDiskPath(
       ppro.Constants.ScratchDiskFolderType.CAPTURE
     );
     return capturePath;

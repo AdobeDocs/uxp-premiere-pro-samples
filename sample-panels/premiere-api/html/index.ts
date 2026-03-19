@@ -1167,7 +1167,7 @@ async function getOriginatingProjectPathClicked() {
   if (originatingPath) {
     log(`Originating project path: ${originatingPath}`);
   } else {
-    log("Failed to get originating project path (no clip selected or not available)", "red");
+    log("Failed to get originating project path", "red");
   }
 }
 

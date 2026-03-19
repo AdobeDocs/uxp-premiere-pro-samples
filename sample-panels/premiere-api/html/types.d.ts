@@ -480,11 +480,11 @@ export declare type OperationCompleteEvent = {
 }
 
 export declare type PRProductionStatic = {
-  getActiveProduction(): object	//Get an instance of the currently active production.
+  getActiveProduction(): PRProduction	//Get an instance of the currently active production.
 }
 
 export declare type PRProduction = {
-  getScratchDiskSettings(): Promise<object>	//Get the scratch disk settings instance for this production.
+  getScratchDiskSettings(): Promise<ScratchDiskSettings>	//Get the scratch disk settings instance for this production.
 }
 
 export declare type PointF = {
