@@ -29,6 +29,7 @@ import {
   getSupportedGraphicsWhiteLuminances,
   getCurrentGraphicsWhiteLuminance,
   closeProject,
+  isProjectFile,
 } from "./src/project";
 
 import {
@@ -47,6 +48,9 @@ import {
   setSequenceSettings,
   setSequenceInOutPoint,
   renameFirstSelectedTrackItem,
+  getVideoFrameRate,
+  setVideoFrameRate,
+  closeSequence,
 } from "./src/sequence";
 
 import {
@@ -87,6 +91,7 @@ import {
   getFirstProjectItemType,
   getFirstProjectItemColorLabel,
   setFirstProjectItemColorLabel,
+  getOriginatingProjectPath,
 } from "./src/projectPanel";
 
 import {
@@ -146,6 +151,11 @@ import {
   getIngestEnabled,
   setIngestEnabled,
 } from "./src/settings";
+
+import {
+  getActiveProduction,
+  getScratchDiskSettings,
+} from "./src/prProduction";
 
 import { addProjSeqListeners, addEncoderListeners } from "./src/eventManager";
 
@@ -538,6 +548,34 @@ async function closeProjectClicked() {
   log(`Project "${projName}" is closed.`);
 }
 
+async function closeSequenceClicked() {
+  const project = await getProject();
+  if (!project) return;
+
+  const sequence = await project.getActiveSequence();
+  if (!sequence) {
+    log(`No active sequence found`, "red");
+    return;
+  }
+
+  const success = await closeSequence(project, sequence);
+  log(success ? `Successfully closed sequence "${sequence.name}"` : "Failed to close sequence");
+}
+
+async function isProjectFileClicked() {
+  const project = await getProject();
+  if (!project) return;
+
+  const projectPath = project.path;
+  if (!projectPath) {
+    log("No project file path available", "red");
+    return;
+  }
+
+  const isProject = await isProjectFile(projectPath);
+  log(`"${projectPath}" ${isProject ? "is" : "is not"} a valid Premiere project file`);
+}
+
 //sequence button events
 async function getSequenceSettingsClicked() {
   const project = await getProject();
@@ -877,6 +915,40 @@ async function renameFirstSelectedTrackItemClicked() {
   );
 }
 
+async function getVideoFrameRateClicked() {
+  const project = await getProject();
+  if (!project) return;
+
+  const sequence = await project.getActiveSequence();
+  if (!sequence) {
+    log("No active sequence found", "red");
+    return;
+  }
+
+  const frameRate = await getVideoFrameRate(sequence);
+  if (frameRate) {
+    log(`Video frame rate: ${frameRate}`);
+  } else {
+    log("Failed to get video frame rate", "red");
+  }
+}
+
+async function setVideoFrameRateClicked() {
+  const project = await getProject();
+  if (!project) return;
+
+  const sequence = await project.getActiveSequence();
+  if (!sequence) {
+    log("No active sequence found", "red");
+    return;
+  }
+
+  const frameRate = 23.976;
+
+  const success = await setVideoFrameRate(project, sequence, frameRate);
+  log(success ? `Successfully set video frame rate to ${frameRate}` : "Failed to set video frame rate");
+}
+
 //marker button events
 async function createMarkerCommentClicked() {
   const project = await getProject();
@@ -1084,6 +1156,16 @@ async function setFirstProjectItemColorLabelClicked() {
       ? "Set color label of first project item to MAGENTA successfully"
       : "Failed to set color label of first project item to MAGENTA"
   );
+}
+
+async function getOriginatingProjectPathClicked() {
+  const project = await getProject();
+  if (!project) return;
+
+  const originatingPath = await getOriginatingProjectPath(project);
+  if (originatingPath !== null) {
+    log(`Originating project path: ${originatingPath}`);
+  }
 }
 
 async function createBinClicked() {
@@ -1782,6 +1864,25 @@ async function setIngestSettingsClicked() {
   );
 }
 
+//PRProduction button events
+async function getActiveProductionClicked() {
+  const activeProduction = getActiveProduction();
+  if (activeProduction) {
+    log(`Active production retrieved successfully`);
+  } else {
+    log("No active production found", "red");
+  }
+}
+
+async function getScratchDiskSettingsClicked() {
+  const scratchDiskPath = await getScratchDiskSettings();
+  if (scratchDiskPath) {
+  	log(`Current Production scratch disk path is ${scratchDiskPath}`);
+  } else {
+    log("Failed to get production scratch disk settings", "red");
+  }
+}
+
 //AppPreference button events
 async function getPreferenceSettingClicked() {
   let currSetting = await getPreferenceSetting();
@@ -2277,6 +2378,8 @@ window.addEventListener("load", async () => {
     getCurrentGraphicsWhiteLuminanceClicked
   );
   registerClick("close-project", closeProjectClicked);
+  registerClick("close-sequence", closeSequenceClicked);
+  registerClick("is-project-file", isProjectFileClicked);
 
   //sequence events registering
   registerClick("get-sequence-settings", getSequenceSettingsClicked);
@@ -2302,6 +2405,8 @@ window.addEventListener("load", async () => {
     "rename-first-selected-trackItem",
     renameFirstSelectedTrackItemClicked
   );
+  registerClick("get-video-frame-rate", getVideoFrameRateClicked);
+  registerClick("set-video-frame-rate", setVideoFrameRateClicked);
 
   //marker events registering
   registerClick("marker-comment", createMarkerCommentClicked);
@@ -2352,6 +2457,7 @@ window.addEventListener("load", async () => {
   registerClick("get-project-items", getProjectItemsClicked);
   registerClick("get-selected-project-items", getSelectedProjectItemsClicked);
   registerClick("get-project-items-proxy-info", getProjectItemsProxyInfoClicked);
+  registerClick("get-originating-project-path", getOriginatingProjectPathClicked);
   registerClick("get-media-path", getMediaFilePathClicked);
   registerClick("get-media-info", getMediaInfoClicked);
   registerClick("set-media-start", setMediaStartClicked);
@@ -2412,6 +2518,10 @@ window.addEventListener("load", async () => {
   registerClick("set-project-setting", setScratchDiskSettingsClicked);
   registerClick("get-ingest-setting", getIngestSettingsClicked);
   registerClick("set-ingest-enabled", setIngestSettingsClicked);
+
+  // PRProduction
+  registerClick("get-active-production", getActiveProductionClicked);
+  registerClick("get-production-scratch-disk-setting", getScratchDiskSettingsClicked);
 
   // AppPreference
   registerClick("get-autopeak-preference", getPreferenceSettingClicked);
