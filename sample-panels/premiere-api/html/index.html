@@ -123,6 +123,126 @@
     </div>
     <footer>
       <div class="section">
+        <h4>App Preference</h4>
+        <sp-button id="get-autopeak-preference">
+          Get Auto Peak Generation Preference
+        </sp-button>
+        <sp-button id="set-autopeak-setting">
+          Toggle Auto Peak Generation Preference
+        </sp-button>
+      </div>
+      <div class="section">
+        <h4>Effects & Transitions</h4>
+        <sp-button id="get-effect-names">Get Effect Names</sp-button>
+        <sp-button id="add-gamma-correction-effect">
+          Add Gamma Correction Effect
+        </sp-button>
+        <sp-button id="add-multiple-effects">
+          Add Gamma Correction and Extract Effect
+        </sp-button>
+        <sp-button id="add-vocal-enhancer-effect">
+          Add Vocal Enhancer Effect
+        </sp-button>
+        <sp-button id="remove-gamma-correction-effect">
+          Remove The Last Effect
+        </sp-button>
+        <sp-button id="get-transition-names">Get Transition Names</sp-button>
+        <sp-button id="add-transition-start">
+          Add Transition To The Start Of TrackItem
+        </sp-button>
+        <sp-button id="add-transition-end">
+          Add Transition To The End Of TrackItem
+        </sp-button>
+        <sp-button id="remove-transition-start">
+          Remove Transition To The Start
+        </sp-button>
+      </div>
+      <div class="section">
+        <h4>Encoder Controls</h4>
+        <sp-button id="encode-first-selected-project-item">
+          Queue First Selected ProjectItem To Adobe Media Encoder
+        </sp-button>
+        <sp-button id="encode-file">
+          Queue Media File To Adobe Media Encoder
+        </sp-button>
+      </div>
+      <div class="section">
+        <h4>Export Controls</h4>
+        <sp-button id="export-frame">Export Current Frame As PNG</sp-button>
+        <sp-button id="export-sequence">
+          Export Sequence Using Preset
+        </sp-button>
+        <sp-button id="get-export-file-extension">
+          Get Exported File Extension From .epr
+        </sp-button>
+      </div>
+      <div class="section">
+        <h4>Import Controls</h4>
+        <sp-button id="import-ae-component">Import AE Composition</sp-button>
+        <input
+          type="text"
+          id="ae-component-name"
+          placeholder="AE Composition Name Here"
+        />
+        <sp-button id="import-files">Import Media Files From Disk</sp-button>
+        <sp-button id="import-all-ae-components">
+          Import All AE Composition
+        </sp-button>
+        <sp-button id="import-sequences">Import Sequences From Disk</sp-button>
+      </div>
+      <div class="section">
+        <h4>Keyframe</h4>
+        <sp-button id="set-value">Set Value </sp-button>
+        <sp-button id="get-start-value">Get Start Value</sp-button>
+        <sp-button id="add-keyframe">Add Keyframe</sp-button>
+        <sp-button id="get-keyframes">Get Keyframes As Ticktime</sp-button>
+        <sp-button id="get-keyfram-time">Get Keyframes At Time</sp-button>
+        <sp-button id="set-interpolation">
+          Set Interpolation At Keyframe
+        </sp-button>
+      </div>
+      <div class="section">
+        <h4>Markers</h4>
+        <sp-button id="marker-comment">Add Comment Marker</sp-button>
+        <sp-button id="marker-chapter">Add Chapter Marker</sp-button>
+        <sp-button id="marker-weblink">Add Weblink Marker</sp-button>
+        <sp-button id="marker-flashcuepoint">
+          Add Flash Cue Point Marker
+        </sp-button>
+        <sp-button id="marker-movemarker">Move Marker</sp-button>
+        <sp-button id="marker-removemarker">Remove Marker</sp-button>
+        <sp-button id="marker-info-sequence">
+          Get Sequence Marker Info
+        </sp-button>
+        <sp-button id="set-first-sequence-marker-color">
+          Set First Sequence Marker Color to BLUE
+        </sp-button>
+      </div>
+      <div class="section">
+        <h4>Metadata</h4>
+        <sp-button id="get-project-metadata">Get Project MetaData</sp-button>
+        <sp-button id="get-xmp-metadata">Get XMP MetaData</sp-button>
+        <sp-button id="get-projectcolumns-metadata">
+          Get Project Columns MetaData
+        </sp-button>
+        <sp-button id="get-projectpanel-metadata">
+          Get Project Panel MetaData
+        </sp-button>
+        <sp-button id="set-project-metadata">Set Project Metadata</sp-button>
+        <sp-button id="set-xmp-metadata">Set XMP Metadata</sp-button>
+        <sp-button id="set-projectpanel-metadata">
+          Set Project Panel MetaData
+        </sp-button>
+        <sp-button id="add-property-metadata-schema">
+          Add Property To Project Metdata Schema
+        </sp-button>
+      </div>
+      <div class="section">
+        <h4>PRProduction</h4>
+        <sp-button id="get-active-production">Get Active Production</sp-button>
+        <sp-button id="get-production-scratch-disk-setting">Get Production Scratch Disk Setting</sp-button>
+      </div>
+      <div class="section">
         <h4>Project</h4>
         <sp-button id="open-project">Open Project</sp-button>
         <sp-button id="active-project">Active Project</sp-button>
@@ -134,97 +254,36 @@
         <sp-button id="pause-project">Pause Growing</sp-button>
         <sp-button id="save-project">Save Project</sp-button>
         <sp-button id="save-as-project">Save As Project</sp-button>
-        <sp-button id="get-supported-luminances-project"
-          >Get Supported Graphics White Luminances</sp-button
-        >
-        <sp-button id="get-luminance-project"
-          >Get Current Graphics White Luminance</sp-button
-        >
+        <sp-button id="get-supported-luminances-project">
+          Get Supported Graphics White Luminances
+        </sp-button>
+        <sp-button id="get-luminance-project">
+          Get Current Graphics White Luminance
+        </sp-button>
         <sp-button id="close-project">Close Project</sp-button>
         <sp-button id="is-project-file">Check if Project</sp-button>
       </div>
       <div class="section">
-        <h4>Sequence</h4>
-        <sp-button id="get-sequence-settings"
-          >Get sequence settings</sp-button
-        >
-        <sp-button id="set-sequence-settings"
-          >Change sequence settings</sp-button
-        >
-        <sp-button id="set-sequence-in-out-point"
-          >Set Sequence In and Out Point</sp-button
-        >
-        <sp-button id="get-sequence-from-id">Get Sequence From Id</sp-button>
-        <sp-button id="set-active-sequence">Set Last Sequence Active</sp-button>
-        <sp-button id="create-sequence">Create Sequence</sp-button>
-        <sp-button id="create-media-sequence"
-          >Create Sequence From Media</sp-button
-        >
-        <sp-button id="get-caption-track-count"
-          >Get Caption Track Count</sp-button
-        >
-        <sp-button id="get-video-track-sequence"
-          >Get First Video Track</sp-button
-        >
-        <sp-button id="get-selection-sequence"
-          >Get Sequence Selection</sp-button
-        >
-        <sp-button id="set-selection-sequence"
-          >Set Sequence Selection</sp-button
-        >
-        <sp-button id="create-sub-sequence">Create Subsequence</sp-button>
-        <sp-button id="overwrite-item"
-          >Overwrite TrackItem with Selected ProjectItem</sp-button
-        >
-        <sp-button id="insert-item"
-          >Insert TrackItem with Selected ProjectItem</sp-button
-        >
-        <sp-button id="insert-mogrt">Insert Mogrt from Path at V2</sp-button>
-        <sp-button id="clone-selected-item"
-          >Clone Selected TrackItem to Another Track</sp-button
-        >
-        <sp-button id="remove-selected-items"
-          >Remove Selected TrackItems</sp-button
-        >
-        <sp-button id="trim-selected-item">
-          Trim First Selected TrackItem
+        <h4>Project Converter</h4>
+        <sp-button id="export-fcpxml">
+          Export as Final Cut Pro XML
         </sp-button>
-        <sp-button id="trim-handles">
-          Trim 20 Frames Off Head and Tail of First Selected TrackItem
+        <sp-button id="export-otio">
+          Export as OpenTimelineIO
         </sp-button>
-        <sp-button id="rename-first-selected-trackItem">
-          Rename First Selected TrackItem
-        </sp-button>
-        <sp-button id="get-video-frame-rate">Get Video Frame Rate</sp-button>
-        <sp-button id="set-video-frame-rate">Set Video Frame Rate to 23.976</sp-button>
-        <sp-button id="close-sequence">Close Sequence</sp-button>
-      </div>
-      <div class="section">
-        <h4>Markers</h4>
-        <sp-button id="marker-comment">Add Comment Marker</sp-button>
-        <sp-button id="marker-chapter">Add Chapter Marker</sp-button>
-        <sp-button id="marker-weblink">Add Weblink Marker</sp-button>
-        <sp-button id="marker-flashcuepoint"
-          >Add Flash Cue Point Marker</sp-button
-        >
-        <sp-button id="marker-movemarker">Move Marker</sp-button>
-        <sp-button id="marker-removemarker">Remove Marker</sp-button>
-        <sp-button id="marker-info-sequence"
-          >Get Sequence Marker Info</sp-button
-        >
-        <sp-button id="set-first-sequence-marker-color">
-          Set First Sequence Marker Color to BLUE
+        <sp-button id="export-aaf">
+          Export as AAF
         </sp-button>
       </div>
       <div class="section">
         <h4>Project Panel Item Manipulation</h4>
-        <sp-button id="get-project-items"> Get Project Items</sp-button>
+        <sp-button id="get-project-items">Get Project Items</sp-button>
         <sp-button id="get-selected-project-items">
-          Get Selected Project Items</sp-button
-        >
-        <sp-button id="get-project-items-proxy-info"> Get Project Items Proxy Info</sp-button>
-        <sp-button id="get-media-path"> Get Media File Path</sp-button>
-        <sp-button id="get-media-info"> Get Media Info</sp-button>
+          Get Selected Project Items
+        </sp-button>
+        <sp-button id="get-project-items-proxy-info">Get Project Items Proxy Info</sp-button>
+        <sp-button id="get-media-path">Get Media File Path</sp-button>
+        <sp-button id="get-media-info">Get Media Info</sp-button>
         <sp-button id="set-media-start">
           Set Media Start to 1 second
         </sp-button>
@@ -240,60 +299,109 @@
         <sp-button id="set-first-project-item-color-label">
           Set Color Label of First Project Item to MAGENTA
         </sp-button>
-        <sp-button id="create-bin"> Create Bin</sp-button>
-        <sp-button id="create-smart-bin"> Create Smart Bin</sp-button>
-        <sp-button id="rename-bin"> Rename Bin</sp-button>
-        <sp-button id="remove-item"> Remove Item</sp-button>
-        <sp-button id="move-item"> Move Item</sp-button>
-        <sp-button id="set-in-out-point"> Set In Out Point</sp-button>
-        <sp-button id="clear-in-out-point"> Clear In Out Point</sp-button>
+        <sp-button id="create-bin">Create Bin</sp-button>
+        <sp-button id="create-smart-bin">Create Smart Bin</sp-button>
+        <sp-button id="rename-bin">Rename Bin</sp-button>
+        <sp-button id="remove-item">Remove Item</sp-button>
+        <sp-button id="move-item">Move Item</sp-button>
+        <sp-button id="set-in-out-point">Set In Out Point</sp-button>
+        <sp-button id="clear-in-out-point">Clear In Out Point</sp-button>
         <sp-button id="set-override-framerate">
-          Set Override FrameRate</sp-button
-        >
+          Set Override FrameRate
+        </sp-button>
         <sp-button id="set-override-pixel-aspect-ratio">
-          Set Override Pixel Aspect Ratio</sp-button
-        >
+          Set Override Pixel Aspect Ratio
+        </sp-button>
         <sp-button id="get-originating-project-path">
-          Get Originating Project Path For First Clip</sp-button
-        >
+          Get Originating Project Path For First Clip
+        </sp-button>
         <sp-button id="set-scale-to-frame-size">
-          Set Scale To Frame Size</sp-button
-        >
+          Set Scale To Frame Size
+        </sp-button>
         <sp-button id="set-footage-interpretation">
-          Set Footage Interpretation</sp-button
-        >
-        <sp-button id="refresh-media"> Refresh Media</sp-button>
-        <sp-button id="attach-proxy"> Attach Proxy</sp-button>
-        <sp-button id="change-path"> Change Media File Path</sp-button>
-        <sp-button id="get-view-ids"> Get Project View Ids</sp-button>
+          Set Footage Interpretation
+        </sp-button>
+        <sp-button id="refresh-media">Refresh Media</sp-button>
+        <sp-button id="attach-proxy">Attach Proxy</sp-button>
+        <sp-button id="change-path">Change Media File Path</sp-button>
+        <sp-button id="get-view-ids">Get Project View Ids</sp-button>
         <sp-button id="get-project-from-view-id">
-          Get Project From First View Id</sp-button
-        >
+          Get Project From First View Id
+        </sp-button>
         <sp-button id="get-selection-from-view-id">
-          Get Selected ProjectItems From First View Id</sp-button
-        >
+          Get Selected ProjectItems From First View Id
+        </sp-button>
         <sp-button id="rename-first-selected-projectItem">
           Rename First Selected ProjectItem
         </sp-button>
       </div>
       <div class="section">
-        <h4>Metadata</h4>
-        <sp-button id="get-project-metadata">Get Project MetaData</sp-button>
-        <sp-button id="get-xmp-metadata">Get XMP MetaData</sp-button>
-        <sp-button id="get-projectcolumns-metadata"
-          >Get Project Columns MetaData</sp-button
-        >
-        <sp-button id="get-projectpanel-metadata"
-          >Get Project Panel MetaData</sp-button
-        >
-        <sp-button id="set-project-metadata">Set Project Metadata</sp-button>
-        <sp-button id="set-xmp-metadata">Set XMP Metadata</sp-button>
-        <sp-button id="set-projectpanel-metadata"
-          >Set Project Panel MetaData</sp-button
-        >
-        <sp-button id="add-property-metadata-schema"
-          >Add Property To Project Metdata Schema</sp-button
-        >
+        <h4>Properties</h4>
+        <sp-button id="get-sequence-property">
+          Get Sample Sequence Property
+        </sp-button>
+        <sp-button id="set-sequence-property">
+          Set New Sample Sequence Property
+        </sp-button>
+        <sp-button id="clear-sequence-property">
+          Clear New Sample Sequence Property
+        </sp-button>
+      </div>
+      <div class="section">
+        <h4>Sequence</h4>
+        <sp-button id="get-sequence-settings">
+          Get sequence settings
+        </sp-button>
+        <sp-button id="set-sequence-settings">
+          Change sequence settings
+        </sp-button>
+        <sp-button id="set-sequence-in-out-point">
+          Set Sequence In and Out Point
+        </sp-button>
+        <sp-button id="get-sequence-from-id">Get Sequence From Id</sp-button>
+        <sp-button id="set-active-sequence">Set Last Sequence Active</sp-button>
+        <sp-button id="create-sequence">Create Sequence</sp-button>
+        <sp-button id="create-media-sequence">
+          Create Sequence From Media
+        </sp-button>
+        <sp-button id="get-caption-track-count">
+          Get Caption Track Count
+        </sp-button>
+        <sp-button id="get-video-track-sequence">
+          Get First Video Track
+        </sp-button>
+        <sp-button id="get-selection-sequence">
+          Get Sequence Selection
+        </sp-button>
+        <sp-button id="set-selection-sequence">
+          Set Sequence Selection
+        </sp-button>
+        <sp-button id="create-sub-sequence">Create Subsequence</sp-button>
+        <sp-button id="overwrite-item">
+          Overwrite TrackItem with Selected ProjectItem
+        </sp-button>
+        <sp-button id="insert-item">
+          Insert TrackItem with Selected ProjectItem
+        </sp-button>
+        <sp-button id="insert-mogrt">Insert Mogrt from Path at V2</sp-button>
+        <sp-button id="clone-selected-item">
+          Clone Selected TrackItem to Another Track
+        </sp-button>
+        <sp-button id="remove-selected-items">
+          Remove Selected TrackItems
+        </sp-button>
+        <sp-button id="trim-selected-item">
+          Trim First Selected TrackItem
+        </sp-button>
+        <sp-button id="trim-handles">
+          Trim 20 Frames Off Head and Tail of First Selected TrackItem
+        </sp-button>
+        <sp-button id="rename-first-selected-trackItem">
+          Rename First Selected TrackItem
+        </sp-button>
+        <sp-button id="get-video-frame-rate">Get Video Frame Rate</sp-button>
+        <sp-button id="set-video-frame-rate">Set Video Frame Rate to 23.976</sp-button>
+        <sp-button id="close-sequence">Close Sequence</sp-button>
       </div>
       <div class="section">
         <h4>Source Monitor Controls</h4>
@@ -307,130 +415,22 @@
         <sp-button id="close-all-clips">Close All Clips</sp-button>
       </div>
       <div class="section">
-        <h4>Keyframe</h4>
-        <sp-button id="set-value">Set Value </sp-button>
-        <sp-button id="get-start-value">Get Start Value</sp-button>
-        <sp-button id="add-keyframe">Add Keyframe</sp-button>
-        <sp-button id="get-keyframes">Get Keyframes As Ticktime</sp-button>
-        <sp-button id="get-keyfram-time">Get Keyframes At Time</sp-button>
-        <sp-button id="set-interpolation"
-          >Set Interpolation At Keyframe</sp-button
-        >
-      </div>
-      <div class="section">
-        <h4>Effects & Transitions</h4>
-        <sp-button id="get-effect-names">Get Effect Names</sp-button>
-        <sp-button id="add-gamma-correction-effect"
-          >Add Gamma Correction Effect</sp-button
-        >
-        <sp-button id="add-multiple-effects"
-          >Add Gamma Correction and Extract Effect</sp-button
-        >
-        <sp-button id="add-vocal-enhancer-effect"
-          >Add Vocal Enhancer Effect</sp-button
-        >
-        <sp-button id="remove-gamma-correction-effect"
-          >Remove The Last Effect</sp-button
-        >
-        <sp-button id="get-transition-names">Get Transition Names</sp-button>
-        <sp-button id="add-transition-start"
-          >Add Transition To The Start Of TrackItem</sp-button
-        >
-        <sp-button id="add-transition-end"
-          >Add Transition To The End Of TrackItem</sp-button
-        >
-        <sp-button id="remove-transition-start"
-          >Remove Transition To The Start</sp-button
-        >
-      </div>
-      <div class="section">
-        <h4>Properties</h4>
-        <sp-button id="get-sequence-property"
-          >Get Sample Sequence Property</sp-button
-        >
-        <sp-button id="set-sequence-property"
-          >Set New Sample Sequence Property</sp-button
-        >
-        <sp-button id="clear-sequence-property"
-          >Clear New Sample Sequence Property</sp-button
-        >
-      </div>
-      <div class="section">
         <h4>Settings</h4>
-        <sp-button id="get-project-setting"
-          >Get Scratch Disk Path Setting</sp-button
-        >
-        <sp-button id="set-project-setting"
-          >Set Scratch Disk Path Setting To MyDocuments</sp-button
-        >
+        <sp-button id="get-project-setting">
+          Get Scratch Disk Path Setting
+        </sp-button>
+        <sp-button id="set-project-setting">
+          Set Scratch Disk Path Setting To MyDocuments
+        </sp-button>
         <sp-button id="get-ingest-setting">Get Ingest Enabled</sp-button>
         <sp-button id="set-ingest-enabled">Set Ingest Enabled</sp-button>
       </div>
       <div class="section">
-        <h4>PRProduction</h4>
-        <sp-button id="get-active-production">Get Active Production</sp-button>
-        <sp-button id="get-production-scratch-disk-setting">Get Production Scratch Disk Setting</sp-button>
-      </div>
-      <div class="section">
-        <h4>App Preference</h4>
-        <sp-button id="get-autopeak-preference"
-          >Get Auto Peak Generation Preference
-        </sp-button>
-        <sp-button id="set-autopeak-setting"
-          >Toggle Auto Peak Generation Preference</sp-button
-        >
-      </div>
-      <div class="section">
-        <h4>Export Controls</h4>
-        <sp-button id="export-frame"> Export Current Frame As PNG </sp-button>
-        <sp-button id="export-sequence">
-          Export Sequence Using Preset
-        </sp-button>
-        <sp-button id="get-export-file-extension">
-          Get Exported File Extension From .epr
-        </sp-button>
-      </div>
-      <div class="section">
-        <h4>Encoder Controls</h4>
-        <sp-button id="encode-first-selected-project-item">
-          Queue First Selected ProjectItem To Adobe Media Encoder</sp-button
-        >
-        <sp-button id="encode-file"
-          >Queue Media File To Adobe Media Encoder</sp-button
-        >
-      </div>
-      <div class="section">
-        <h4>Import Controls</h4>
-        <sp-button id="import-ae-component">Import AE Composition</sp-button>
-        <input
-          type="text"
-          id="ae-component-name"
-          placeholder="AE Composition Name Here"
-        />
-        <sp-button id="import-files">Import Media Files From Disk</sp-button>
-        <sp-button id="import-all-ae-components"
-          >Import All AE Composition</sp-button
-        >
-        <sp-button id="import-sequences">Import Sequences From Disk</sp-button>
-      </div>
-      <div class="section">
         <h4>Transcript Controls</h4>
-        <sp-button id="import-transcript"
-          >Import Transcript from JSON</sp-button
-        >
+        <sp-button id="import-transcript">
+          Import Transcript from JSON
+        </sp-button>
         <sp-button id="export-transcript">Export Transcript to JSON</sp-button>
-      </div>
-      <div class="section">
-        <h4>Project Converter</h4>
-        <sp-button id="export-fcpxml"
-          >Export as Final Cut Pro XML</sp-button
-        >
-        <sp-button id="export-otio"
-          >Export as OpenTimelineIO</sp-button
-        >
-        <sp-button id="export-aaf"
-          >Export as AAF</sp-button
-        >
       </div>
     </footer>
   </body>
