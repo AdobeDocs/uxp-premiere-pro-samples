@@ -91,7 +91,11 @@ export async function changeTimeVarying(
 
 //Sets the value of the component parameter stream.
 export async function setValue() {
-  const { componentParam, project } = await getComponentParam();
+  const result = await getComponentParam();
+  if (!result) {
+    return false;
+  }
+  const { componentParam, project } = result;
   const keyframe = componentParam.createKeyframe(300);
 
   let success = await changeTimeVarying(componentParam, project, false);
@@ -119,7 +123,11 @@ export async function setValue() {
 
 //Gets the value of the component parameter stream.
 export async function getStartValue() {
-  const { componentParam, project } = await getComponentParam();
+  const result = await getComponentParam();
+  if (!result) {
+    return;
+  }
+  const { componentParam, project } = result;
 
   let success = await changeTimeVarying(componentParam, project, false);
 
@@ -133,7 +141,11 @@ export async function getStartValue() {
 
 //Adds a keyframe to the component parameter stream.
 export async function addKeyframe() {
-  const { componentParam, project } = await getComponentParam();
+  const result = await getComponentParam();
+  if (!result) {
+    return false;
+  }
+  const { componentParam, project } = result;
 
   let success = await changeTimeVarying(componentParam, project, true);
   try {
@@ -160,13 +172,21 @@ export async function addKeyframe() {
 
 //Gets all the keyframes of componentParam stream.
 export async function getKeyframes() {
-  const { componentParam } = await getComponentParam();
+  const result = await getComponentParam();
+  if (!result) {
+    return;
+  }
+  const { componentParam } = result;
   return componentParam.getKeyframeListAsTickTimes();
 }
 
 //Gets all the keyframes of a componentParam at specific time.
 export async function getKeyframe() {
-  const { componentParam } = await getComponentParam();
+  const result = await getComponentParam();
+  if (!result) {
+    return;
+  }
+  const { componentParam } = result;
   try {
     let keyframePtr = await componentParam.getKeyframePtr(
       ppro.TickTime.createWithSeconds(0)
@@ -199,7 +219,11 @@ export async function getKeyframe() {
 
 // 8 kfInterpMode_TimeTransitionEnd
 export async function setInterpolation() {
-  const { componentParam, project } = await getComponentParam();
+  const result = await getComponentParam();
+  if (!result) {
+    return false;
+  }
+  const { componentParam, project } = result;
 
   let success = await changeTimeVarying(componentParam, project, true);
   try {

@@ -21,23 +21,32 @@ import { log } from "./utils";
  * Export current active sequence's current frame as PNG file
  */
 export async function exportSequenceFrame(sequence: Sequence) {
-  // @ts-ignore
-  const folder = await uxp.storage.localFileSystem.getFolder();
-  let folderDir = await folder.nativePath;
+  try {
+    // @ts-ignore
+    const folder = await uxp.storage.localFileSystem.getFolder();
+    if (!folder) {
+      log("No folder selected for export");
+      return false;
+    }
+    let folderDir = await folder.nativePath;
 
-  let playerPos = await sequence.getPlayerPosition(); // ticktime obj
-  const exportName = "output.png";
+    let playerPos = await sequence.getPlayerPosition(); // ticktime obj
+    const exportName = "output.png";
 
-  log("Exporting output.png.png *(We do double extension)*");
+    log("Exporting output.png.png *(We do double extension)*");
 
-  return ppro.Exporter.exportSequenceFrame(
-    sequence,
-    playerPos,
-    exportName,
-    folderDir,
-    600, // width
-    500 // height
-  );
+    return ppro.Exporter.exportSequenceFrame(
+      sequence,
+      playerPos,
+      exportName,
+      folderDir,
+      600, // width
+      500 // height
+    );
+  } catch (err) {
+    log(`Error exporting frame: ${err}`, "red");
+    return false;
+  }
 }
 
 /**

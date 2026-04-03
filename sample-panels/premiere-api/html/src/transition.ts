@@ -62,7 +62,7 @@ export async function addTransitionStart(project: Project) {
   }
   const videoTrackItems = await getVideoTrackItems();
 
-  if (videoTrackItems && videoTrackItems.length === 0) {
+  if (!videoTrackItems || videoTrackItems.length === 0) {
     return;
   }
   matchnames = await transitionFactory.getVideoTransitionMatchNames();
@@ -100,7 +100,7 @@ export async function addTransitionEnd(project: Project) {
   }
   const videoTrackItems = await getVideoTrackItems();
 
-  if (videoTrackItems && videoTrackItems.length === 0) {
+  if (!videoTrackItems || videoTrackItems.length === 0) {
     return;
   }
 
@@ -133,7 +133,7 @@ export async function removeTransitionStart(project: Project) {
   }
   const videoTrackItems = await getVideoTrackItems();
 
-  if (videoTrackItems && videoTrackItems.length === 0) {
+  if (!videoTrackItems || videoTrackItems.length === 0) {
     return;
   }
 

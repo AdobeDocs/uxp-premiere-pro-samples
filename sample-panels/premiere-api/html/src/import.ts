@@ -14,6 +14,7 @@
 
 import type { Guid, premierepro, Project, ProjectItem } from "../types.d.ts";
 const ppro = require("premierepro") as premierepro;
+import { log } from "./utils";
 
 /**
  * Import files into project
@@ -22,13 +23,18 @@ const ppro = require("premierepro") as premierepro;
  * @returns [Boolean] if import successful
  */
 export async function importFiles(project: Project, filePaths: string[]) {
-  // import into current project if any
-  return await project.importFiles(
-    filePaths,
-    true, // suppressUI
-    null, // Project bin unset, should import it to project root
-    false // importAsNumberedStills
-  );
+  try {
+    // import into current project if any
+    return await project.importFiles(
+      filePaths,
+      true, // suppressUI
+      null, // Project bin unset, should import it to project root
+      false // importAsNumberedStills
+    );
+  } catch (err) {
+    log(`Error importing files: ${err}`, "red");
+    return false;
+  }
 }
 
 /**
@@ -43,7 +49,12 @@ export async function importSequences(
   projectFilePath: string,
   seqIds: Guid[]
 ) {
-  return project.importSequences(projectFilePath, seqIds);
+  try {
+    return project.importSequences(projectFilePath, seqIds);
+  } catch (err) {
+    log(`Error importing sequences: ${err}`, "red");
+    return false;
+  }
 }
 
 /**
@@ -60,7 +71,12 @@ export async function importAeComponent(
   aeCompName: string,
   rootItem: ProjectItem
 ) {
-  return project.importAEComps(projectFilePath, [aeCompName], rootItem);
+  try {
+    return project.importAEComps(projectFilePath, [aeCompName], rootItem);
+  } catch (err) {
+    log(`Error importing AE composition: ${err}`, "red");
+    return false;
+  }
 }
 
 /**
@@ -75,5 +91,10 @@ export async function importAllAeComponents(
   projectFilePath: string,
   rootItem: ProjectItem
 ) {
-  return project.importAllAEComps(projectFilePath, rootItem);
+  try {
+    return project.importAllAEComps(projectFilePath, rootItem);
+  } catch (err) {
+    log(`Error importing all AE compositions: ${err}`, "red");
+    return false;
+  }
 }

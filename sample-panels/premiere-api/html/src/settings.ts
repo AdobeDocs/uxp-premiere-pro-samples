@@ -21,13 +21,18 @@ import { log } from "./utils";
  * @return [string] Scratch Disk Path of current project
  */
 export async function getScratchDiskSetting(project: Project) {
-  const projectSettings = ppro.ProjectSettings;
-  const scratchDiskSettings = await projectSettings.getScratchDiskSettings(
-    project
-  );
-  return scratchDiskSettings.getScratchDiskPath(
-    ppro.Constants.ScratchDiskFolderType.CAPTURE
-  );
+  try {
+    const projectSettings = ppro.ProjectSettings;
+    const scratchDiskSettings = await projectSettings.getScratchDiskSettings(
+      project
+    );
+    return scratchDiskSettings.getScratchDiskPath(
+      ppro.Constants.ScratchDiskFolderType.CAPTURE
+    );
+  } catch (err) {
+    log(`Error getting scratch disk setting: ${err}`, "red");
+    return null;
+  }
 }
 
 /**
@@ -69,9 +74,14 @@ export async function setScratchDiskSettings(project: Project) {
  * @return [bool] If ingest is enabled for current project
  */
 export async function getIngestEnabled(project: Project) {
-  const projectSettings = ppro.ProjectSettings;
-  const ingestSettings = await projectSettings.getIngestSettings(project);
-  return ingestSettings.getIsIngestEnabled();
+  try {
+    const projectSettings = ppro.ProjectSettings;
+    const ingestSettings = await projectSettings.getIngestSettings(project);
+    return ingestSettings.getIsIngestEnabled();
+  } catch (err) {
+    log(`Error getting ingest enabled setting: ${err}`, "red");
+    return null;
+  }
 }
 
 /**
