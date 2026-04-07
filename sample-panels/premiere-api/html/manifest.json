@@ -6,7 +6,7 @@
   "main": "index.html",
   "host": {
       "app": "premierepro",
-      "minVersion": "25.1.0"
+      "minVersion": "25.4.0"
   },
   "manifestVersion": 5,
   "requiredPermissions": {

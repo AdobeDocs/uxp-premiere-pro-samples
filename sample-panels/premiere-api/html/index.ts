@@ -2315,7 +2315,7 @@ window.addEventListener("load", async () => {
   registerClick("get-insertion-bin-project", getInsertionBinClicked);
   registerClick("get-all-sequences-project", getAllSequencesClicked);
   registerClick("open-sequence-project", openSequenceClicked);
-  registerClick('pause-project"', pauseGrowingClicked);
+  registerClick("pause-project", pauseGrowingClicked);
   registerClick("save-project", saveProjectClicked);
   registerClick("save-as-project", saveAsProjectClicked);
   registerClick(
