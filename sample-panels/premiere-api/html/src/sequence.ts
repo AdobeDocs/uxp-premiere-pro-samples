@@ -14,6 +14,8 @@
 
 import type {
   AudioClipTrackItem,
+  AudioTrack,
+  CaptionTrack,
   ClipProjectItem,
   Guid,
   premierepro,
@@ -22,6 +24,7 @@ import type {
   Sequence,
   SequenceSettings,
   VideoClipTrackItem,
+  VideoTrack,
 } from "../types.d.ts";
 import { getClipProjectItem } from "./projectPanel.js";
 const ppro = require("premierepro") as premierepro;
@@ -441,6 +444,33 @@ export async function renameFirstSelectedTrackItem(
       success = project.executeTransaction((compoundAction) => {
         compoundAction.addAction(renameAction);
       }, "rename trackItem to TrackItem 1");
+    });
+  } catch (error) {
+    log(error, "red");
+  }
+  return success;
+}
+
+/**
+ * Rename a track to include a given prefix
+ * @param project - The project containing the track
+ * @param track - The track to rename
+ * @param prefix - The prefix to add to the track name
+ * @returns Success status
+ */
+export async function renameTrack(
+  project: Project,
+  track: AudioTrack | CaptionTrack | VideoTrack,
+  prefix: "Audio" | "Caption" | "Video",
+) {
+  let success = false;
+
+  try {
+    project.lockedAccess(() => {
+      const renameAction = track.createSetNameAction(`${prefix} ${track.name}`);
+      success = project.executeTransaction((compoundAction) => {
+        compoundAction.addAction(renameAction);
+      }, `rename track to ${prefix} ${track.name}`);
     });
   } catch (error) {
     log(error, "red");
