@@ -441,6 +441,30 @@ async function setVideoTrackNameClicked() {
   }
 }
 
+async function showGuidForAllMarkersClicked() {
+  const project = await getProject();
+  if (!project) {
+    log(`Failed to get project`, "red");
+    return;
+  }
+
+  const sequence = await project.getActiveSequence();
+  if (!sequence) {
+    log(`Failed to get active sequence`, "red");
+    return;
+  }
+
+  const markers = await ppro.Markers.getMarkers(sequence);
+  if (!markers) {
+    log(`Failed to get markers`, "red");
+    return;
+  }
+
+  for (const marker of markers.getMarkers()) {
+    log(`Marker "${marker.getName()}" has the guid "${marker.guid.toString()}"`);
+  }
+}
+
 //project button events
 async function openProjectClicked() {
   const project = await openProject();
@@ -1109,7 +1133,9 @@ async function getSequenceMarkerInfoClicked() {
   for (const [index, markerInfo] of sequenceMarkerInfos.entries()) {
     log(`${index + 1}.`);
     log(`Marker Name: ${markerInfo.name}`);
-    log(`Marker Guid: ${markerInfo.guid.toString()}`);
+    if (markerInfo.guid) {
+      log(`Marker Guid: ${markerInfo.guid.toString()}`);
+    }
     log(`Marker Type: ${markerInfo.type}`);
     log(
       `Marker Color: RGBA(${markerInfo.color.red}, ${markerInfo.color.green}, ${markerInfo.color.blue}, ${markerInfo.color.alpha})`
@@ -2395,7 +2421,7 @@ window.addEventListener("load", async () => {
   /* 26.3.0 button events registering */
   registerClick("set-audio-track-name", setAudioTrackNameClicked);
   registerClick("set-caption-track-name", setCaptionTrackNameClicked);
-  registerClick("get-marker-guid", getSequenceMarkerInfoClicked);
+  registerClick("show-guid-for-all-markers", showGuidForAllMarkersClicked);
   registerClick("set-video-track-name", setVideoTrackNameClicked);
 
   //project events registering

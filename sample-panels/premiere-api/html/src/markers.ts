@@ -201,7 +201,7 @@ export async function removeMarker(project: Project) {
 
 export type MarkerInfo = {
   name: string;
-  guid: Guid;
+  guid?: Guid;
   type: string;
   color: Color;
   colorIndex: number;
