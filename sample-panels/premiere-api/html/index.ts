@@ -48,6 +48,7 @@ import {
   setSequenceSettings,
   setSequenceInOutPoint,
   renameFirstSelectedTrackItem,
+  renameTrack,
   getVideoFrameRate,
   setVideoFrameRate,
   closeSequence,
@@ -356,6 +357,89 @@ entrypoints.setup({
     },
   },
 });
+
+/* 26.3.0 button events */
+
+async function setAudioTrackNameClicked() {
+  const project = await getProject();
+  if (!project) {
+    log(`Failed to get project`, "red");
+    return;
+  }
+
+  const sequence = await project.getActiveSequence();
+  if (!sequence) {
+    log(`Failed to get active sequence`, "red");
+    return;
+  }
+
+  const audioTrack = await sequence.getAudioTrack(0);
+  if (!audioTrack) {
+    log(`Failed to get or find audio track`, "red");
+    return;
+  }
+
+  const success = await renameTrack(project, audioTrack, "Audio");
+  if (success) {
+    log(`Successfully renamed audio track to "${audioTrack.name}"`);
+  } else {
+    log(`Failed to rename audio track`, "red");
+  }
+}
+
+async function setCaptionTrackNameClicked() {
+  const project = await getProject();
+  if (!project) {
+    log(`Failed to get project`, "red");
+    return;
+  }
+
+  const sequence = await project.getActiveSequence();
+  if (!sequence) {
+    log(`Failed to get active sequence`, "red");
+    return;
+  }
+
+  const captionTrack = await sequence.getCaptionTrack(0);
+  if (!captionTrack) {
+    log(`Failed to get or find caption track`, "red");
+    return;
+  }
+
+  const success = await renameTrack(project, captionTrack, "Caption");
+  if (success) {
+    log(`Successfully renamed caption track to "${captionTrack.name}"`);
+  } else {
+    log(`Failed to rename caption track`, "red");
+  }
+}
+
+async function setVideoTrackNameClicked() {
+  const project = await getProject();
+  if (!project) {
+    log(`Failed to get project`, "red");
+    return;
+  }
+
+  const sequence = await project.getActiveSequence();
+  if (!sequence) {
+    log(`Failed to get active sequence`, "red");
+    return;
+  }
+
+  const videoTrack = await sequence.getVideoTrack(0);
+  if (!videoTrack) {
+    log(`Failed to get or find video track`, "red");
+    return;
+  }
+
+  const success = await renameTrack(project, videoTrack, "Video");
+  if (success) {
+    log(`Successfully renamed video track to "${videoTrack.name}"`);
+  } else {
+    log(`Failed to rename video track`, "red");
+  }
+}
 
 //project button events
 async function openProjectClicked() {
@@ -1025,6 +1109,7 @@ async function getSequenceMarkerInfoClicked() {
   for (const [index, markerInfo] of sequenceMarkerInfos.entries()) {
     log(`${index + 1}.`);
     log(`Marker Name: ${markerInfo.name}`);
+    log(`Marker Guid: ${markerInfo.guid.toString()}`);
     log(`Marker Type: ${markerInfo.type}`);
     log(
       `Marker Color: RGBA(${markerInfo.color.red}, ${markerInfo.color.green}, ${markerInfo.color.blue}, ${markerInfo.color.alpha})`
@@ -2307,6 +2392,12 @@ async function exportAsOpenTimelineIOClicked() {
 }
 
 window.addEventListener("load", async () => {
+  /* 26.3.0 button events registering */
+  registerClick("set-audio-track-name", setAudioTrackNameClicked);
+  registerClick("set-caption-track-name", setCaptionTrackNameClicked);
+  registerClick("get-marker-guid", getSequenceMarkerInfoClicked);
+  registerClick("set-video-track-name", setVideoTrackNameClicked);
+
   //project events registering
   registerClick("open-project", openProjectClicked);
   registerClick("active-project", getActiveProjectClicked);
