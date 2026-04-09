@@ -434,6 +434,14 @@ export declare type AudioTrackStatic = {
 export declare type AudioTrack = {
 
   /**
+   * Action to change the name of the track
+   *
+   * @param name
+   * @version 26.3.0
+   */
+  createSetNameAction(name: string): object
+
+  /**
    * sets the mute state of the track to muted/unmuted
    *
    * @param mute
@@ -480,6 +488,14 @@ export declare type CaptionTrackStatic = {
 }
 
 export declare type CaptionTrack = {
+
+  /**
+   * Action to change the name of the track
+   *
+   * @param name
+   * @version 26.3.0
+   */
+  createSetNameAction(name: string): object
 
   /**
    * sets the mute state of the track to muted/unmuted
@@ -3921,6 +3937,14 @@ export declare type VideoTrackStatic = {
 }
 
 export declare type VideoTrack = {
+
+  /**
+   * Action to change the name of the track
+   *
+   * @param name
+   * @version 26.3.0
+   */
+  createSetNameAction(name: string): object
 
   /**
    * sets the mute state of the track to muted/unmuted
