@@ -1691,6 +1691,13 @@ export declare type Marker = {
    * @param comments
    */
   createSetCommentsAction(comments: string): Action
+
+  /**
+   * The unique identifier of the marker.
+   * @readonly
+   * @version 26.3.0
+   */
+  readonly guid: Guid
 }
 
 export declare type MarkersStatic = {
