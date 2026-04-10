@@ -14,6 +14,7 @@
 
 import type {
   Color,
+  Guid,
   Marker,
   premierepro,
   Project,
@@ -198,28 +199,28 @@ export async function removeMarker(project: Project) {
   return success;
 }
 
-export async function getSequenceMarkerInfo(sequence: Sequence) {
-  let markerInfos = [];
+export type MarkerInfo = {
+  name: string;
+  guid?: Guid;
+  type: string;
+  color: Color;
+  colorIndex: number;
+}
+
+export async function getSequenceMarkerInfo(sequence: Sequence): Promise<MarkerInfo[]> {
+  let markerInfos: MarkerInfo[] = [];
   try {
     const sequenceMarkersOwner = await ppro.Markers.getMarkers(sequence);
     const markers = sequenceMarkersOwner.getMarkers();
     for (let marker of markers) {
-      let markerInfoObj: {
-        name: string;
-        type: string;
-        color: Color;
-        colorIndex: number;
-      } = {
-        name: "",
-        type: "",
-        color: null,
-        colorIndex: -1,
+      let markerInfo: MarkerInfo = {
+        name: marker.getName(),
+        guid: marker.guid,
+        type: marker.getType(),
+        color: marker.getColor(),
+        colorIndex: marker.getColorIndex(),
       };
-      markerInfoObj.name = marker.getName();
-      markerInfoObj.type = marker.getType();
-      markerInfoObj.color = marker.getColor();
-      markerInfoObj.colorIndex = marker.getColorIndex();
-      markerInfos.push(markerInfoObj);
+      markerInfos.push(markerInfo);
     }
   } catch (error) {
     log(error, "red");

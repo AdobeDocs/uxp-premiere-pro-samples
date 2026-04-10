@@ -434,6 +434,14 @@ export declare type AudioTrackStatic = {
 export declare type AudioTrack = {
 
   /**
+   * Action to change the name of the track
+   *
+   * @param name
+   * @version 26.3.0
+   */
+  createSetNameAction(name: string): object
+
+  /**
    * sets the mute state of the track to muted/unmuted
    *
    * @param mute
@@ -480,6 +488,14 @@ export declare type CaptionTrackStatic = {
 }
 
 export declare type CaptionTrack = {
+
+  /**
+   * Action to change the name of the track
+   *
+   * @param name
+   * @version 26.3.0
+   */
+  createSetNameAction(name: string): object
 
   /**
    * sets the mute state of the track to muted/unmuted
@@ -1691,6 +1707,13 @@ export declare type Marker = {
    * @param comments
    */
   createSetCommentsAction(comments: string): Action
+
+  /**
+   * The unique identifier of the marker.
+   * @readonly
+   * @version 26.3.0
+   */
+  readonly guid: Guid
 }
 
 export declare type MarkersStatic = {
@@ -3916,6 +3939,14 @@ export declare type VideoTrackStatic = {
 export declare type VideoTrack = {
 
   /**
+   * Action to change the name of the track
+   *
+   * @param name
+   * @version 26.3.0
+   */
+  createSetNameAction(name: string): object
+
+  /**
    * sets the mute state of the track to muted/unmuted
    *
    * @param mute
@@ -4048,11 +4079,22 @@ export declare type Transcript = {
 
 
 export namespace Constants {
-  export enum MediaType {
-    ANY,
-    DATA,
-    VIDEO,
-    AUDIO
+  export enum AudioChannelType {
+    MONO,
+    STEREO,
+    SURROUND_51,
+    MULTI
+  }
+
+  export enum AudioDisplayFormatType {
+    SAMPLE_RATE,
+    MILLISECONDS
+  }
+
+  export enum AudioTrackEvent {
+    TRACK_CHANGED,
+    INFO_CHANGED,
+    LOCK_CHANGED
   }
 
   export enum ContentType {
@@ -4061,43 +4103,18 @@ export namespace Constants {
     MEDIA
   }
 
-  export enum ProjectItemColorLabel {
-    VIOLET,
-    IRIS,
-    LAVENDER,
-    CERULEAN,
-    FOREST,
-    ROSE,
-    MANGO,
-    PURPLE,
-    BLUE,
-    TEAL,
-    MAGENTA,
-    TAN,
-    GREEN,
-    BROWN,
-    YELLOW
+  export enum EncoderEvent {
+    RENDER_COMPLETE,
+    RENDER_ERROR,
+    RENDER_CANCEL,
+    RENDER_QUEUE,
+    RENDER_PROGRESS
   }
 
-  export enum TransitionPosition {
-    START,
-    END
-  }
-
-  export enum TrackItemType {
-    EMPTY,
-    CLIP,
-    TRANSITION,
-    PREVIEW,
-    FEEDBACK
-  }
-
-  export enum ProjectEvent {
-    OPENED,
-    CLOSED,
-    DIRTY,
-    ACTIVATED,
-    PROJECT_ITEM_SELECTION_CHANGED
+  export enum ExportType {
+    QUEUE_TO_AME,
+    QUEUE_TO_APP,
+    IMMEDIATELY
   }
 
   export enum InterpolationMode {
@@ -4109,55 +4126,21 @@ export namespace Constants {
     TIME_TRANSITION_START
   }
 
-  export enum SequenceOperation {
-    APPLYCUT,
-    CREATEMARKER,
-    CREATESUBCLIP
+  export enum MarkerColor {
+    GREEN,
+    RED,
+    MAGNETA,
+    ORANGE,
+    YELLOW,
+    BLUE,
+    CYAN
   }
 
-  export enum PropertyType {
-    PERSISTENT,
-    NON_PERSISTENT
-  }
-
-  export enum SequenceEvent {
-    ACTIVATED,
-    CLOSED,
-    SELECTION_CHANGED
-  }
-
-  export enum VideoTrackEvent {
-    TRACK_CHANGED,
-    INFO_CHANGED,
-    LOCK_CHANGED
-  }
-
-  export enum AudioTrackEvent {
-    TRACK_CHANGED,
-    INFO_CHANGED,
-    LOCK_CHANGED
-  }
-
-  export enum EncoderEvent {
-    RENDER_COMPLETE,
-    RENDER_ERROR,
-    RENDER_CANCEL,
-    RENDER_QUEUE,
-    RENDER_PROGRESS
-  }
-
-  export enum ScratchDiskFolderType {
-    CAPTURE,
-    AUDIO_PREVIEW,
-    VIDEO_PREVIEW,
-    AUTO_SAVE,
-    CCL_LIBRARIES,
-    CAPSULE_MEDIA
-  }
-
-  export enum ScratchDiskFolder {
-    SAME_AS_PROJECT,
-    MY_DOCUMENTS
+  export enum MediaType {
+    ANY,
+    DATA,
+    VIDEO,
+    AUDIO
   }
 
   export enum MetadataType {
@@ -4165,27 +4148,6 @@ export namespace Constants {
     REAL,
     TEXT,
     BOOLEAN
-  }
-
-  export enum ExportType {
-    QUEUE_TO_AME,
-    QUEUE_TO_APP,
-    IMMEDIATELY
-  }
-
-  export enum PreferenceKey {
-    AUTO_PEAK_GENERATION,
-    IMPORT_WORKSPACE,
-    SHOW_QUICKSTART_DIALOG
-  }
-
-  export enum SnapEvent {
-    KEYFRAME,
-    RAZOR_PLAYHEAD,
-    RAZOR_MARKER,
-    TRACKITEM,
-    GUIDES,
-    PLAYHEAD_TRACKITEM
   }
 
   export enum OperationCompleteEvent {
@@ -4214,10 +4176,94 @@ export namespace Constants {
     DVCProHD
   }
 
-  export enum VideoFieldType {
-    PROGRESSIVE,
-    UPPER_FIRST,
-    LOWER_FIRST
+  export enum PreferenceKey {
+    AUTO_PEAK_GENERATION,
+    IMPORT_WORKSPACE,
+    SHOW_QUICKSTART_DIALOG
+  }
+
+  export enum ProjectConverter {
+    AAF_EXPORT_AUDIO_FORMAT_AIFF,
+    AAF_EXPORT_AUDIO_FORMAT_WAV
+  }
+
+  export enum ProjectEvent {
+    OPENED,
+    CLOSED,
+    DIRTY,
+    ACTIVATED,
+    PROJECT_ITEM_SELECTION_CHANGED
+  }
+
+  export enum ProjectItemColorLabel {
+    VIOLET,
+    IRIS,
+    LAVENDER,
+    CERULEAN,
+    FOREST,
+    ROSE,
+    MANGO,
+    PURPLE,
+    BLUE,
+    TEAL,
+    MAGENTA,
+    TAN,
+    GREEN,
+    BROWN,
+    YELLOW
+  }
+
+  export enum PropertyType {
+    PERSISTENT,
+    NON_PERSISTENT
+  }
+
+  export enum ScratchDiskFolder {
+    SAME_AS_PROJECT,
+    MY_DOCUMENTS
+  }
+
+  export enum ScratchDiskFolderType {
+    CAPTURE,
+    AUDIO_PREVIEW,
+    VIDEO_PREVIEW,
+    AUTO_SAVE,
+    CCL_LIBRARIES,
+    CAPSULE_MEDIA
+  }
+
+  export enum SequenceEvent {
+    ACTIVATED,
+    CLOSED,
+    SELECTION_CHANGED
+  }
+
+  export enum SequenceOperation {
+    APPLYCUT,
+    CREATEMARKER,
+    CREATESUBCLIP
+  }
+
+  export enum SnapEvent {
+    KEYFRAME,
+    RAZOR_PLAYHEAD,
+    RAZOR_MARKER,
+    TRACKITEM,
+    GUIDES,
+    PLAYHEAD_TRACKITEM
+  }
+
+  export enum TrackItemType {
+    EMPTY,
+    CLIP,
+    TRANSITION,
+    PREVIEW,
+    FEEDBACK
+  }
+
+  export enum TransitionPosition {
+    START,
+    END
   }
 
   export enum VideoDisplayFormatType {
@@ -4230,26 +4276,16 @@ export namespace Constants {
     FRAMES
   }
 
-  export enum AudioChannelType {
-    MONO,
-    STEREO,
-    SURROUND_51,
-    MULTI
+  export enum VideoFieldType {
+    PROGRESSIVE,
+    UPPER_FIRST,
+    LOWER_FIRST
   }
 
-  export enum AudioDisplayFormatType {
-    SAMPLE_RATE,
-    MILLISECONDS
-  }
-
-  export enum MarkerColor {
-    GREEN,
-    RED,
-    MAGNETA,
-    ORANGE,
-    YELLOW,
-    BLUE,
-    CYAN
+  export enum VideoTrackEvent {
+    TRACK_CHANGED,
+    INFO_CHANGED,
+    LOCK_CHANGED
   }
 }
 
