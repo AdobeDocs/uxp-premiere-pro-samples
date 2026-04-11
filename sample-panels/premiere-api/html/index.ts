@@ -317,13 +317,14 @@ entrypoints.setup({
             },
           ],
         },
-        { id: "separator", "label": "-" },
+        { id: "separator", label: "-" },
         {
           id: "reload",
           label: "Reload Panel",
           enabled: true,
           checked: false,
         },
+        // Shorthand for a separator menu item.
         "-",
         {
           id: "toggle-checked",
@@ -347,6 +348,14 @@ entrypoints.setup({
             // "this" refers to the (UxpPanelInfo) panel itself, allowing
             // access the panel's menu items and other properties.
             this.menuItems.getItem(id).checked = !this.menuItems.getItem(id).checked;
+            break;
+
+          case "submenu-item1":
+            log("Submenu item 1 clicked");
+            break;
+
+          case "submenu-item2":
+            log("Submenu item 2 clicked");
             break;
 
           default:
