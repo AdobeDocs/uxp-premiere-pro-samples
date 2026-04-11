@@ -317,13 +317,14 @@ entrypoints.setup({
             },
           ],
         },
-        { id: "separator", "label": "-" },
+        { id: "separator", label: "-" },
         {
           id: "reload",
           label: "Reload Panel",
           enabled: true,
           checked: false,
         },
+        // Shorthand for a separator menu item.
         "-",
         {
           id: "toggle-checked",
