@@ -349,6 +349,14 @@ entrypoints.setup({
             this.menuItems.getItem(id).checked = !this.menuItems.getItem(id).checked;
             break;
 
+          case "submenu-item1":
+            log("Submenu item 1 clicked");
+            break;
+
+          case "submenu-item2":
+            log("Submenu item 2 clicked");
+            break;
+
           default:
             log(`Unknown menu item invoked: ${id}`, "red");
             break;
