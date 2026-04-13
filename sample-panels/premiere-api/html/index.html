@@ -47,7 +47,7 @@
       font-size: 1.1em;
     }
 
-    #ae-component-name {
+    #ae-component-name, #sequence-preset-path {
       height: 20px;
       border-radius: 0.5em;
       font-size: 1.1em;
@@ -134,6 +134,15 @@
       <div class="section">
         <h4>Marker</h4>
         <sp-button id="show-guid-for-all-markers">Show Guid for All Markers</sp-button>
+      </div>
+      <div class="section">
+        <h4>Project</h4>
+        <sp-button id="create-sequence-with-preset-path">Create Sequence with Preset Path</sp-button>
+        <input
+          type="text"
+          id="sequence-preset-path"
+          placeholder="path/to/preset.sqpreset"
+        />
       </div>
       <div class="section">
         <h4>VideoTrack</h4>

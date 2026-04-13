@@ -452,6 +452,32 @@ async function setVideoTrackNameClicked() {
   }
 }
 
+async function createSequenceWithPresetPathClicked() {
+  const project = await getProject();
+  if (!project) {
+    log("Failed to get project", "red");
+    return;
+  }
+
+  const presetPath = (document.getElementById("sequence-preset-path") as HTMLInputElement)?.value;
+  if (!presetPath) {
+    log("No preset path provided", "red");
+    return;
+  }
+
+  try {
+    const sequence = await project.createSequenceWithPresetPath("Test Sequence", presetPath);
+
+    if (sequence) {
+      log(`Successfully created sequence "${sequence.name}" with preset path`);
+    } else {
+      log("Failed to create sequence with preset path", "red");
+    }
+  } catch (error) {
+    log(`Error creating sequence with preset path: ${error}`, "red");
+  }
+}
+
 async function showGuidForAllMarkersClicked() {
   const project = await getProject();
   if (!project) {
@@ -2433,6 +2459,7 @@ window.addEventListener("load", async () => {
   registerClick("set-audio-track-name", setAudioTrackNameClicked);
   registerClick("set-caption-track-name", setCaptionTrackNameClicked);
   registerClick("show-guid-for-all-markers", showGuidForAllMarkersClicked);
+  registerClick("create-sequence-with-preset-path", createSequenceWithPresetPathClicked);
   registerClick("set-video-track-name", setVideoTrackNameClicked);
 
   //project events registering

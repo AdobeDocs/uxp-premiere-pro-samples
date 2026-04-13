@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PremiereData Version="3">
+	<SequencePreset ObjectRef="1"/>
+	<SequencePreset ObjectID="1" ClassID="5e73dd7e-4f86-4917-80eb-08ddb2f4a5f3" Version="9">
+		<VideoTimeDisplay>104</VideoTimeDisplay>
+		<AudioTimeDisplay>200</AudioTimeDisplay>
+		<VideoFrameRate>8467200000</VideoFrameRate>
+		<VideoFrameSize>0,0,1080,1920</VideoFrameSize>
+		<AudioFrameRate>5292000</AudioFrameRate>
+		<AudioChannelType>1</AudioChannelType>
+		<VideoFieldType>0</VideoFieldType>
+		<ImmersiveVideoVRConfiguration>{"ambisonicsHRIR":"","ambisonicsMonitoringType":0,"capturedHorizontalView":0,"capturedVerticalView":0,"fieldOfHorizontalView":108,"fieldOfVerticalView":108,"projectionType":0,"stereoscopicEye":0,"stereoscopicType":0,"version":3}</ImmersiveVideoVRConfiguration>
+		<WorkingColorSpace>{"baseColorProfile":{"colorProfileName":"BT.709 RGB Full"},"baseProfileType":1}</WorkingColorSpace>
+		<Names Version="1">
+			<NameItem Version="1" Index="0">
+				<First>en_US</First>
+				<Second>Social Media Portrait 9x16 30 fps</Second>
+			</NameItem>
+		</Names>
+		<Descriptions Version="1">
+			<DescriptionItem Version="1" Index="0">
+				<First>en_US</First>
+				<Second>Vertical aspect 9x16 format best viewed on a mobile device. 1080x1920 30 frames per second.</Second>
+			</DescriptionItem>
+		</Descriptions>
+		<EditingModeGUID.Mac>795454d9-d3c2-429d-9474-923ab13b7018</EditingModeGUID.Mac>
+		<EditingModeGUID.Win>9678AF98-A7B7-4bdb-B477-7AC9C8DF4A4E</EditingModeGUID.Win>
+		<PreviewPresetFileName.Mac>QuickTime</PreviewPresetFileName.Mac>
+		<PreviewPresetVideoCodec.Mac>1634755443</PreviewPresetVideoCodec.Mac>
+		<PreviewPresetFileName.Win>QuickTime</PreviewPresetFileName.Win>
+		<PreviewPresetVideoCodec.Win>1634755443</PreviewPresetVideoCodec.Win>
+		<VideoPixelAspectRatio>1,1</VideoPixelAspectRatio>
+		<VideoUseMaxBitDepth>false</VideoUseMaxBitDepth>
+		<VideoUseMaxRenderQuality>false</VideoUseMaxRenderQuality>
+		<VideoAllowLinearCompositing>true</VideoAllowLinearCompositing>
+		<AdaptiveNumChannels>2</AdaptiveNumChannels>
+		<InitialNumberOfVideoTracks>3</InitialNumberOfVideoTracks>
+		<AudioTracks>[{"mAssign":0,"mAudioSends":[],"mChannelType":1,"mIsOpen":false,"mIsSubmix":false,"mKeyframeMode":true,"mLocked":false,"mMatrix":[],"mMute":false,"mName":"","mPan":0,"mPannerAssignments":[],"mSolo":false,"mSyncLock":true,"mTargeted":false,"mTrackID":-1,"mVolume":1},{"mAssign":0,"mAudioSends":[],"mChannelType":1,"mIsOpen":false,"mIsSubmix":false,"mKeyframeMode":true,"mLocked":false,"mMatrix":[],"mMute":false,"mName":"","mPan":0,"mPannerAssignments":[],"mSolo":false,"mSyncLock":true,"mTargeted":false,"mTrackID":-1,"mVolume":1},{"mAssign":0,"mAudioSends":[],"mChannelType":1,"mIsOpen":false,"mIsSubmix":false,"mKeyframeMode":true,"mLocked":false,"mMatrix":[],"mMute":false,"mName":"","mPan":0,"mPannerAssignments":[],"mSolo":false,"mSyncLock":true,"mTargeted":false,"mTrackID":-1,"mVolume":1},{"mAssign":0,"mAudioSends":[],"mChannelType":1,"mIsOpen":false,"mIsSubmix":false,"mKeyframeMode":true,"mLocked":false,"mMatrix":[],"mMute":false,"mName":"","mPan":0,"mPannerAssignments":[],"mSolo":false,"mSyncLock":true,"mTargeted":false,"mTrackID":-1,"mVolume":1}]</AudioTracks>
+		<VideoTracks>[]</VideoTracks>
+		<PreviewVideoFrameSize>0,0,1080,1920</PreviewVideoFrameSize>
+		<SequenceWorkingColorSpace>{"workingSpaceConfigVersion":1,"workingSpaceID":"BT.709 RGB Full","workingSpaceIsLinearized":0}</SequenceWorkingColorSpace>
+		<AutoToneMapEnabled>true</AutoToneMapEnabled>
+	</SequencePreset>
+</PremiereData>
