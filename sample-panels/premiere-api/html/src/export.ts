@@ -13,7 +13,9 @@
  **************************************************************************/
 
 import type { premierepro, Sequence } from "../types.d.ts";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const ppro = require("premierepro") as premierepro;
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const uxp = require("uxp") as typeof import("uxp");
 
 import { log } from "./utils";
@@ -21,11 +23,11 @@ import { log } from "./utils";
  * Export current active sequence's current frame as PNG file
  */
 export async function exportSequenceFrame(sequence: Sequence) {
-  // @ts-ignore
+  // @ts-expect-error - uxp.storage.localFileSystem is not typed correctly
   const folder = await uxp.storage.localFileSystem.getFolder();
-  let folderDir = await folder.nativePath;
+  const folderDir = await folder.nativePath;
 
-  let playerPos = await sequence.getPlayerPosition(); // ticktime obj
+  const playerPos = await sequence.getPlayerPosition(); // ticktime obj
   const exportName = "output.png";
 
   log("Exporting output.png.png *(We do double extension)*");
@@ -47,7 +49,7 @@ export async function exportSequence(sequence: Sequence) {
   // let user select preset file
   let presetFile;
   log("Please select a preset file for export");
-  // @ts-ignore
+  // @ts-expect-error - uxp.storage.localFileSystem is not typed correctly
   const file = await uxp.storage.localFileSystem.getFileForOpening({
     types: ["epr"],
   });
@@ -59,17 +61,17 @@ export async function exportSequence(sequence: Sequence) {
   }
 
   log("Please select folder for export");
-  // @ts-ignore
   // let user choose dir for export output mpg file into
+  // @ts-expect-error - uxp.storage.localFileSystem is not typed correctly
   const folder = await uxp.storage.localFileSystem.getFolder();
-  let folderDir = await folder.nativePath;
+  const folderDir = await folder.nativePath;
   if (!folderDir) {
     log("Selection of folder for export failed. Please try again");
     return false;
   }
 
-  let exportPath = folderDir + path.sep + "output.mpg"; // export to MPEG2
-  let encoder = await ppro.EncoderManager.getManager();
+  const exportPath = folderDir + path.sep + "output.mpg"; // export to MPEG2
+  const encoder = await ppro.EncoderManager.getManager();
   return encoder.exportSequence(
     sequence,
     ppro.Constants.ExportType.IMMEDIATELY, // export in Premiere Pro
