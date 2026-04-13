@@ -17,6 +17,7 @@ import type {
   premierepro,
   VideoClipTrackItem,
 } from "../types.d.ts";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const ppro = require("premierepro") as premierepro;
 import { log } from "./utils";
 import { getActiveProject, getActiveSequence } from "./project";
@@ -111,7 +112,7 @@ async function onSequenceSelectionChange(sequence) {
   const selection = await seq.getSelection();
   const trackItems = await selection.getTrackItems();
   trackItems.forEach(async (item: VideoClipTrackItem | AudioClipTrackItem) => {
-    let name = await item.getName();
+    const name = await item.getName();
     console.log(`selection for trackItem named ${name} changed`);
   });
 }
@@ -136,7 +137,7 @@ async function onEncoderProgress() {
  * Add Encoder event listeners
  */
 export async function addEncoderListeners() {
-  let encoder = await ppro.EncoderManager.getManager();
+  const encoder = await ppro.EncoderManager.getManager();
   await ppro.EventManager.addEventListener(
     encoder,
     ppro.EncoderManager.EVENT_RENDER_PROGRESS,
