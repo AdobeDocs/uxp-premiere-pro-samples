@@ -12,26 +12,26 @@
  * written permission of Adobe.
  **************************************************************************/
 
-import type { premierepro, Project, Sequence } from "../types.d.ts";
+import type { premierepro, Project, VideoClipTrackItem } from "../types.d.ts";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const ppro = require("premierepro") as premierepro;
 import { log } from "./utils";
 
-let trackItems;
-let matchnames;
 const transitionFactory = ppro.TransitionFactory;
 
 export async function getVideoTrackItems() {
-  let proj = await ppro.Project.getActiveProject();
+  let trackItems: VideoClipTrackItem[];
+  const proj = await ppro.Project.getActiveProject();
   if (!proj) {
     log(`No project found.`, "red");
     return;
   } else {
-    let sequence = await proj.getActiveSequence();
+    const sequence = await proj.getActiveSequence();
     if (!sequence) {
       log("No sequence found", "red");
       return;
     } else {
-      let videoTrack = await sequence.getVideoTrack(0);
+      const videoTrack = await sequence.getVideoTrack(0);
       if (!videoTrack) {
         log("No videoTrack found", "red");
         return;
@@ -65,9 +65,9 @@ export async function addTransitionStart(project: Project) {
   if (videoTrackItems && videoTrackItems.length === 0) {
     return;
   }
-  matchnames = await transitionFactory.getVideoTransitionMatchNames();
+  const matchnames = await transitionFactory.getVideoTransitionMatchNames();
 
-  let addTransitionOptions = ppro.AddTransitionOptions();
+  const addTransitionOptions = ppro.AddTransitionOptions();
   addTransitionOptions.setApplyToStart(true);
 
   const videoTransition = await transitionFactory.createVideoTransition(
@@ -78,7 +78,7 @@ export async function addTransitionStart(project: Project) {
   try {
     project.lockedAccess(() => {
       success = project.executeTransaction((compoundAction) => {
-        var action1 = videoTrackItems[0].createAddVideoTransitionAction(
+        const action1 = videoTrackItems[0].createAddVideoTransitionAction(
           videoTransition,
           addTransitionOptions
         );
@@ -104,7 +104,7 @@ export async function addTransitionEnd(project: Project) {
     return;
   }
 
-  matchnames = await transitionFactory.getVideoTransitionMatchNames();
+  const matchnames = await transitionFactory.getVideoTransitionMatchNames();
   const videoTransition = await transitionFactory.createVideoTransition(
     matchnames[1]
   );
@@ -113,7 +113,7 @@ export async function addTransitionEnd(project: Project) {
   try {
     project.lockedAccess(() => {
       success = project.executeTransaction((compoundAction) => {
-        var action1 =
+        const action1 =
           videoTrackItems[0].createAddVideoTransitionAction(videoTransition);
         compoundAction.addAction(action1);
       }, "createAddTransitionAction");
@@ -141,7 +141,7 @@ export async function removeTransitionStart(project: Project) {
   try {
     project.lockedAccess(() => {
       success = project.executeTransaction((compoundAction) => {
-        var action1 = videoTrackItems[0].createRemoveVideoTransitionAction(
+        const action1 = videoTrackItems[0].createRemoveVideoTransitionAction(
           ppro.Constants.TransitionPosition.START
         );
         compoundAction.addAction(action1);
