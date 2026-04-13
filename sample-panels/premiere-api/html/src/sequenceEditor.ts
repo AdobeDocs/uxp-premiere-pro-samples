@@ -19,6 +19,7 @@ import type {
   ProjectItem,
   VideoClipTrackItem,
 } from "../types.d.ts";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const ppro = require("premierepro") as premierepro;
 import { getSelectedProjectItems } from "./projectPanel";
 import { log } from "./utils";
