@@ -13,11 +13,11 @@
  **************************************************************************/
 
 import type {
-  Action,
   ComponentParam,
   premierepro,
   Project,
 } from "../types.d.ts";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const ppro = require("premierepro") as premierepro;
 import { log } from "./utils";
 
@@ -76,7 +76,7 @@ export async function changeTimeVarying(
   let success: boolean;
   try {
     project.lockedAccess(() => {
-      let setTimeVaryingAction =
+      const setTimeVaryingAction =
         componentParam.createSetTimeVaryingAction(value);
       success = project.executeTransaction((compoundAction) => {
         compoundAction.addAction(setTimeVaryingAction);
@@ -102,7 +102,7 @@ export async function setValue() {
           log(
             `Setting the value of ${componentParam.displayName} to ${keyframe.value.value}`
           );
-          var action1 = componentParam.createSetValueAction(keyframe, true);
+          const action1 = componentParam.createSetValueAction(keyframe, true);
           compoundAction.addAction(action1);
         }, "createSetValueAction");
       } else {
@@ -121,7 +121,7 @@ export async function setValue() {
 export async function getStartValue() {
   const { componentParam, project } = await getComponentParam();
 
-  let success = await changeTimeVarying(componentParam, project, false);
+  const success = await changeTimeVarying(componentParam, project, false);
 
   if (success) {
     log(`Getting the start value of ${componentParam.displayName}`);
@@ -144,7 +144,7 @@ export async function addKeyframe() {
           log(
             `Adding a keyframe to ${componentParam.displayName} at ${keyframe.position.seconds}`
           );
-          let action = componentParam.createAddKeyframeAction(keyframe);
+          const action = componentParam.createAddKeyframeAction(keyframe);
           compoundAction.addAction(action);
         }, "createAddKeyframeAction");
       } else {
@@ -168,7 +168,7 @@ export async function getKeyframes() {
 export async function getKeyframe() {
   const { componentParam } = await getComponentParam();
   try {
-    let keyframePtr = await componentParam.getKeyframePtr(
+    const keyframePtr = await componentParam.getKeyframePtr(
       ppro.TickTime.createWithSeconds(0)
     );
     return keyframePtr;
@@ -206,12 +206,12 @@ export async function setInterpolation() {
     project.lockedAccess(() => {
       if (success) {
         success = project.executeTransaction((compoundAction) => {
-          let keyframe = componentParam.createKeyframe(150);
+          const keyframe = componentParam.createKeyframe(150);
           keyframe.position = ppro.TickTime.createWithSeconds(1);
           log(
             `Adding a keyframe to ${componentParam.displayName} at ${keyframe.position.seconds}`
           );
-          let action = componentParam.createAddKeyframeAction(keyframe);
+          const action = componentParam.createAddKeyframeAction(keyframe);
           compoundAction.addAction(action);
         }, "createAddKeyframeAction");
       } else {
