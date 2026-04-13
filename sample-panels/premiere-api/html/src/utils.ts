@@ -24,7 +24,6 @@ export const log = (msg: string, color?: string) => {
 export const clearLog = () =>
   (document.querySelector("#plugin-body").innerHTML = "");
 
-export const registerClick = (id: string, cb: Function) => {
-  //@ts-ignore
-  document.querySelector(`#${id}`).addEventListener("click", cb);
+export const registerClick = (id: string, cb: (this: Element, event: Event) => void) => {
+  document.querySelector(`#${id}`)?.addEventListener("click", cb);
 };
