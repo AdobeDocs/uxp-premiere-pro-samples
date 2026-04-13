@@ -2110,6 +2110,15 @@ export declare type Project = {
   createSequence(name: string, presetPath?: string): Promise<Sequence>
 
   /**
+   * Create a new sequence with a preset path
+   *
+   * @param name
+   * @param presetPath
+   * @version 26.3.0
+   */
+  createSequenceWithPresetPath(name: string, presetPath: string): Promise<Sequence>
+
+  /**
    * Create a new sequence with a given name and medias
    *
    * @param name
