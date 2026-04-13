@@ -12,12 +12,14 @@
  * written permission of Adobe.
  **************************************************************************/
 import type { Guid, premierepro, Project, Sequence } from "../types.d.ts";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const ppro = require("premierepro") as premierepro;
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const uxp = require("uxp") as typeof import("uxp");
 import { log } from "./utils";
 
 export async function openProject() {
-  // @ts-ignore
+  // @ts-expect-error - uxp.storage.localFileSystem is not typed correctly
   const file = await uxp.storage.localFileSystem.getFileForOpening({
     types: ["prproj"],
   });
@@ -95,7 +97,7 @@ export async function saveProject(project: Project) {
 
 export async function saveAsProject(project: Project) {
   if (project) {
-    // @ts-ignore
+    // @ts-expect-error - uxp.storage.localFileSystem is not typed correctly
     const file = await uxp.storage.localFileSystem.getFileForSaving(
       `newProjectCopy`,
       {

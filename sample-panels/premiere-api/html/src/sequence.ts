@@ -27,6 +27,7 @@ import type {
   VideoTrack,
 } from "../types.d.ts";
 import { getClipProjectItem } from "./projectPanel.js";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const ppro = require("premierepro") as premierepro;
 import { log } from "./utils";
 
@@ -47,7 +48,7 @@ async function getInfoFromSettings(settings: SequenceSettings) {
     fieldType = "Upper Field First";
   }
 
-  let displayFormatType = "";
+  let displayFormatType: string;
   switch (displayFormat.type) {
     case ppro.Constants.VideoDisplayFormatType.FEET_FRAME_16mm:
       displayFormatType = "Feet+Frames 16mm";
@@ -165,7 +166,7 @@ export async function createSequenceFromMedia(
   sequenceName: string
 ) {
   if (project) {
-    let mediaItem = await getClipProjectItem(project);
+    const mediaItem = await getClipProjectItem(project);
     if (!mediaItem) {
       log("No media item found in the project.");
       return;
@@ -211,7 +212,7 @@ export async function getSequenceSelection(sequence: Sequence) {
 
 export async function setSequenceSelection(sequence: Sequence) {
   if (sequence) {
-    let trackItemSelection = await sequence.getSelection();
+    const trackItemSelection = await sequence.getSelection();
 
     const videoTrack = await sequence.getVideoTrack(0);
     const videoTrackItems = videoTrack.getTrackItems(
@@ -257,7 +258,7 @@ export async function trimSelectedItem(project: Project, sequence: Sequence) {
         const newEnd = ppro.TickTime.createWithSeconds(oldEnd.seconds - 1.0);
         project.lockedAccess(() => {
           success = project.executeTransaction((compoundAction) => {
-            var action1 = items[0].createSetEndAction(newEnd);
+            const action1 = items[0].createSetEndAction(newEnd);
             compoundAction.addAction(action1);
           }, "Trim end of item by 1 second");
         });
@@ -284,7 +285,7 @@ async function getMediaStartEndTime(projectItem: ProjectItem) {
   const projItemMetadataJson = JSON.parse(projectItemMetadata);
   let projItemStartTime;
   let projItemEndTime;
-  for (let currentMetadata of projItemMetadataJson) {
+  for (const currentMetadata of projItemMetadataJson) {
     if (projItemStartTime && projItemEndTime) {
       break;
     } else if (currentMetadata.ColumnID == MEDIA_START_COLUMN_ID) {
@@ -401,11 +402,11 @@ export async function addHandlesToTrackItem(
       ) {
         project.lockedAccess(() => {
           success = project.executeTransaction((compoundAction) => {
-            var action1 = trackItemToChange.createSetInPointAction(
+            const action1 = trackItemToChange.createSetInPointAction(
               ppro.TickTime.createWithTicks(String(newInPointTicks))
             );
 
-            var action2 = trackItemToChange.createSetOutPointAction(
+            const action2 = trackItemToChange.createSetOutPointAction(
               ppro.TickTime.createWithTicks(String(newOutPointTicks))
             );
             compoundAction.addAction(action1);

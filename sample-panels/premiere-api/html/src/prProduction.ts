@@ -12,7 +12,8 @@
  * written permission of Adobe.
  **************************************************************************/
 
-import type { premierepro, PRProduction, ScratchDiskSettings } from "../types.d.ts";
+import type { premierepro } from "../types.d.ts";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const ppro = require("premierepro") as premierepro;
 import { log } from "./utils";
 

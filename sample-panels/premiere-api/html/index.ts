@@ -11,7 +11,7 @@
  * then your use, modification, or distribution of it requires the prior
  * written permission of Adobe.
  **************************************************************************/
-/// <reference path="./types.d.ts" />
+
 //module imports
 import { log, clearLog, registerClick } from "./src/utils";
 import {
@@ -205,7 +205,9 @@ import {
   exportAsOpenTimelineIO,
 } from "./src/projectConverter";
 
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const ppro = require("premierepro") as premierepro;
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const uxp = require("uxp") as typeof import("uxp");
 
 const { entrypoints } = uxp;
@@ -279,7 +281,7 @@ const PREMIERE_MEDIA_EXTENSIONS = [
 // for each of the panels or commands defined in the manifest.json file.
 entrypoints.setup({
   panels: {
-    // @ts-ignore - entrypoints.setup is, unfortunately, incorrectly typed
+    // @ts-expect-error - entrypoints.setup is, unfortunately, incorrectly typed
     // for panels and commands.
     // See: https://github.com/adobe/cc-ext-uxp-types/issues/5
     samplepanel: {
@@ -596,7 +598,7 @@ async function pauseGrowingClicked() {
   const project = await getProject();
   if (!project) return;
 
-  let success = await pauseGrowing(true, project);
+  const success = await pauseGrowing(true, project);
   log(
     success
       ? `Stopped the project file (${project.name}) from growing further to prevent it from becoming too large, and switched to a new file.`
@@ -608,7 +610,7 @@ async function saveProjectClicked() {
   const project = await getProject();
   if (!project) return;
 
-  let success = await saveProject(project);
+  const success = await saveProject(project);
   log(
     success
       ? `Project ${project.name} successfully`
@@ -620,7 +622,7 @@ async function saveAsProjectClicked() {
   const project = await getProject();
   if (!project) return;
 
-  let success = await saveAsProject(project);
+  const success = await saveAsProject(project);
   log(
     success
       ? `Project ${project.name} saved as successfully`
@@ -632,7 +634,7 @@ async function getSupportedGraphicsWhiteLuminancesClicked() {
   const project = await getProject();
   if (!project) return;
 
-  let supportedColors = await getSupportedGraphicsWhiteLuminances(project);
+  const supportedColors = await getSupportedGraphicsWhiteLuminances(project);
   if (supportedColors.length === 0) {
     log("No supported colors found.", "red");
     return;
@@ -704,7 +706,7 @@ async function getSequenceSettingsClicked() {
   }
 
   const sequenceVideoSettingsInfo = await getVideoSettingsInfo(sequence);
-  for (let info of sequenceVideoSettingsInfo) {
+  for (const info of sequenceVideoSettingsInfo) {
     log(info);
   }
 }
@@ -854,8 +856,8 @@ async function getSequenceSelectionClicked() {
   if (!project) return;
 
   const sequence = await project.getActiveSequence();
-  let trackItemSelection = await getSequenceSelection(sequence);
-  let trackItems = await trackItemSelection.getTrackItems();
+  const trackItemSelection = await getSequenceSelection(sequence);
+  const trackItems = await trackItemSelection.getTrackItems();
   if (!trackItems.length) {
     log("No track items selected", "red");
     return;
@@ -863,7 +865,7 @@ async function getSequenceSelectionClicked() {
   log(`Selected TrackItems:\n`);
   trackItems.forEach(
     async (item: VideoClipTrackItem | AudioClipTrackItem, index) => {
-      let name = await item.getName();
+      const name = await item.getName();
       log(`    ${index + 1}: ${name}\n`);
     }
   );
@@ -874,7 +876,7 @@ async function setSequenceSelectionClicked() {
   if (!project) return;
 
   const sequence = await project.getActiveSequence();
-  let success = await setSequenceSelection(sequence);
+  const success = await setSequenceSelection(sequence);
   log(
     success
       ? `Successfully set the selection for sequence ${sequence.name}`
@@ -887,7 +889,7 @@ async function createSubsequenceClicked() {
   if (!project) return;
 
   const sequence = await project.getActiveSequence();
-  let newSequence = await createSubsequence(sequence);
+  const newSequence = await createSubsequence(sequence);
   log(
     newSequence
       ? `Sub sequence created with ${newSequence.name}`
@@ -923,7 +925,7 @@ async function insertMogrtClicked() {
   const project = await getProject();
   if (!project) return;
   let mogrtPath;
-  // @ts-ignore
+  // @ts-expect-error - uxp.storage.localFileSystem is not typed correctly
   const file = await uxp.storage.localFileSystem.getFileForOpening({
     types: ["mogrt"],
   });
@@ -978,8 +980,8 @@ async function trimSelectedItemClicked() {
   );
 }
 
-async function trimHandlesClicked(callback) {
-  let success = false;
+async function trimHandlesClicked() {
+  let success;
   const project = await getProject();
   if (!project) return;
 
@@ -1402,7 +1404,7 @@ async function attachProxyClicked() {
 
   let proxyFile;
   log("Please select media file to attach as proxy");
-  // @ts-ignore
+  // @ts-expect-error - uxp.storage.localFileSystem is not typed correctly
   const file = await uxp.storage.localFileSystem.getFileForOpening();
   if (file?.isFile && file.nativePath) {
     proxyFile = file.nativePath;
@@ -1425,7 +1427,7 @@ async function changePathClicked() {
 
   let mediaFile;
   log("Please select media file for the change of media file path");
-  // @ts-ignore
+  // @ts-expect-error - uxp.storage.localFileSystem is not typed correctly
   const file = await uxp.storage.localFileSystem.getFileForOpening();
   if (file?.isFile && file.nativePath) {
     mediaFile = file.nativePath;
@@ -1545,7 +1547,7 @@ async function getProjectMetadataClicked() {
       log("Failed to copy Project metadata to clipboard", "red");
     }
   } else {
-    log("Failed to read Project metadata"), "red";
+    log("Failed to read Project metadata", "red");
   }
 }
 
@@ -1649,13 +1651,13 @@ async function openFilePathClicked() {
 }
 
 async function openProjectItemClicked() {
-  let selected = (document.getElementById("project-items") as HTMLInputElement)
+  const selected = (document.getElementById("project-items") as HTMLInputElement)
     ?.value;
 
   if (!selected) {
     log("Please select a projectItem to open");
   } else {
-    let success = await openProjectItem(selected);
+    const success = await openProjectItem(selected);
     if (success) {
       log(`Opened ${selected} at source monitor successfully`);
     } else {
@@ -1686,7 +1688,7 @@ async function getPositionClicked() {
     log("No projectItem opened in source monitor");
     return;
   }
-  let time = await getPosition();
+  const time = await getPosition();
   if (time) {
     log(`Current time of source monitor in seconds is ${time.seconds}`);
   } else {
@@ -1751,7 +1753,7 @@ async function getKeyframesClicked() {
 
   if (ticktimes && ticktimes.length > 0) {
     log("keyframes found at following seconds:");
-    for (let index in ticktimes) {
+    for (const index in ticktimes) {
       log(`"${ticktimes[index].seconds}"`);
     }
   } else log("Failed to gets all the keyframe or there is no keyframe found");
@@ -1777,7 +1779,7 @@ async function getEffectsNameClicked() {
   const effects = await getEffectsName();
   if (effects) {
     log("Followings are the effects list:");
-    for (let index in effects) {
+    for (const index in effects) {
       log(effects[index]);
     }
   } else log("Failed to gets all the effect names", "red");
@@ -1809,7 +1811,7 @@ async function getTransitionNamesClicked() {
   const transitions = await getTransitionNames();
   if (transitions) {
     log("Followings are the transitions list:");
-    for (let index in transitions) {
+    for (const index in transitions) {
       log(transitions[index]);
     }
   } else {
@@ -1947,7 +1949,7 @@ async function getScratchDiskSettingClicked() {
   const project = await getProject();
   if (!project) return;
 
-  let scratchDiskPath = await getScratchDiskSetting(project);
+  const scratchDiskPath = await getScratchDiskSetting(project);
   log(`Current scratch disk path is ${scratchDiskPath}`);
 }
 
@@ -1955,7 +1957,7 @@ async function setScratchDiskSettingsClicked() {
   const project = await getProject();
   if (!project) return;
 
-  let success = await setScratchDiskSettings(project);
+  const success = await setScratchDiskSettings(project);
   log(
     success
       ? "Successfully updated scratch disk path to MyDocuments"
@@ -1967,7 +1969,7 @@ async function getIngestSettingsClicked() {
   const project = await getProject();
   if (!project) return;
 
-  let enabled = await getIngestEnabled(project);
+  const enabled = await getIngestEnabled(project);
   log(`IngestEnabled: ${enabled}`);
 }
 
@@ -1975,7 +1977,7 @@ async function setIngestSettingsClicked() {
   const project = await getProject();
   if (!project) return;
 
-  let success = await setIngestEnabled(project);
+  const success = await setIngestEnabled(project);
   log(
     success
       ? "Successfully updated ingest enabled to true"
@@ -2004,12 +2006,12 @@ async function getScratchDiskSettingsClicked() {
 
 //AppPreference button events
 async function getPreferenceSettingClicked() {
-  let currSetting = await getPreferenceSetting();
+  const currSetting = await getPreferenceSetting();
   log(`Current Auto Peak Generation Setting is: ${currSetting}`);
 }
 
 async function setPreferenceSettingClicked() {
-  let success = await setPreferenceSetting();
+  const success = await setPreferenceSetting();
   log(
     success
       ? "Successfully updated auto peak generation preference"
@@ -2027,7 +2029,7 @@ async function exportSequenceFrameClicked() {
     log("No active sequence available for export.");
     return;
   }
-  let success = await exportSequenceFrame(sequence);
+  const success = await exportSequenceFrame(sequence);
   log(
     success
       ? "Successfully export current frame as png"
@@ -2065,7 +2067,7 @@ async function getExportFileExtensionClicked() {
 
   let presetFile;
   log("Please select a preset file for getting the export file extension");
-  // @ts-ignore
+  // @ts-expect-error - uxp.storage.localFileSystem is not typed correctly
   const file = await uxp.storage.localFileSystem.getFileForOpening({
     types: ["epr"],
   });
@@ -2087,11 +2089,11 @@ async function getExportFileExtensionClicked() {
 //import button events
 async function importFilesClicked() {
   let success = false;
-  // @ts-ignore
+  // @ts-expect-error - uxp.storage.localFileSystem is not typed correctly
   const files = await uxp.storage.localFileSystem.getFileForOpening({
     allowMultiple: true,
   }); // allow multiple files selection
-  let filePaths = [];
+  const filePaths = [];
   if (files.length === 0) {
     log(`No file selected`);
     return;
@@ -2126,17 +2128,17 @@ async function importSequencesClicked() {
 
   log(`Please open the project which you'd to import all its sequences`);
   // let user open the project containing sequences they'd like to import
-  let newProject = await openProject();
+  const newProject = await openProject();
 
   // if no sequence exist, return and alert user
-  let sequences: Array<Sequence> = await newProject.getSequences();
+  const sequences: Array<Sequence> = await newProject.getSequences();
   if (sequences.length == 0) {
     log(`no sequence found for import`);
     return;
   }
 
   // import every sequence inside of project opened to previous active project
-  let seqIds = [];
+  const seqIds = [];
   for (let i = 0; i < sequences.length; i++) {
     seqIds.push(sequences[i].guid);
   }
@@ -2154,7 +2156,7 @@ async function importSequencesClicked() {
 }
 
 async function importAeComponentClicked() {
-  let aeInstalled = await ppro.Utils.isAEInstalled();
+  const aeInstalled = await ppro.Utils.isAEInstalled();
   if (!aeInstalled) {
     log(
       `Please ensure that the matching version of "After Effects" is installed on this machine.`,
@@ -2170,13 +2172,13 @@ async function importAeComponentClicked() {
   const rootItem = await project.getRootItem();
 
   // let user select ae composition file for import
-  // @ts-ignore
+  // @ts-expect-error - uxp.storage.localFileSystem is not typed correctly
   const file = await uxp.storage.localFileSystem.getFileForOpening({
     types: ["aep"],
   });
   if (file?.isFile && file.nativePath) {
     // check if user have input for ae composition name for import
-    let aeCompName = (
+    const aeCompName = (
       document.getElementById("ae-component-name") as HTMLInputElement
     )?.value;
     if (!aeCompName) {
@@ -2199,7 +2201,7 @@ async function importAeComponentClicked() {
 }
 
 async function importAllAeComponentsClicked() {
-  let aeInstalled = await ppro.Utils.isAEInstalled();
+  const aeInstalled = await ppro.Utils.isAEInstalled();
   if (!aeInstalled) {
     log(
       `Please ensure that the matching version of "After Effects" is installed on this machine.`,
@@ -2213,8 +2215,8 @@ async function importAllAeComponentsClicked() {
 
   let success = false;
   const rootItem = await project.getRootItem();
-  // @ts-ignore
   // let user select ae composition file for import
+  // @ts-expect-error - uxp.storage.localFileSystem is not typed correctly
   const file = await uxp.storage.localFileSystem.getFileForOpening({
     types: ["aep"],
   });
@@ -2236,9 +2238,9 @@ async function importAllAeComponentsClicked() {
 async function encodeFileClicked() {
   const project = await getProject();
   if (!project) return;
-  let mediaPath = null;
+  let mediaPath;
   log("Please select media file to encode");
-  // @ts-ignore
+  // @ts-expect-error - uxp.storage.localFileSystem is not typed correctly
   const mediaFile = await uxp.storage.localFileSystem.getFileForOpening({
     types: PREMIERE_MEDIA_EXTENSIONS,
   });
@@ -2249,15 +2251,15 @@ async function encodeFileClicked() {
   }
 
   log("Please select output directory for the encoded file");
-  // @ts-ignore
+  // @ts-expect-error - uxp.storage.localFileSystem is not typed correctly
   const outputFolder = await uxp.storage.localFileSystem.getFolder();
   if (!outputFolder?.nativePath) {
     throw new Error("Selection of output folder failed. Please try again");
   }
 
   log("Please select preset file for the encoded file");
-  let presetPath = null;
-  // @ts-ignore
+  let presetPath;
+  // @ts-expect-error - uxp.storage.localFileSystem is not typed correctly
   const presetFile = await uxp.storage.localFileSystem.getFileForOpening({
     types: ["epr"],
   });
@@ -2283,15 +2285,15 @@ async function encodeFirstSelectedProjectItemClicked() {
   if (!project) return;
 
   log("Please select output directory for the encoded file");
-  // @ts-ignore
+  // @ts-expect-error - uxp.storage.localFileSystem is not typed correctly
   const outputFolder = await uxp.storage.localFileSystem.getFolder();
   if (!outputFolder?.nativePath) {
     throw new Error("Selection of output folder failed. Please try again");
   }
 
   log("Please select preset file for the encoded file");
-  let presetPath = null;
-  // @ts-ignore
+  let presetPath;
+  // @ts-expect-error - uxp.storage.localFileSystem is not typed correctly
   const presetFile = await uxp.storage.localFileSystem.getFileForOpening({
     types: ["epr"],
   });
@@ -2319,7 +2321,7 @@ async function importTranscriptClicked() {
 
   let transcriptFileContent;
   log("Please select transcript file to import");
-  // @ts-ignore
+  // @ts-expect-error - uxp.storage.localFileSystem is not typed correctly
   const file = await uxp.storage.localFileSystem.getFileForOpening({
     types: ["json"],
   });
@@ -2348,7 +2350,7 @@ async function exportTranscriptClicked() {
   }
 
   log("Please select output directory for the transcript file");
-  // @ts-ignore
+  // @ts-expect-error - uxp.storage.localFileSystem is not typed correctly
   const outputFolder = await uxp.storage.localFileSystem.getFolder();
   if (!outputFolder?.nativePath) {
     throw new Error("Selection of output folder failed. Please try again");
@@ -2381,7 +2383,7 @@ async function exportAsFinalCutProXMLClicked() {
   }
 
   log("Please select output directory for Final Cut Pro XML export");
-  // @ts-ignore
+  // @ts-expect-error - uxp.storage.localFileSystem is not typed correctly
   const outputFolder = await uxp.storage.localFileSystem.getFolder();
   if (!outputFolder?.nativePath) {
     log("Selection of output folder failed. Please try again", "red");
@@ -2409,7 +2411,7 @@ async function exportAsOpenTimelineIOClicked() {
   }
 
   log("Please select output directory for OpenTimelineIO export");
-  // @ts-ignore
+  // @ts-expect-error - uxp.storage.localFileSystem is not typed correctly
   const outputFolder = await uxp.storage.localFileSystem.getFolder();
   if (!outputFolder?.nativePath) {
     log("Selection of output folder failed. Please try again", "red");

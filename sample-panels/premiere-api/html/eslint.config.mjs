@@ -2,7 +2,7 @@
  * ADOBE CONFIDENTIAL
  * ___________________
  *
- * Copyright 2024 Adobe
+ * Copyright 2026 Adobe
  * All Rights Reserved.
  *
  * NOTICE: Adobe permits you to use, modify, and distribute this file in
@@ -12,18 +12,17 @@
  * written permission of Adobe.
  **************************************************************************/
 
-export const log = (msg: string, color?: string) => {
-  const console = document.querySelector("#plugin-body");
-  console.innerHTML += color
-    ? `<span style='color:${color}'>${msg}</span><br />`
-    : `${msg}<br />`;
+import eslint from "@eslint/js";
+import { defineConfig, globalIgnores } from "eslint/config";
+import typescript from "typescript-eslint";
 
-  console.scrollTop = console.scrollHeight;
-};
-
-export const clearLog = () =>
-  (document.querySelector("#plugin-body").innerHTML = "");
-
-export const registerClick = (id: string, cb: (this: Element, event: Event) => void) => {
-  document.querySelector(`#${id}`)?.addEventListener("click", cb);
-};
+export default defineConfig(
+  globalIgnores([
+    "scripts/**",
+    "eslint.config.mjs",
+    // types.d.ts is auto-generated; linting errors will be addressed separately.
+    "types.d.ts",
+  ]),
+  eslint.configs.recommended,
+  typescript.configs.recommended,
+);

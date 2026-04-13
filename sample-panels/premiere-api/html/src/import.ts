@@ -12,8 +12,7 @@
  * written permission of Adobe.
  **************************************************************************/
 
-import type { Guid, premierepro, Project, ProjectItem } from "../types.d.ts";
-const ppro = require("premierepro") as premierepro;
+import type { Guid, Project, ProjectItem } from "../types.d.ts";
 
 /**
  * Import files into project

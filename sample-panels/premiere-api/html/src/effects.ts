@@ -13,16 +13,16 @@
  **************************************************************************/
 
 import { log } from "./utils";
-import type { premierepro } from "../types.d.ts";
+import type { premierepro, VideoComponentChain } from "../types.d.ts";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const ppro = require("premierepro") as premierepro;
 
-let matchnames;
-let videoComponentChain;
-let audioComponentChain;
 const filterFactory = ppro.VideoFilterFactory;
 const audioFilterFactory = ppro.AudioFilterFactory;
 
 export async function getVideoComponentChain() {
+  let videoComponentChain: VideoComponentChain | undefined;
+
   const proj = await ppro.Project.getActiveProject();
   if (!proj) {
     log("No active project", "red");
@@ -47,7 +47,6 @@ export async function getVideoComponentChain() {
           return;
         } else {
           videoComponentChain = await trackItems[0].getComponentChain();
-          matchnames = await filterFactory.getMatchNames();
         }
       }
     }
@@ -111,7 +110,7 @@ export async function addEffects(project) {
     try {
       project.lockedAccess(() => {
         success = project.executeTransaction((compoundAction) => {
-          var action1 = videoComponentChain.createInsertComponentAction(
+          const action1 = videoComponentChain.createInsertComponentAction(
             newComponent,
             2
           );
@@ -147,11 +146,11 @@ export async function addMultipleEffects(project) {
     try {
       project.lockedAccess(() => {
         success = project.executeTransaction((compoundAction) => {
-          var action1 = videoComponentChain.createInsertComponentAction(
+          const action1 = videoComponentChain.createInsertComponentAction(
             newComponent1,
             2
           );
-          var action2 = videoComponentChain.createInsertComponentAction(
+          const action2 = videoComponentChain.createInsertComponentAction(
             newComponent2,
             2
           );
@@ -170,7 +169,7 @@ export async function addMultipleEffects(project) {
 }
 
 export async function addVocalEnhancerEffect(project) {
-  let audioComponentChain = await getAudioComponentChain();
+  const audioComponentChain = await getAudioComponentChain();
   if (!audioComponentChain) {
     return false;
   }
@@ -183,7 +182,7 @@ export async function addVocalEnhancerEffect(project) {
     );
     project.lockedAccess(() => {
       success = project.executeTransaction((compoundAction) => {
-        let action1 = audioComponentChain.createInsertComponentAction(
+        const action1 = audioComponentChain.createInsertComponentAction(
           newComponent,
           2
         );
@@ -214,7 +213,7 @@ export async function removeEffects(project) {
 
         success = project.executeTransaction(
           (compoundAction) => {
-            var action1 = videoComponentChain.createRemoveComponentAction(
+            const action1 = videoComponentChain.createRemoveComponentAction(
               newComponentToBeDeleted
             );
             compoundAction.addAction(action1);

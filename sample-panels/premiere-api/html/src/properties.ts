@@ -13,6 +13,7 @@
  **************************************************************************/
 
 import type { premierepro, Project, Sequence } from "../types.d.ts";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const ppro = require("premierepro") as premierepro;
 import { log } from "./utils";
 
@@ -33,7 +34,7 @@ export async function getSequenceProperty(sequence: Sequence) {
 export async function getSequenceSampleProperty(sequence: Sequence) {
   try {
     const properties = await getSequenceProperty(sequence);
-    let value = properties.getValue(NEW_PROPERTY_NAME);
+    const value = properties.getValue(NEW_PROPERTY_NAME);
     return value;
   } catch (err) {
     log(`No value has been defined for property "${NEW_PROPERTY_NAME}"`);
@@ -50,12 +51,12 @@ export async function setSampleSequenceProperty(
   project: Project
 ) {
   const properties = await getSequenceProperty(sequence);
-  let newPropertyValue = 88;
+  const newPropertyValue = 88;
 
   let succeed = false;
   try {
     project.lockedAccess(() => {
-      let setValueAction = properties.createSetValueAction(
+      const setValueAction = properties.createSetValueAction(
         NEW_PROPERTY_NAME,
         newPropertyValue,
         ppro.Constants.PropertyType.NON_PERSISTENT
@@ -83,22 +84,22 @@ export async function clearSampleSequenceProperty(
   project: Project
 ) {
   // check if property exist and log error message as needed
-  let value = await getSequenceSampleProperty(sequence);
-  let succeed;
+  const value = await getSequenceSampleProperty(sequence);
+  let succeed = false;
   if (value) {
     const properties = await getSequenceProperty(sequence);
     log(`Removing property "${NEW_PROPERTY_NAME}"..`);
     try {
       project.lockedAccess(() => {
         succeed = project.executeTransaction((compoundAction) => {
-          let clearValueAction =
+          const clearValueAction =
             properties.createClearValueAction(NEW_PROPERTY_NAME);
           compoundAction.addAction(clearValueAction);
         });
       });
     } catch (err) {
       log(`Error: ${err}`, "red");
-      return false;
+      return succeed;
     }
   }
   return succeed;

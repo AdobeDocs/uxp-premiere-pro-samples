@@ -21,6 +21,7 @@ import type {
   Sequence,
 } from "../types.d.ts";
 import { getClipProjectItem } from "./projectPanel.js";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const ppro = require("premierepro") as premierepro;
 import { log } from "./utils";
 
@@ -153,8 +154,8 @@ export async function createMarkerFlashCuePoint(project: Project) {
 export async function moveMarker(project: Project) {
   const { sequenceMarkers } = await getMarkerObjects(project);
 
-  let markerlist: Array<Marker> = await sequenceMarkers.getMarkers();
-  let marker = markerlist[0];
+  const markerlist: Array<Marker> = await sequenceMarkers.getMarkers();
+  const marker = markerlist[0];
 
   let success = false;
   try {
@@ -178,13 +179,13 @@ export async function moveMarker(project: Project) {
 export async function removeMarker(project: Project) {
   const { sequenceMarkers } = await getMarkerObjects(project);
 
-  let markerlist = await sequenceMarkers.getMarkers();
+  const markerlist = await sequenceMarkers.getMarkers();
 
   let success = false;
   try {
     project.lockedAccess(() => {
       success = project.executeTransaction((compoundAction) => {
-        for (let marker of markerlist) {
+        for (const marker of markerlist) {
           const removeMarkerAction =
             sequenceMarkers.createRemoveMarkerAction(marker);
           compoundAction.addAction(removeMarkerAction);
@@ -208,12 +209,12 @@ export type MarkerInfo = {
 }
 
 export async function getSequenceMarkerInfo(sequence: Sequence): Promise<MarkerInfo[]> {
-  let markerInfos: MarkerInfo[] = [];
+  const markerInfos: MarkerInfo[] = [];
   try {
     const sequenceMarkersOwner = await ppro.Markers.getMarkers(sequence);
     const markers = sequenceMarkersOwner.getMarkers();
-    for (let marker of markers) {
-      let markerInfo: MarkerInfo = {
+    for (const marker of markers) {
+      const markerInfo: MarkerInfo = {
         name: marker.getName(),
         guid: marker.guid,
         type: marker.getType(),
@@ -239,8 +240,8 @@ export async function setFirstSequenceMarkerColor(
       log("No markers found in the sequence", "red");
       return false;
     }
-    let firstMarker = markers[0];
-    let success = project.lockedAccess(() => {
+    const firstMarker = markers[0];
+    const success = project.lockedAccess(() => {
       project.executeTransaction((compoundAction) => {
         const setMarkerColorAction = firstMarker.createSetColorByIndexAction(
           ppro.Constants.MarkerColor.BLUE

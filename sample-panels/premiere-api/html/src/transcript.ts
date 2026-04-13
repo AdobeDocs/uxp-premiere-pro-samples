@@ -14,6 +14,7 @@
 
 import type { premierepro, Project } from "../types.d.ts";
 import { getClipProjectItem } from "./projectPanel";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const ppro = require("premierepro") as premierepro;
 import { log } from "./utils";
 
@@ -29,7 +30,7 @@ export async function importTranscript(
       console.error("No clip project item found to import transcript.");
       return;
     }
-    let success = project.lockedAccess(() => {
+    const success = project.lockedAccess(() => {
       project.executeTransaction((compoundAction) => {
         const action = ppro.Transcript.createImportTextSegmentsAction(
           ppro.Transcript.importFromJSON(transcriptContent), // Convert to TextSegments

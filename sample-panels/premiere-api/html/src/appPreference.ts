@@ -12,7 +12,8 @@
  * written permission of Adobe.
  **************************************************************************/
 
-import type { premierepro, Project, Sequence } from "../types.d.ts";
+import type { premierepro } from "../types.d.ts";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const ppro = require("premierepro") as premierepro;
 import { log } from "./utils";
 
@@ -33,14 +34,13 @@ export async function getPreferenceSetting() {
  * @return [Boolean] if operation succeed
  */
 export async function setPreferenceSetting() {
-  let succeed = true;
   try {
     let newValue = true;
     if (appPreference.getValue(AUTO_PEAK_GENERATION_KEY) == "true") {
       newValue = false;
     }
 
-    appPreference.setValue(
+    return appPreference.setValue(
       AUTO_PEAK_GENERATION_KEY,
       newValue,
       appPreference.PROPERTY_PERSISTENT
@@ -49,5 +49,4 @@ export async function setPreferenceSetting() {
     log(`Error: ${err}`, "red");
     return false;
   }
-  return succeed;
 }

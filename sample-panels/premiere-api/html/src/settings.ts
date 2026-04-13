@@ -12,7 +12,8 @@
  * written permission of Adobe.
  **************************************************************************/
 
-import type { premierepro, Project, Sequence } from "../types.d.ts";
+import type { premierepro, Project } from "../types.d.ts";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const ppro = require("premierepro") as premierepro;
 import { log } from "./utils";
 
@@ -49,7 +50,7 @@ export async function setScratchDiskSettings(project: Project) {
   try {
     project.lockedAccess(() => {
       succeed = project.executeTransaction((compoundAction) => {
-        var action = projectSettings.createSetScratchDiskSettingsAction(
+        const action = projectSettings.createSetScratchDiskSettingsAction(
           project,
           scratchDiskSettings
         );
@@ -88,7 +89,7 @@ export async function setIngestEnabled(project: Project) {
   try {
     project.lockedAccess(() => {
       succeed = project.executeTransaction((compoundAction) => {
-        var action = projectSettings.createSetIngestSettingsAction(
+        const action = projectSettings.createSetIngestSettingsAction(
           project,
           ingestSettings
         );

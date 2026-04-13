@@ -13,7 +13,9 @@
  **************************************************************************/
 
 import type { premierepro, ProjectItem } from "../types.d.ts";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const ppro = require("premierepro") as premierepro;
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const uxp = require("uxp") as typeof import("uxp");
 import { log } from "./utils";
 
@@ -23,7 +25,7 @@ import { log } from "./utils";
  * html component
  */
 export async function addProjectItemsOptions() {
-  let items = document.getElementById("project-items");
+  const items = document.getElementById("project-items");
   // get projectItems from current active project
   const proj = await ppro.Project.getActiveProject();
   if (!proj) {
@@ -31,7 +33,7 @@ export async function addProjectItemsOptions() {
     return;
   }
   const projectRootItem = await proj.getRootItem();
-  let projectItems: Array<ProjectItem> = await projectRootItem.getItems();
+  const projectItems: Array<ProjectItem> = await projectRootItem.getItems();
 
   if (!projectItems) {
     log(`Project Empty. Cannot find valid projectItem to open`);
@@ -39,7 +41,7 @@ export async function addProjectItemsOptions() {
   }
   // insert them as option
   for (let i = 0; i < projectItems.length; i++) {
-    let option = document.createElement("option");
+    const option = document.createElement("option");
     option.innerText = projectItems[i].name;
     option.value = projectItems[i].name;
     items.appendChild(option);
@@ -50,7 +52,7 @@ export async function addProjectItemsOptions() {
  * clear options for projectItems under select
  */
 export async function clearProjectItemOptions() {
-  let items = document.getElementById("project-items");
+  const items = document.getElementById("project-items");
   items.innerHTML = "";
 }
 
@@ -75,7 +77,7 @@ export async function getProjectItemAtSourceMonitor() {
  * open projectItem [clip] in the file user selected
  */
 export async function openFilePath() {
-  // @ts-ignore
+  // @ts-expect-error - uxp.storage.localFileSystem is not typed correctly
   const file = await uxp.storage.localFileSystem.getFileForOpening();
   if (file?.isFile && file.nativePath) {
     return ppro.SourceMonitor.openFilePath(file.nativePath);
@@ -95,7 +97,7 @@ export async function openProjectItem(selected: string) {
     return;
   }
   const projectRootItem = await proj.getRootItem();
-  let projectItems: Array<ProjectItem> = await projectRootItem.getItems();
+  const projectItems: Array<ProjectItem> = await projectRootItem.getItems();
   if (!projectItems) {
     log(`Project Empty. Cannot find valid projectItem to open`);
     return;
