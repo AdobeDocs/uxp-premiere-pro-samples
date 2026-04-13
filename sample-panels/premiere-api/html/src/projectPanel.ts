@@ -18,6 +18,7 @@ import type {
   Project,
   ProjectItem,
 } from "../types.d.ts";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const ppro = require("premierepro") as premierepro;
 import { log } from "./utils";
 
@@ -60,13 +61,13 @@ export async function getClipProjectItem(
   const projectItems: Array<ProjectItem> = await rootItem.getItems();
 
   let clipProjectItem: ClipProjectItem | null = null;
-  for (let projectItem of projectItems) {
+  for (const projectItem of projectItems) {
     const clipProjectItemCandidate = ppro.ClipProjectItem.cast(projectItem);
     if (!clipProjectItemCandidate) {
       // Not a clip — may be a folder; add its items to search.
       const folderProjectItem = ppro.FolderItem.cast(projectItem);
       if (folderProjectItem) {
-        let items = await folderProjectItem.getItems();
+        const items = await folderProjectItem.getItems();
         projectItems.push(...items);
       }
     } else {
@@ -299,7 +300,7 @@ export async function setInOutPoint(project: Project) {
   try {
     project.lockedAccess(() => {
       success = project.executeTransaction((compoundAction) => {
-        let action = clipProjectItem.createSetInOutPointsAction(
+        const action = clipProjectItem.createSetInOutPointsAction(
           inPoint,
           outPoint
         );
@@ -325,7 +326,7 @@ export async function clearInOutPoint(project: Project) {
   try {
     project.lockedAccess(() => {
       success = project.executeTransaction((compoundAction) => {
-        let action = clipProjectItem.createClearInOutPointsAction();
+        const action = clipProjectItem.createClearInOutPointsAction();
         compoundAction.addAction(action);
       }, "createClearInOutPointsAction");
     });
@@ -348,7 +349,7 @@ export async function setScaleToFrameSize(project: Project) {
   try {
     project.lockedAccess(() => {
       success = project.executeTransaction((compoundAction) => {
-        let action = clipProjectItem.createSetScaleToFrameSizeAction();
+        const action = clipProjectItem.createSetScaleToFrameSizeAction();
         compoundAction.addAction(action);
       }, "createSetScaleToFrameSizeAction");
     });
@@ -371,10 +372,10 @@ export async function setFootageInterpretation(project: Project) {
     return;
   }
   const clipProjectItem = await getClipProjectItem(project);
-  let interpretation = await clipProjectItem.getFootageInterpretation();
+  const interpretation = await clipProjectItem.getFootageInterpretation();
   await interpretation.setFrameRate(20);
   await interpretation.setPixelAspectRatio(1.5);
-  let createSetFootageInterpretationAction =
+  const createSetFootageInterpretationAction =
     await clipProjectItem.createSetFootageInterpretationAction(interpretation);
 
   let success = false;
@@ -398,7 +399,7 @@ export async function setOverrideFrameRate(project: Project) {
   try {
     project.lockedAccess(() => {
       success = project.executeTransaction((compoundAction) => {
-        let action = clipProjectItem.createSetOverrideFrameRateAction(0.5);
+        const action = clipProjectItem.createSetOverrideFrameRateAction(0.5);
         compoundAction.addAction(action);
       }, "createSetOverrideFrameRateAction");
     });
@@ -417,7 +418,7 @@ export async function setOverridePixelAspectRatio(project: Project) {
   try {
     project.lockedAccess(() => {
       success = project.executeTransaction((compoundAction) => {
-        let action = clipProjectItem.createSetOverridePixelAspectRatioAction(
+        const action = clipProjectItem.createSetOverridePixelAspectRatioAction(
           1,
           2
         );
@@ -447,7 +448,7 @@ export async function attachProxy(project: Project, proxyFile: string) {
     );
   } catch (err) {
     log(`Error: ${err}`, "red");
-    return false;
+    return success;
   }
   return success;
 }
@@ -459,7 +460,7 @@ export async function changeMediaFilePath(project: Project, mediaFile: string) {
     success = await clipProjectItem.changeMediaFilePath(mediaFile);
   } catch (err) {
     log(`Error: ${err}`, "red");
-    return false;
+    return success;
   }
   return success;
 }
@@ -609,7 +610,7 @@ export async function getFirstProjectItemColorLabel(project: Project) {
       throw new Error("No ProjectItem found in project panel");
     }
 
-    let colorLabelDict = {
+    const colorLabelDict = {
       [ppro.Constants.ProjectItemColorLabel.VIOLET]: "VIOLET",
       [ppro.Constants.ProjectItemColorLabel.BLUE]: "BLUE",
       [ppro.Constants.ProjectItemColorLabel.GREEN]: "GREEN",
