@@ -51,6 +51,194 @@ export declare type premierepro = {
   Constants: typeof Constants
 }
 
+export declare type AAFExportOptions = {
+  /**
+   * Constructs a new instance of the AAFExportOptions class.
+   * @constructor
+   */
+  (): AAFExportOptions
+
+  /**
+   * When true, renders the sequence video to a single media file for AAF export (video mixdown) instead of relying only on linked source clips
+   *
+   * @param mixdownVideo
+   * @version 26.3.0
+   */
+  setMixdownVideo(mixdownVideo: boolean): AAFExportOptions
+
+  /**
+   * When true, exports multichannel audio as separate mono media files (one file per channel)
+   *
+   * @param explodeToMono
+   * @version 26.3.0
+   */
+  setExplodeToMono(explodeToMono: boolean): AAFExportOptions
+
+  /**
+   * Set the audio sample rate
+   *
+   * @param sampleRate
+   * @version 26.3.0
+   */
+  setSampleRate(sampleRate: number): AAFExportOptions
+
+  /**
+   * Set the audio bits per sample
+   *
+   * @param bitsPerSample
+   * @version 26.3.0
+   */
+  setBitsPerSample(bitsPerSample: number): AAFExportOptions
+
+  /**
+   * Set whether to embed audio in the AAF file
+   *
+   * @param embedAudio
+   * @version 26.3.0
+   */
+  setEmbedAudio(embedAudio: boolean): AAFExportOptions
+
+  /**
+   * Set the audio file format (0 for AIFF, 1 for WAV)
+   *
+   * @param audioFileFormat
+   * @version 26.3.0
+   */
+  setAudioFileFormat(audioFileFormat: number): AAFExportOptions
+
+  /**
+   * Set whether to trim sources
+   *
+   * @param trimSources
+   * @version 26.3.0
+   */
+  setTrimSources(trimSources: boolean): AAFExportOptions
+
+  /**
+   * Set the number of handle frames
+   *
+   * @param handleFrames
+   * @version 26.3.0
+   */
+  setHandleFrames(handleFrames: number): AAFExportOptions
+
+  /**
+   * Path to the encoder preset file (.epr) used when mixdown video is enabled
+   *
+   * @param videoMixdownPresetPath
+   * @version 26.3.0
+   */
+  setVideoMixdownPresetPath(videoMixdownPresetPath: string): AAFExportOptions
+
+  /**
+   * Set whether to render audio effects
+   *
+   * @param renderAudioEffects
+   * @version 26.3.0
+   */
+  setRenderAudioEffects(renderAudioEffects: boolean): AAFExportOptions
+
+  /**
+   * Set whether to interleave without effects
+   *
+   * @param interleaveWithoutEffects
+   * @version 26.3.0
+   */
+  setInterleaveWithoutEffects(interleaveWithoutEffects: boolean): AAFExportOptions
+
+  /**
+   * When true, exploded mono audio is written under a subdirectory named after the folder that contained each clip's source media on disk
+   *
+   * @param preserveParentFolder
+   * @version 26.3.0
+   */
+  setPreserveParentFolder(preserveParentFolder: boolean): AAFExportOptions
+
+  /**
+   * True if the exporter will render a single mixed-down video file
+   * @readonly
+   * @version 26.3.0
+   */
+  readonly mixdownVideo: boolean
+
+  /**
+   * True if multichannel audio is exported as separate mono files per channel
+   * @readonly
+   * @version 26.3.0
+   */
+  readonly explodeToMono: boolean
+
+  /**
+   * Get the audio sample rate
+   * @readonly
+   * @version 26.3.0
+   */
+  readonly sampleRate: number
+
+  /**
+   * Get the audio bits per sample
+   * @readonly
+   * @version 26.3.0
+   */
+  readonly bitsPerSample: number
+
+  /**
+   * Get whether to embed audio in the AAF file
+   * @readonly
+   * @version 26.3.0
+   */
+  readonly embedAudio: boolean
+
+  /**
+   * Get the audio file format (0 for AIFF, 1 for WAV)
+   * @readonly
+   * @version 26.3.0
+   */
+  readonly audioFileFormat: number
+
+  /**
+   * Get whether to trim sources
+   * @readonly
+   * @version 26.3.0
+   */
+  readonly trimSources: boolean
+
+  /**
+   * Get the number of handle frames
+   * @readonly
+   * @version 26.3.0
+   */
+  readonly handleFrames: number
+
+  /**
+   * Get the video mixdown preset path
+   * @readonly
+   * @version 26.3.0
+   */
+  readonly videoMixdownPresetPath: string
+
+  /**
+   * Get whether to render audio effects
+   * @readonly
+   * @version 26.3.0
+   */
+  readonly renderAudioEffects: boolean
+
+  /**
+   * Get whether to interleave without effects
+   * @readonly
+   * @version 26.3.0
+   */
+  readonly interleaveWithoutEffects: boolean
+
+  /**
+   * Get whether to preserve parent folder
+   * @readonly
+   * @version 26.3.0
+   */
+  readonly preserveParentFolder: boolean
+}
+
 export declare type Action = {
 }
 
@@ -2311,6 +2499,16 @@ export declare type ProjectColorSettings = {
 }
 
 export declare type ProjectConverterStatic = {
+
+  /**
+   * Export a sequence as an AAF (Advanced Authoring Format) file to the specified output path.
+   *
+   * @param sequence
+   * @param filePath
+   * @param aafExportOptions
+   * @version 26.3.0
+   */
+  exportAAF(sequence: Sequence, filePath: string, aafExportOptions?: AAFExportOptions): Promise<boolean>
 
   /**
    * Export a sequence as Final Cut Pro XML to the specified output file path.
