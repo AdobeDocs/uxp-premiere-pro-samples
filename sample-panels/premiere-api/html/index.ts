@@ -201,6 +201,7 @@ import {
 } from "./src/encoderManager";
 import { exportTranscript, importTranscript } from "./src/transcript";
 import {
+  exportAAF,
   exportAsFinalCutProXML,
   exportAsOpenTimelineIO,
 } from "./src/projectConverter";
@@ -475,6 +476,36 @@ async function createSequenceWithPresetPathClicked() {
     }
   } catch (error) {
     log(`Error creating sequence with preset path: ${error}`, "red");
+  }
+}
+
+async function exportAAFClicked() {
+  const project = await getProject();
+  if (!project) {
+    log(`Failed to get project`, "red");
+    return;
+  }
+
+  const sequence = await project.getActiveSequence();
+  if (!sequence) {
+    log(`Failed to get active sequence`, "red");
+    return;
+  }
+
+  log("Please select output directory for the AAF export");
+  // @ts-expect-error - uxp.storage.localFileSystem is not typed correctly
+  const outputFolder = await uxp.storage.localFileSystem.getFolder();
+  if (!outputFolder?.nativePath) {
+    log("Selection of output folder failed. Please try again", "red");
+    return;
+  }
+
+  const outputFilePath = `${outputFolder.nativePath}/${sequence.name}.aaf`;
+  const success = await exportAAF(sequence, outputFilePath);
+  if (success) {
+    log(`Successfully exported AAF to ${outputFilePath}`);
+  } else {
+    log(`Failed to export AAF`, "red");
   }
 }
 
@@ -2460,6 +2491,7 @@ window.addEventListener("load", async () => {
   registerClick("set-caption-track-name", setCaptionTrackNameClicked);
   registerClick("show-guid-for-all-markers", showGuidForAllMarkersClicked);
   registerClick("create-sequence-with-preset-path", createSequenceWithPresetPathClicked);
+  registerClick("export-aaf", exportAAFClicked);
   registerClick("set-video-track-name", setVideoTrackNameClicked);
 
   //project events registering
