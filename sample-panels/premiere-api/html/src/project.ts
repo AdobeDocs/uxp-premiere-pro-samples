@@ -25,7 +25,7 @@ export async function openProject() {
   });
   if (file?.isFile && file.nativePath) {
     try {
-      return await ppro.Project.open(file.nativePath);
+      return await ppro.Project.open(file.nativePath, ppro.OpenProjectOptions());
     } catch (e) {
       log(`Error: ${e}`);
     }
@@ -148,7 +148,7 @@ export async function getCurrentGraphicsWhiteLuminance(project: Project) {
 
 export async function closeProject(project: Project) {
   if (project) {
-    return project.close();
+    return project.close(new ppro.CloseProjectOptions());
   } else {
     log("No project found.", "red");
   }
