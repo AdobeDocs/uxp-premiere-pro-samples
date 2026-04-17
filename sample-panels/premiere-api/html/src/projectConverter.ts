@@ -17,6 +17,15 @@ import { log } from "./utils";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const ppro = require("premierepro") as premierepro;
 
+export async function exportAAF(sequence: Sequence, outputFilePath: string) {
+  try {
+    return await ppro.ProjectConverter.exportAAF(sequence, outputFilePath, new ppro.AAFExportOptions());
+  } catch (e) {
+    log(`Error exporting as AAF: ${e}`, "red");
+    return false;
+  }
+}
+
 /**
  * Export a sequence as Final Cut Pro XML to a user-selected output directory.
  */
