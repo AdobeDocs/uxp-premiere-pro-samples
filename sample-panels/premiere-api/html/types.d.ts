@@ -4076,6 +4076,11 @@ export declare type TranscriptStatic = {
   createImportTextSegmentsAction(textSegments: TextSegments, clipProjectItem: ClipProjectItem): Action
 
   /**
+   * Returns the list of language services available for transcription
+   */
+  querySupportedLanguages(): Array<{displayString: string, languageCode: string, locale: string}>
+
+  /**
    * Export transcripts inside of clipProjectItem as JSON string if transcript exist
    *
    * @param clipProjectItem
