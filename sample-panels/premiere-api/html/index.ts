@@ -478,6 +478,23 @@ async function createSequenceWithPresetPathClicked() {
   }
 }
 
+async function querySupportedLanguagesClicked() {
+  const languages = ppro.Transcript.querySupportedLanguages();
+  if (languages.length === 0) {
+    log("No supported languages found.", "red");
+    return;
+  }
+
+  for (const language of languages) {
+    let logLine = `Language: ${language.displayString}, code: ${language.languageCode}`;
+    if (language.locale) {
+      logLine += `, locale: ${language.locale}`;
+    }
+
+    log(logLine);
+  }
+}
+
 async function showGuidForAllMarkersClicked() {
   const project = await getProject();
   if (!project) {
@@ -2460,6 +2477,7 @@ window.addEventListener("load", async () => {
   registerClick("set-caption-track-name", setCaptionTrackNameClicked);
   registerClick("show-guid-for-all-markers", showGuidForAllMarkersClicked);
   registerClick("create-sequence-with-preset-path", createSequenceWithPresetPathClicked);
+  registerClick("query-supported-languages", querySupportedLanguagesClicked);
   registerClick("set-video-track-name", setVideoTrackNameClicked);
 
   //project events registering
