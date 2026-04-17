@@ -19,7 +19,7 @@ const ppro = require("premierepro") as premierepro;
 
 export async function exportAAF(sequence: Sequence, outputFilePath: string) {
   try {
-    return await ppro.ProjectConverter.exportAAF(sequence, outputFilePath);
+    return await ppro.ProjectConverter.exportAAF(sequence, outputFilePath, new ppro.AAFExportOptions());
   } catch (e) {
     log(`Error exporting as AAF: ${e}`, "red");
     return false;

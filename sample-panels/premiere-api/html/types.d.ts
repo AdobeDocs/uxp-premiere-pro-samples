@@ -1,4 +1,5 @@
 export declare type premierepro = {
+  AAFExportOptions: AAFExportOptions
   AppPreference: AppPreferenceStatic
   AudioClipTrackItem: AudioClipTrackItemStatic
   AudioComponentChain: AudioComponentChainStatic
@@ -56,6 +57,7 @@ export declare type AAFExportOptions = {
    * Constructs a new instance of the AAFExportOptions class.
    * @constructor
    */
+  new (): AAFExportOptions
   (): AAFExportOptions
 
   /**
