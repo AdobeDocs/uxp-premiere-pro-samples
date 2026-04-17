@@ -4077,6 +4077,7 @@ export declare type TranscriptStatic = {
 
   /**
    * Returns the list of language services available for transcription
+   * @version 26.3.0
    */
   querySupportedLanguages(): Array<{displayString: string, languageCode: string, locale: string}>
 
