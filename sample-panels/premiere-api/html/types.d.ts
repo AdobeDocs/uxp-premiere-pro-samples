@@ -1,6 +1,9 @@
 export declare type premierepro = {
   AAFExportOptions: AAFExportOptions
+  Action: Action
+  AddTransitionOptions: AddTransitionOptions
   AppPreference: AppPreferenceStatic
+  Application: Application
   AudioClipTrackItem: AudioClipTrackItemStatic
   AudioComponentChain: AudioComponentChainStatic
   AudioFilterComponent: AudioFilterComponentStatic
@@ -8,25 +11,39 @@ export declare type premierepro = {
   AudioTrack: AudioTrackStatic
   CaptionTrack: CaptionTrackStatic
   ClipProjectItem: ClipProjectItemStatic
+  CloseProjectOptions: CloseProjectOptions
+  Color: Color
+  Component: Component
+  ComponentParam: ComponentParam
+  CompoundAction: CompoundAction
   EncoderManager: EncoderManagerStatic
   Exporter: ExporterStatic
   FolderItem: FolderItemStatic
+  FootageInterpretation: FootageInterpretation
   FrameRate: FrameRateStatic
   Guid: GuidStatic
+  IngestSettings: IngestSettings
   Keyframe: KeyframeStatic
   Marker: MarkerStatic
   Markers: MarkersStatic
+  Media: Media
   Metadata: MetadataStatic
+  OpenProjectOptions: OpenProjectOptions
   OperationCompleteEvent: OperationCompleteEventStatic
   PRProduction: PRProductionStatic
+  PointF: PointF
+  PointKeyframe: PointKeyframe
   Project: ProjectStatic
   ProjectClosedEvent: ProjectClosedEventStatic
+  ProjectColorSettings: ProjectColorSettings
   ProjectConverter: ProjectConverterStatic
   ProjectEvent: ProjectEventStatic
   ProjectItem: ProjectItemStatic
+  ProjectItemSelection: ProjectItemSelection
   ProjectSettings: ProjectSettingsStatic
   ProjectUtils: ProjectUtilsStatic
   Properties: PropertiesStatic
+  RectF: RectF
   ScratchDiskSettings: ScratchDiskSettingsStatic
   Sequence: SequenceStatic
   SequenceEditor: SequenceEditorStatic
@@ -36,6 +53,7 @@ export declare type premierepro = {
   SourceMonitor: SourceMonitorStatic
   TextSegments: TextSegmentsStatic
   TickTime: TickTimeStatic
+  TimeDisplay: TimeDisplay
   TrackItemSelection: TrackItemSelectionStatic
   TransitionFactory: TransitionFactoryStatic
   UniqueSerializeable: UniqueSerializeableStatic
@@ -48,7 +66,6 @@ export declare type premierepro = {
   VideoTransition: VideoTransitionStatic
   EventManager: EventManagerStatic
   Transcript: TranscriptStatic
-  AddTransitionOptions: AddTransitionOptions
   Constants: typeof Constants
 }
 
@@ -249,6 +266,7 @@ export declare type AddTransitionOptions = {
    * Constructs a new instance of the AddTransitionOptions class.
    * @constructor
    */
+  new (): AddTransitionOptions
   (): AddTransitionOptions
 
   /**
@@ -981,6 +999,7 @@ export declare type CloseProjectOptions = {
    * Constructs a new instance of the CloseProjectOptions class.
    * @constructor
    */
+  new (): CloseProjectOptions
   (): CloseProjectOptions
 
   /**
@@ -1046,6 +1065,7 @@ export declare type Color = {
    * @param [blue]
    * @param [alpha]
    */
+  new (red?: number, green?: number, blue?: number, alpha?: number): Color
   (red?: number, green?: number, blue?: number, alpha?: number): Color
 
   /**
@@ -1667,6 +1687,7 @@ export declare type FrameRate = {
    * Constructs a new instance of the FrameRate class.
    * @constructor
    */
+  new (): FrameRate
   (): FrameRate
 
   /**
@@ -1703,6 +1724,7 @@ export declare type Guid = {
    * Constructs a new instance of the Guid class.
    * @constructor
    */
+  new (): Guid
   (): Guid
 
   /**
@@ -2064,6 +2086,12 @@ export declare type Metadata = {
 }
 
 export declare type OpenProjectOptions = {
+  /**
+   * Constructs a new instance of the OpenProjectOptions class.
+   * @constructor
+   */
+  new (): OpenProjectOptions
+  (): OpenProjectOptions
 
   /**
    * Set whether to show the convert project dialog on project open/close
@@ -2208,6 +2236,7 @@ export declare type PointF = {
    * @param [x]
    * @param [y]
    */
+  new (x?: number, y?: number): PointF
   (x?: number, y?: number): PointF
 
   /**
@@ -2834,6 +2863,7 @@ export declare type RectF = {
    * Constructs a new instance of the RectF class.
    * @constructor
    */
+  new (): RectF
   (): RectF
 
   /**
@@ -3711,6 +3741,7 @@ export declare type TickTime = {
    * Constructs a new instance of the TickTime class.
    * @constructor
    */
+  new (): TickTime
   (): TickTime
 
   /**
