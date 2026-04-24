@@ -13,10 +13,11 @@
  **************************************************************************/
 
 import type { premierepro, Project } from "../types.d.ts";
-import { getClipProjectItem } from "./projectPanel";
+import { getClipProjectItem, getSelectedProjectItems } from "./projectPanel";
+import { log } from "./utils";
+
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const ppro = require("premierepro") as premierepro;
-import { log } from "./utils";
 
 // To ensure successful import/export, please ensure your JSON follow 
 // sample Adobe Transcript JSON file spec we provided.
@@ -43,6 +44,27 @@ export async function importTranscript(
   } catch (err) {
     log(`Error: ${err}`, "red");
     return false;
+  }
+}
+
+export async function hasTranscript(project: Project): Promise<void> {
+  const projectItems = await getSelectedProjectItems(project);
+  if (!projectItems || projectItems.length === 0) {
+    log("Select at least one project item to check for a transcript.", "red");
+    return;
+  }
+
+  for (const projectItem of projectItems) {
+    const clipProjectItem = ppro.ClipProjectItem.cast(projectItem);
+    if (!clipProjectItem) {
+      continue;
+    }
+
+    if (ppro.Transcript.hasTranscript(clipProjectItem)) {
+      log(`Clip "${clipProjectItem.name}" has a transcript.`, "green");
+    } else {
+      log(`Clip "${clipProjectItem.name}" does not have a transcript.`, "red");
+    }
   }
 }
 
