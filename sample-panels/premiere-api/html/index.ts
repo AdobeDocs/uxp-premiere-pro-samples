@@ -199,7 +199,7 @@ import {
   encodeFile,
   encodeFirstSelectedProjectItem,
 } from "./src/encoderManager";
-import { exportTranscript, importTranscript } from "./src/transcript";
+import { exportTranscript, hasTranscript, importTranscript } from "./src/transcript";
 import {
   exportAAF,
   exportAsFinalCutProXML,
@@ -524,6 +524,16 @@ async function querySupportedLanguagesClicked() {
 
     log(logLine);
   }
+}
+
+async function hasTranscriptClicked() {
+  const project = await getProject();
+  if (!project) {
+    log(`Failed to get project`, "red");
+    return;
+  }
+
+  await hasTranscript(project);
 }
 
 async function showGuidForAllMarkersClicked() {
@@ -2510,6 +2520,7 @@ window.addEventListener("load", async () => {
   registerClick("create-sequence-with-preset-path", createSequenceWithPresetPathClicked);
   registerClick("export-aaf", exportAAFClicked);
   registerClick("query-supported-languages", querySupportedLanguagesClicked);
+  registerClick("has-transcript", hasTranscriptClicked);
   registerClick("set-video-track-name", setVideoTrackNameClicked);
 
   //project events registering
