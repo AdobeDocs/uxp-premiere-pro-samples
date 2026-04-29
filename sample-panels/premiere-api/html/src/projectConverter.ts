@@ -12,7 +12,7 @@
  * written permission of Adobe.
  **************************************************************************/
 
-import type { premierepro, Sequence } from "../types.d.ts";
+import type { premierepro, Sequence } from "@adobe/premierepro";
 import { log } from "./utils";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const ppro = require("premierepro") as premierepro;

@@ -194,7 +194,7 @@ import type {
   Sequence,
   VideoClipTrackItem,
   AudioClipTrackItem,
-} from "./types.d.ts";
+} from "@adobe/premierepro";
 import {
   encodeFile,
   encodeFirstSelectedProjectItem,

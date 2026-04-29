@@ -25,7 +25,7 @@ import type {
   SequenceSettings,
   VideoClipTrackItem,
   VideoTrack,
-} from "../types.d.ts";
+} from "@adobe/premierepro";
 import { getClipProjectItem } from "./projectPanel.js";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const ppro = require("premierepro") as premierepro;

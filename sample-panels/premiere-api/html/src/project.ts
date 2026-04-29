@@ -11,7 +11,7 @@
  * then your use, modification, or distribution of it requires the prior
  * written permission of Adobe.
  **************************************************************************/
-import type { Guid, premierepro, Project, Sequence } from "../types.d.ts";
+import type { Guid, premierepro, Project, Sequence } from "@adobe/premierepro";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const ppro = require("premierepro") as premierepro;
 // eslint-disable-next-line @typescript-eslint/no-require-imports

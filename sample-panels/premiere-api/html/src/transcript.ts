@@ -12,7 +12,7 @@
  * written permission of Adobe.
  **************************************************************************/
 
-import type { premierepro, Project } from "../types.d.ts";
+import type { premierepro, Project } from "@adobe/premierepro";
 import { getClipProjectItem, getSelectedProjectItems } from "./projectPanel";
 import { log } from "./utils";
 
