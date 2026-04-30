@@ -46,15 +46,33 @@ Here's `premiere-api` in Premiere:
 
 ## Adding TypeScript Definitions in Visual Studio Code
 
-Copy the included `types.d.ts` to the root of the `html` directory.
+Install the `@adobe/premierepro` type declaration package. The `premiere-api` and `metadata-handler` sample panels already include this in its dependencies as an example.
 
-Add this line to the top of `index.js`:
+```sh
+# For current APIs
+$ npm install -D @adobe/premierepro
 
-`/// <reference path="./types.d.ts" />`
+# To see what's available in Beta
+$ npm install -D @adobe/premierepro@beta
+```
 
-You can now see and use TypeScript definitions for Premiere Pro's UXP APIs, in Visual Studio Code.
+For JavaScript-specific projects: create a `jsconfig.json` file which includes at least the following configuration:
+```json
+{
+  "compilerOptions": {
+    "types": ["@adobe/premierepro"]
+  },
+  "excludes": ["node_modules"]
+}
+```
+
+You can now see and use TypeScript declarations for Premiere Pro's UXP APIs, in Visual Studio Code, either directly in TypeScript projects:
 
 ![UXP typescript autocomplete](payloads/ts_def_demo.png)
+
+Or using JSDoc equivalent documentation and tags to add type hints in JavaScript projects:
+
+![UXP JSDoc type hints](payloads/js_def_demo.png)
 
 ## Transcript definition
 
