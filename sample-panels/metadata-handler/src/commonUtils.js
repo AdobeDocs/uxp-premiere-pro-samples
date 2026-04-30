@@ -12,6 +12,7 @@
  * written permission of Adobe.
  **************************************************************************/
 
+/** @type {import('@adobe/premierepro').premierepro} */
 const ppro = require("premierepro");
 
 const ALLOWED_INPUTS_GOOD_HIDE = [

@@ -12,8 +12,10 @@
  * written permission of Adobe.
  **************************************************************************/
 
+/** @type {import('@adobe/premierepro').premierepro} */
 const ppro = require("premierepro");
 const uxp = require("uxp");
+
 const {
   getSelectedProjectItems,
   getProjectItems,
