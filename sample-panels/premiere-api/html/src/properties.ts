@@ -65,7 +65,7 @@ export async function setSampleSequenceProperty(
       project.lockedAccess(() => {
         succeed = project.executeTransaction((compoundAction) => {
           compoundAction.addAction(setValueAction);
-        });
+        }, "Set Sample Sequence Property");
       });
     });
   } catch (err) {
@@ -95,7 +95,7 @@ export async function clearSampleSequenceProperty(
           const clearValueAction =
             properties.createClearValueAction(NEW_PROPERTY_NAME);
           compoundAction.addAction(clearValueAction);
-        });
+        }, "Clear Sample Sequence Property");
       });
     } catch (err) {
       log(`Error: ${err}`, "red");
