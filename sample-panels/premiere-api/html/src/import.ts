@@ -12,7 +12,7 @@
  * written permission of Adobe.
  **************************************************************************/
 
-import type { Guid, Project, ProjectItem } from "../types.d.ts";
+import type { Guid, Project, ProjectItem } from "@adobe/premierepro";
 
 /**
  * Import files into project

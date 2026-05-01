@@ -12,7 +12,7 @@
  * written permission of Adobe.
  **************************************************************************/
 
-import type { premierepro, Project, ProjectItem } from "../types.d.ts";
+import type { premierepro, Project, ProjectItem } from "@adobe/premierepro";
 import { getSelectedProjectItems } from "./projectPanel.js";
 import { log } from "./utils";
 // eslint-disable-next-line @typescript-eslint/no-require-imports

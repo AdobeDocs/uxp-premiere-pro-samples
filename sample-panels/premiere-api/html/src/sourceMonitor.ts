@@ -12,7 +12,7 @@
  * written permission of Adobe.
  **************************************************************************/
 
-import type { premierepro, ProjectItem } from "../types.d.ts";
+import type { premierepro, ProjectItem } from "@adobe/premierepro";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const ppro = require("premierepro") as premierepro;
 // eslint-disable-next-line @typescript-eslint/no-require-imports

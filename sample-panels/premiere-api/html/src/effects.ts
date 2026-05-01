@@ -13,7 +13,7 @@
  **************************************************************************/
 
 import { log } from "./utils";
-import type { premierepro, VideoComponentChain } from "../types.d.ts";
+import type { premierepro, VideoComponentChain } from "@adobe/premierepro";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const ppro = require("premierepro") as premierepro;
 

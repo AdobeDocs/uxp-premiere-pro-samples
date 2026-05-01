@@ -12,7 +12,9 @@
  * written permission of Adobe.
  **************************************************************************/
 
+/** @type {import('@adobe/premierepro').premierepro} */
 const ppro = require("premierepro");
+
 const { getProjectName } = require("./src/commonUtils");
 const {
   exportMetadata,

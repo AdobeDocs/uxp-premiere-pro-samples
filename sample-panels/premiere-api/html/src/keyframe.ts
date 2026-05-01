@@ -16,7 +16,7 @@ import type {
   ComponentParam,
   premierepro,
   Project,
-} from "../types.d.ts";
+} from "@adobe/premierepro";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const ppro = require("premierepro") as premierepro;
 import { log } from "./utils";
