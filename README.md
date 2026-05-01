@@ -74,6 +74,16 @@ Or using JSDoc equivalent documentation and tags to add type hints in JavaScript
 
 ![UXP JSDoc type hints](payloads/js_def_demo.png)
 
+## Linting
+
+To lint the `premiere-api` sample code and peform some basic static analysis, you can run:
+
+```sh
+$ npm run lint
+```
+
+This will print out per-file warnings and/or errors that should be fixed before commiting new features to the repository.
+
 ## Transcript definition
 
 We have included [Premiere Pro's transcript JSON definition](./sample-panels/premiere-api/html/assets/transcript_format_spec.json), in the `assets` directory, within the `premiere-api` sample plugin.
