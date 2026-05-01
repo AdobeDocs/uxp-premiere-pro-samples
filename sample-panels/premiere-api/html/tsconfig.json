@@ -9,7 +9,11 @@
     "allowJs": true,
     "checkJs": true,
     "isolatedModules": true,
-    "types": ["@adobe/cc-ext-uxp-types", "@types/node"],
+    "types": [
+      "@adobe/cc-ext-uxp-types",
+      "@types/node",
+      "@adobe/premierepro"
+    ],
     "outDir": "../build-html",
     "noImplicitAny": null,
     "esModuleInterop": true
