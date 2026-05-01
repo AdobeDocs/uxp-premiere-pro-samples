@@ -86,14 +86,15 @@ export async function setXMPMetadata(project: Project) {
   }
   const replacedXmpMetadata = await ppro.Metadata.getXMPMetadata(projectItems[0]);
   const projectItem = projectItems[1];
-  const setXMPMetadataAction = await ppro.Metadata.createSetXMPMetadataAction(
-    projectItem,
-    replacedXmpMetadata
-  );
 
   let success = false;
   try {
     project.lockedAccess(() => {
+      const setXMPMetadataAction = ppro.Metadata.createSetXMPMetadataAction(
+        projectItem,
+        replacedXmpMetadata
+      );
+
       success = project.executeTransaction((compoundAction) => {
         compoundAction.addAction(setXMPMetadataAction);
       }, "createSetXMPMetadataAction");
@@ -118,16 +119,16 @@ export async function setProjectMetadata(project: Project) {
   const metadata =
     '<?xpacket begin="" id="W5M0MpCehiHzreSzNTczkc9d"?><x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="Adobe XMP Core 9.0-c001 152.deb9585, 2024/02/06-08:36:10 "><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"><rdf:Description rdf:about="" xmlns:premierePrivateProjectMetaData="http://ns.adobe.com/premierePrivateProjectMetaData/1.0/"><premierePrivateProjectMetaData:Column.Intrinsic.Name>Name changed</premierePrivateProjectMetaData:Column.Intrinsic.Name><premierePrivateProjectMetaData:Column.PropertyBool.Hide>True</premierePrivateProjectMetaData:Column.PropertyBool.Hide></rdf:Description></rdf:RDF></x:xmpmeta><?xpacket end="w"?>';
   const updatedFields = ["Column.Intrinsic.Name"];
-  const setProjectMetadataAction =
-    await ppro.Metadata.createSetProjectMetadataAction(
-      projectItem1,
-      metadata,
-      updatedFields
-    );
 
   let success = false;
   try {
     project.lockedAccess(() => {
+      const setProjectMetadataAction = ppro.Metadata.createSetProjectMetadataAction(
+        projectItem1,
+        metadata,
+        updatedFields
+      );
+
       success = project.executeTransaction((compoundAction) => {
         compoundAction.addAction(setProjectMetadataAction);
       }, "createSetProjectMetadataAction");

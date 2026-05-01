@@ -114,7 +114,7 @@ export async function createBin(project: Project) {
       success = project.executeTransaction((compoundAction) => {
         const createBinAction = rootItem.createBinAction("Bin1", true);
         compoundAction.addAction(createBinAction);
-      });
+      }, "Create Bin");
     });
   } catch (err) {
     log(`Error: ${err}`, "red");
@@ -137,7 +137,7 @@ export async function createSmartBin(project: Project) {
       success = project.executeTransaction((compoundAction) => {
         const createBinAction = rootItem.createSmartBinAction("Bin2", "Bin");
         compoundAction.addAction(createBinAction);
-      });
+      }, "Create Smart Bin");
     });
   } catch (err) {
     log(`Error: ${err}`, "red");
@@ -161,7 +161,7 @@ export async function renameBin(project: Project) {
       project.executeTransaction((compoundAction) => {
         const createBinAction = rootItem.createBinAction("Bin3", true);
         compoundAction.addAction(createBinAction);
-      });
+      }, "Create Bin");
     });
   } catch (err) {
     log(`Error: ${err}`, "red");
@@ -181,7 +181,7 @@ export async function renameBin(project: Project) {
         const renameBinAction =
           ppro.FolderItem.cast(newBin).createRenameBinAction("Bin3_rename");
         compoundAction.addAction(renameBinAction);
-      });
+      }, "Rename Bin");
     });
   } catch (err) {
     log(`Error: ${err}`, "red");
@@ -200,7 +200,7 @@ export async function removeItem(project: Project) {
       project.executeTransaction((compoundAction) => {
         const createBinAction = rootItem.createBinAction("Bin4", true);
         compoundAction.addAction(createBinAction);
-      });
+      }, "Create Bin");
     });
   } catch (err) {
     log(`Error: ${err}`, "red");
@@ -219,7 +219,7 @@ export async function removeItem(project: Project) {
           const createRemoveItemAction =
             rootItem.createRemoveItemAction(newBin);
           compoundAction.addAction(createRemoveItemAction);
-        });
+        }, "Remove Item");
       });
     } catch (err) {
       log(`Error: ${err}`, "red");
@@ -239,7 +239,7 @@ export async function moveItem(project: Project) {
       project.executeTransaction((compoundAction) => {
         const createBinAction = rootItem.createBinAction("Bin5", true);
         compoundAction.addAction(createBinAction);
-      });
+      }, "Create Bin");
     });
   } catch (err) {
     log(`Error: ${err}`, "red");
@@ -251,7 +251,7 @@ export async function moveItem(project: Project) {
       project.executeTransaction((compoundAction) => {
         const createBinAction = rootItem.createBinAction("Bin6", true);
         compoundAction.addAction(createBinAction);
-      });
+      }, "Create Bin");
     });
   } catch (err) {
     log(`Error: ${err}`, "red");
@@ -274,7 +274,7 @@ export async function moveItem(project: Project) {
             ppro.FolderItem.cast(newBin2)
           );
           compoundAction.addAction(createMoveItemAction);
-        });
+        }, "Move Item");
       });
     } catch (err) {
       log(`Error: ${err}`, "red");
@@ -375,12 +375,13 @@ export async function setFootageInterpretation(project: Project) {
   const interpretation = await clipProjectItem.getFootageInterpretation();
   await interpretation.setFrameRate(20);
   await interpretation.setPixelAspectRatio(1.5);
-  const createSetFootageInterpretationAction =
-    await clipProjectItem.createSetFootageInterpretationAction(interpretation);
 
   let success = false;
   try {
     project.lockedAccess(() => {
+      const createSetFootageInterpretationAction =
+        clipProjectItem.createSetFootageInterpretationAction(interpretation);
+
       success = project.executeTransaction((compoundAction) => {
         compoundAction.addAction(createSetFootageInterpretationAction);
       }, "createSetFootageInterpretationAction");
@@ -545,7 +546,7 @@ export async function setMediaStart(project: Project) {
       );
       success = project.executeTransaction((compoundAction) => {
         compoundAction.addAction(mediaSetStartAction);
-      });
+      }, "Set media start to 1 second");
     });
   } catch (error) {
     log(error, "red");

@@ -13,6 +13,7 @@
  **************************************************************************/
 
 import type {
+  Component,
   ComponentParam,
   premierepro,
   Project,
@@ -24,7 +25,7 @@ import { log } from "./utils";
 //Gets the componenetParam
 export async function getComponentParam() {
   let componentParam: ComponentParam;
-  let component;
+  let component: Component;
   const proj = await ppro.Project.getActiveProject();
   if (!proj) {
     log("No active project", "red");
@@ -50,9 +51,9 @@ export async function getComponentParam() {
         } else {
           const componentChain = await trackItems[0].getComponentChain();
           try {
-            await proj.lockedAccess(async () => {
+            proj.lockedAccess(() => {
               component = componentChain.getComponentAtIndex(1);
-              componentParam = await component.getParam(1);
+              componentParam = component.getParam(1);
             });
           } catch (err) {
             log(`Error: ${err}`, "red");

@@ -91,7 +91,7 @@ export async function createMarkerChapter(project: Project) {
           "This is a chapter marker"
         );
         compoundAction.addAction(addMarkerAction);
-      });
+      }, "Create Chapter Marker");
     });
   } catch (err) {
     log(`Error: ${err}`, "red");
@@ -116,7 +116,7 @@ export async function createMarkerWeblink(project: Project) {
           "This is a weblink marker"
         );
         compoundAction.addAction(addMarkerAction);
-      });
+      }, "Create Weblink Marker");
     });
   } catch (err) {
     log(`Error: ${err}`, "red");
@@ -141,7 +141,7 @@ export async function createMarkerFlashCuePoint(project: Project) {
           "This is a Flash Cue Point marker"
         );
         compoundAction.addAction(addMarkerAction);
-      });
+      }, "Create Flash Cue Point Marker");
     });
   } catch (err) {
     log(`Error: ${err}`, "red");
@@ -166,7 +166,7 @@ export async function moveMarker(project: Project) {
           ppro.TickTime.createWithSeconds(3.0)
         );
         compoundAction.addAction(moveMarkerAction);
-      });
+      }, "Move Marker");
     });
   } catch (err) {
     log(`Error: ${err}`, "red");
@@ -190,7 +190,7 @@ export async function removeMarker(project: Project) {
             sequenceMarkers.createRemoveMarkerAction(marker);
           compoundAction.addAction(removeMarkerAction);
         }
-      });
+      }, "Remove Marker");
     });
   } catch (err) {
     log(`Error: ${err}`, "red");
