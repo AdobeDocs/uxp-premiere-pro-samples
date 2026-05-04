@@ -157,14 +157,14 @@ async function onEncoderProgress(event: RenderProgressEvent) {
 /**
  * Add Encoder event listeners
  */
-export async function addEncoderListeners() {
-  const encoder = await ppro.EncoderManager.getManager();
-  await ppro.EventManager.addEventListener(
+export function addEncoderListeners() {
+  const encoder = ppro.EncoderManager.getManager();
+  ppro.EventManager.addEventListener(
     encoder,
     ppro.EncoderManager.EVENT_RENDER_PROGRESS,
     onEncoderProgress
   );
-  await ppro.EventManager.addEventListener(
+  ppro.EventManager.addEventListener(
     encoder,
     ppro.EncoderManager.EVENT_RENDER_COMPLETE,
     onEncoderComplete
