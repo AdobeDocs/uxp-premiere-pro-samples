@@ -16,10 +16,13 @@ import type {
   premierepro,
   Application,
   AudioClipTrackItem,
+  ProjectClosedEvent,
+  ProjectEvent,
   VideoClipTrackItem,
 } from "@adobe/premierepro";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const ppro = require("premierepro") as premierepro;
+
 import { log } from "./utils";
 import { getActiveProject, getActiveSequence } from "./project";
 import {
@@ -39,11 +42,11 @@ type SequenceEvent = {
  * callback function for sequence close event
  * console sequence name closed and update active sequence name in case of no active seq
  */
-async function sequenceClosed(sequence) {
-  log("Sequence Closed: " + sequence.name);
+async function sequenceClosed(event: SequenceEvent) {
+  log(`Sequence Closed: ${event.name}`);
   // check for case that no more active sequence exist
   const project = await getActiveProject();
-  sequence = await getActiveSequence(project);
+  const sequence = await getActiveSequence(project);
   if (!sequence) {
     document.getElementById("active-sequence-name").innerText =
       "No Active Sequence";
@@ -54,17 +57,16 @@ async function sequenceClosed(sequence) {
  * callback function for project open event
  * console project name opened
  */
-async function onProjectOpened() {
-  const project = await getActiveProject();
-  log("Project Opened: " + project.name);
+async function onProjectOpened(event: ProjectEvent) {
+  log(`Project Opened: ${event.name}`);
 }
 
 /**
  * callback function for project close event
  * console project name closed
  */
-async function projectClosed(project) {
-  log("Project Closed: " + project.name);
+async function projectClosed(event: ProjectClosedEvent) {
+  log(`Project Closed: ${event.name}`);
   clearProjectItemOptions();
 }
 
@@ -72,7 +74,7 @@ async function projectClosed(project) {
  * callback function for sequence activated event
  * add sequence close event listener and update active seq name
  */
-async function onSequenceActivated(sequence) {
+async function onSequenceActivated(event: SequenceEvent) {
   // add close event listener for the current active sequence
   const project = await getActiveProject();
   const seq = await getActiveSequence(project);
@@ -83,14 +85,14 @@ async function onSequenceActivated(sequence) {
     false
   );
   // update active sequence name
-  document.getElementById("active-sequence-name").innerText = sequence.name;
+  document.getElementById("active-sequence-name").innerText = event.name;
 }
 
 /**
  * callback function for project activated event
  * add project close event listener and update active project name
  */
-async function onProjectActivated(project) {
+async function onProjectActivated(event: ProjectEvent) {
   // refresh current projectItem options
   await refreshProjectItemOptions();
   ppro.EventManager.addGlobalEventListener(
@@ -98,14 +100,14 @@ async function onProjectActivated(project) {
     projectClosed
   );
   // update active project name
-  document.getElementById("active-project-name").innerText = project.name;
+  document.getElementById("active-project-name").innerText = event.name;
 }
 
 /**
  * callback function for project dirty event
  * Update projectItem options when user remove/add new projectItem
  */
-async function onProjectDirty() {
+async function onProjectDirty(/* event: ProjectEvent */) {
   await refreshProjectItemOptions();
 }
 
@@ -113,11 +115,11 @@ async function onProjectDirty() {
  * Callback function for sequence trackItem selection change event
  * Log selected trackItem's name in console
  */
-async function onSequenceSelectionChange(sequence) {
-  console.log(`Selection for ${sequence.name} changed`);
+async function onSequenceSelectionChange(event: SequenceEvent) {
+  console.log(`Selection for ${event.name} changed`);
   const project = await getActiveProject();
-  const seq = await getActiveSequence(project);
-  const selection = await seq.getSelection();
+  const sequence = await getActiveSequence(project);
+  const selection = await sequence.getSelection();
   const trackItems = await selection.getTrackItems();
   trackItems.forEach(async (item: VideoClipTrackItem | AudioClipTrackItem) => {
     const name = await item.getName();
@@ -133,8 +135,11 @@ type RenderCompleteEvent = {
  * Callback function for encoder complete event
  * Log encoder complete in console when AME job complete
  */
-async function onEncoderComplete() {
-  console.log("Encoder process complete");
+async function onEncoderComplete(event: RenderCompleteEvent) {
+  console.log(`Encoder process complete: ${event.outputFiles.length} files exported`);
+  event.outputFiles.forEach((file: string) => {
+    console.log(`- ${file}`);
+  });
 }
 
 type RenderProgressEvent = {
@@ -145,8 +150,8 @@ type RenderProgressEvent = {
  * Callback function for encoder cancel event
  * Log encoder in progress in console when AME job is in progress
  */
-async function onEncoderProgress() {
-  console.log("Encoder in progress");
+async function onEncoderProgress(event: RenderProgressEvent) {
+  console.log(`Encoder in progress: ${event.progress * 100}%`);
 }
 
 /**
@@ -170,7 +175,7 @@ export async function addEncoderListeners() {
  * Callback function for effect drop event
  * Log Effect dropped when new effect is dropped to trackItem
  */
-export async function onEffectDropped() {
+export async function onEffectDropped(/* event: OperationCompleteEvent */) {
   console.log("Effect dropped");
 }
 
@@ -178,7 +183,7 @@ export async function onEffectDropped() {
  * Callback function for effect dragged over completion event
  * Log effect dragged over when effect is dragged over trackItem
  */
-async function onEffectDraggedOver() {
+async function onEffectDraggedOver(/* event: OperationCompleteEvent */) {
   console.log("Effect dragged over");
 }
 
@@ -186,7 +191,7 @@ async function onEffectDraggedOver() {
  * Callback function for snap trackItem event
  * Log trackItem snapped when trackItem is snapped in timeline
  */
-async function onSnapTrackItem() {
+async function onSnapTrackItem(/* event: SnapEvent */) {
   console.log("TrackItem snapped");
 }
 
@@ -194,7 +199,7 @@ async function onSnapTrackItem() {
  * Callback function for snap trackItem playhead event
  * Log playhead snapped when playhead is snapped to trackItem edges
  */
-async function onSnapTrackItemPlayhead() {
+async function onSnapTrackItemPlayhead(/* event: SnapEvent */) {
   console.log("Playhead snapped to trackItem edges");
 }
 /**
