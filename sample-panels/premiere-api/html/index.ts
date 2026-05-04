@@ -198,6 +198,7 @@ import type {
 import {
   encodeFile,
   encodeFirstSelectedProjectItem,
+  setEmbeddedXMPEnabled,
 } from "./src/encoderManager";
 import { exportTranscript, hasTranscript, importTranscript } from "./src/transcript";
 import {
@@ -2418,6 +2419,15 @@ async function encodeFirstSelectedProjectItemClicked() {
   );
 }
 
+async function setEmbeddedXMPEnabledClicked() {
+  const result = await setEmbeddedXMPEnabled(true);
+  log(
+    result
+      ? "setEmbeddedXMPEnabled(true) succeeded"
+      : "setEmbeddedXMPEnabled(true) failed"
+  );
+}
+
 // Transcript button events
 async function importTranscriptClicked() {
   const project = await getProject();
@@ -2724,6 +2734,7 @@ window.addEventListener("load", async () => {
     "encode-first-selected-project-item",
     encodeFirstSelectedProjectItemClicked
   );
+  registerClick("set-embedded-xmp-enabled", setEmbeddedXMPEnabledClicked);
 
   // Import controls
   registerClick("import-ae-component", importAeComponentClicked);
