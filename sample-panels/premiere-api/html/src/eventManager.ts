@@ -13,8 +13,9 @@
  **************************************************************************/
 
 import type {
-  AudioClipTrackItem,
   premierepro,
+  Application,
+  AudioClipTrackItem,
   VideoClipTrackItem,
 } from "@adobe/premierepro";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -26,6 +27,13 @@ import {
   clearProjectItemOptions,
   refreshProjectItemOptions,
 } from "./sourceMonitor";
+
+type SequenceEvent = {
+  currentTarget: Application;
+  id: string;
+  name: string;
+  target: Application;
+}
 
 /**
  * callback function for sequence close event
@@ -117,12 +125,20 @@ async function onSequenceSelectionChange(sequence) {
   });
 }
 
+type RenderCompleteEvent = {
+  readonly outputFiles: string[];
+}
+
 /**
  * Callback function for encoder complete event
  * Log encoder complete in console when AME job complete
  */
 async function onEncoderComplete() {
   console.log("Encoder process complete");
+}
+
+type RenderProgressEvent = {
+  readonly progress: number;
 }
 
 /**
