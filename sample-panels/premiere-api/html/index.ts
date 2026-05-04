@@ -2747,7 +2747,7 @@ window.addEventListener("load", async () => {
   await addProjSeqListeners();
 
   // add encoder event listeners. Details in eventManager.ts
-  await addEncoderListeners();
+  addEncoderListeners();
 });
 
 //Helper functions
