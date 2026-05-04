@@ -93,8 +93,7 @@ export async function encodeFirstSelectedProjectItem(
 export async function setEmbeddedXMPEnabled(enabled: boolean): Promise<boolean> {
   try {
     const encoderManager = ppro.EncoderManager.getManager() as EncoderManagerExtended;
-    const result = await encoderManager.setEmbeddedXMPEnabled(enabled);
-    return result;
+    return  await encoderManager.setEmbeddedXMPEnabled(enabled);
   } catch (e) {
     log(`Error: ${e}`, "red");
     return false;
