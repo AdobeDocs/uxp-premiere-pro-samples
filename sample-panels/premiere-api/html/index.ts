@@ -453,6 +453,26 @@ async function setVideoTrackNameClicked() {
   }
 }
 
+async function hasObjectMaskClicked() {
+  const project = await getProject();
+  if (!project) {
+    log(`Failed to get project`, "red");
+    return;
+  }
+
+  const sequence = await project.getActiveSequence();
+  if (!sequence) {
+    log(`Failed to get active sequence`, "red");
+    return;
+  }
+
+  const sequenceHasObjectMask = ppro.ObjectMaskUtils.hasObjectMask(sequence);
+  log(`Sequence ${sequence.name} ${sequenceHasObjectMask ? "has" : "does not have"} an object mask`);
+
+  const hasObjectMask = ppro.ObjectMaskUtils.hasObjectMask(project);
+  log(`Project ${project.name} ${hasObjectMask ? "has" : "does not have"} an object mask`);
+}
+
 async function createSequenceWithPresetPathClicked() {
   const project = await getProject();
   if (!project) {
@@ -2517,6 +2537,7 @@ window.addEventListener("load", async () => {
   registerClick("set-audio-track-name", setAudioTrackNameClicked);
   registerClick("set-caption-track-name", setCaptionTrackNameClicked);
   registerClick("show-guid-for-all-markers", showGuidForAllMarkersClicked);
+  registerClick("has-object-mask", hasObjectMaskClicked);
   registerClick("create-sequence-with-preset-path", createSequenceWithPresetPathClicked);
   registerClick("export-aaf", exportAAFClicked);
   registerClick("query-supported-languages", querySupportedLanguagesClicked);
