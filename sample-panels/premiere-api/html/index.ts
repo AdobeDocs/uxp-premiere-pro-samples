@@ -198,6 +198,10 @@ import type {
 import {
   encodeFile,
   encodeFirstSelectedProjectItem,
+  toggleEmbeddedXMP,
+  toggleSidecarXMP,
+  launchEncoder,
+  startBatchEncode,
 } from "./src/encoderManager";
 import { exportTranscript, hasTranscript, importTranscript } from "./src/transcript";
 import {
@@ -2418,6 +2422,32 @@ async function encodeFirstSelectedProjectItemClicked() {
   );
 }
 
+async function toggleEmbeddedXMPClicked() {
+  await toggleEmbeddedXMP();
+}
+
+async function toggleSidecarXMPClicked() {
+  await toggleSidecarXMP();
+}
+
+async function launchEncoderClicked() {
+  const result = await launchEncoder();
+  log(
+    result
+      ? "launchEncoder() succeeded"
+      : "launchEncoder() failed"
+  );
+}
+
+async function startBatchEncodeClicked() {
+  const result = await startBatchEncode();
+  log(
+    result
+      ? "startBatchEncode() succeeded"
+      : "startBatchEncode() failed"
+  );
+}
+
 // Transcript button events
 async function importTranscriptClicked() {
   const project = await getProject();
@@ -2724,6 +2754,10 @@ window.addEventListener("load", async () => {
     "encode-first-selected-project-item",
     encodeFirstSelectedProjectItemClicked
   );
+  registerClick("toggle-embedded-xmp", toggleEmbeddedXMPClicked);
+  registerClick("toggle-sidecar-xmp", toggleSidecarXMPClicked);
+  registerClick("launch-encoder", launchEncoderClicked);
+  registerClick("start-batch-encode", startBatchEncodeClicked);
 
   // Import controls
   registerClick("import-ae-component", importAeComponentClicked);
