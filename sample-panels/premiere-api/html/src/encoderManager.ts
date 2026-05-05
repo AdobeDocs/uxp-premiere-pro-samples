@@ -16,6 +16,8 @@ import type { EncoderManager, premierepro, Project, ProjectItem } from "@adobe/p
 
 type EncoderManagerExtended = EncoderManager & {
   setEmbeddedXMPEnabled(enabled: boolean): Promise<boolean>;
+  launchEncoder(): Promise<boolean>;
+  startBatchEncode(): Promise<boolean>;
 };
 import { getSelectedProjectItems } from "./projectPanel.js";
 import { log } from "./utils";
@@ -93,7 +95,27 @@ export async function encodeFirstSelectedProjectItem(
 export async function setEmbeddedXMPEnabled(enabled: boolean): Promise<boolean> {
   try {
     const encoderManager = ppro.EncoderManager.getManager() as EncoderManagerExtended;
-    return  await encoderManager.setEmbeddedXMPEnabled(enabled);
+    return await encoderManager.setEmbeddedXMPEnabled(enabled);
+  } catch (e) {
+    log(`Error: ${e}`, "red");
+    return false;
+  }
+}
+
+export async function launchEncoder(): Promise<boolean> {
+  try {
+    const encoderManager = ppro.EncoderManager.getManager() as EncoderManagerExtended;
+    return await encoderManager.launchEncoder();
+  } catch (e) {
+    log(`Error: ${e}`, "red");
+    return false;
+  }
+}
+
+export async function startBatchEncode(): Promise<boolean> {
+  try {
+    const encoderManager = ppro.EncoderManager.getManager() as EncoderManagerExtended;
+    return await encoderManager.startBatchEncode();
   } catch (e) {
     log(`Error: ${e}`, "red");
     return false;

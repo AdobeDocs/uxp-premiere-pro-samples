@@ -199,6 +199,8 @@ import {
   encodeFile,
   encodeFirstSelectedProjectItem,
   setEmbeddedXMPEnabled,
+  launchEncoder,
+  startBatchEncode,
 } from "./src/encoderManager";
 import { exportTranscript, hasTranscript, importTranscript } from "./src/transcript";
 import {
@@ -2428,6 +2430,24 @@ async function setEmbeddedXMPEnabledClicked() {
   );
 }
 
+async function launchEncoderClicked() {
+  const result = await launchEncoder();
+  log(
+    result
+      ? "launchEncoder() succeeded"
+      : "launchEncoder() failed"
+  );
+}
+
+async function startBatchEncodeClicked() {
+  const result = await startBatchEncode();
+  log(
+    result
+      ? "startBatchEncode() succeeded"
+      : "startBatchEncode() failed"
+  );
+}
+
 // Transcript button events
 async function importTranscriptClicked() {
   const project = await getProject();
@@ -2735,6 +2755,8 @@ window.addEventListener("load", async () => {
     encodeFirstSelectedProjectItemClicked
   );
   registerClick("set-embedded-xmp-enabled", setEmbeddedXMPEnabledClicked);
+  registerClick("launch-encoder", launchEncoderClicked);
+  registerClick("start-batch-encode", startBatchEncodeClicked);
 
   // Import controls
   registerClick("import-ae-component", importAeComponentClicked);
