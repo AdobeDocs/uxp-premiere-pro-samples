@@ -198,7 +198,8 @@ import type {
 import {
   encodeFile,
   encodeFirstSelectedProjectItem,
-  setEmbeddedXMPEnabled,
+  toggleEmbeddedXMP,
+  toggleSidecarXMP,
   launchEncoder,
   startBatchEncode,
 } from "./src/encoderManager";
@@ -2421,13 +2422,12 @@ async function encodeFirstSelectedProjectItemClicked() {
   );
 }
 
-async function setEmbeddedXMPEnabledClicked() {
-  const result = await setEmbeddedXMPEnabled(true);
-  log(
-    result
-      ? "setEmbeddedXMPEnabled(true) succeeded"
-      : "setEmbeddedXMPEnabled(true) failed"
-  );
+async function toggleEmbeddedXMPClicked() {
+  await toggleEmbeddedXMP();
+}
+
+async function toggleSidecarXMPClicked() {
+  await toggleSidecarXMP();
 }
 
 async function launchEncoderClicked() {
@@ -2754,7 +2754,8 @@ window.addEventListener("load", async () => {
     "encode-first-selected-project-item",
     encodeFirstSelectedProjectItemClicked
   );
-  registerClick("set-embedded-xmp-enabled", setEmbeddedXMPEnabledClicked);
+  registerClick("toggle-embedded-xmp", toggleEmbeddedXMPClicked);
+  registerClick("toggle-sidecar-xmp", toggleSidecarXMPClicked);
   registerClick("launch-encoder", launchEncoderClicked);
   registerClick("start-batch-encode", startBatchEncodeClicked);
 

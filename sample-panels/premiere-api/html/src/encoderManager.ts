@@ -14,11 +14,6 @@
 
 import type { EncoderManager, premierepro, Project, ProjectItem } from "@adobe/premierepro";
 
-type EncoderManagerExtended = EncoderManager & {
-  setEmbeddedXMPEnabled(enabled: boolean): Promise<boolean>;
-  launchEncoder(): Promise<boolean>;
-  startBatchEncode(): Promise<boolean>;
-};
 import { getSelectedProjectItems } from "./projectPanel.js";
 import { log } from "./utils";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -92,10 +87,28 @@ export async function encodeFirstSelectedProjectItem(
 }
 
 
-export async function setEmbeddedXMPEnabled(enabled: boolean): Promise<boolean> {
+let embeddedXMPState = false;
+export async function toggleEmbeddedXMP(): Promise<boolean> {
   try {
-    const encoderManager = ppro.EncoderManager.getManager() as EncoderManagerExtended;
-    return await encoderManager.setEmbeddedXMPEnabled(enabled);
+    embeddedXMPState = !embeddedXMPState;
+    const encoderManager = ppro.EncoderManager.getManager();
+    const result = await encoderManager.setEmbeddedXMPEnabled(embeddedXMPState);
+    log(result ? `setEmbeddedXMPEnabled(${embeddedXMPState}) succeeded` : `setEmbeddedXMPEnabled(${embeddedXMPState}) failed`);
+    return result;
+  } catch (e) {
+    log(`Error: ${e}`, "red");
+    return false;
+  }
+}
+
+let sidecarXMPState = false;
+export async function toggleSidecarXMP(): Promise<boolean> {
+  try {
+    sidecarXMPState = !sidecarXMPState;
+    const encoderManager = ppro.EncoderManager.getManager();
+    const result = await encoderManager.setSidecarXMPEnabled(sidecarXMPState);
+    log(result ? `setSidecarXMPEnabled(${sidecarXMPState}) succeeded` : `setSidecarXMPEnabled(${sidecarXMPState}) failed`);
+    return result;
   } catch (e) {
     log(`Error: ${e}`, "red");
     return false;
@@ -104,7 +117,7 @@ export async function setEmbeddedXMPEnabled(enabled: boolean): Promise<boolean> 
 
 export async function launchEncoder(): Promise<boolean> {
   try {
-    const encoderManager = ppro.EncoderManager.getManager() as EncoderManagerExtended;
+    const encoderManager = ppro.EncoderManager.getManager();
     return await encoderManager.launchEncoder();
   } catch (e) {
     log(`Error: ${e}`, "red");
@@ -114,7 +127,7 @@ export async function launchEncoder(): Promise<boolean> {
 
 export async function startBatchEncode(): Promise<boolean> {
   try {
-    const encoderManager = ppro.EncoderManager.getManager() as EncoderManagerExtended;
+    const encoderManager = ppro.EncoderManager.getManager();
     return await encoderManager.startBatchEncode();
   } catch (e) {
     log(`Error: ${e}`, "red");
