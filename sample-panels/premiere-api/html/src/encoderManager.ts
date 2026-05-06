@@ -12,7 +12,8 @@
  * written permission of Adobe.
  **************************************************************************/
 
-import type { premierepro, Project, ProjectItem } from "@adobe/premierepro";
+import type { EncoderManager, premierepro, Project, ProjectItem } from "@adobe/premierepro";
+
 import { getSelectedProjectItems } from "./projectPanel.js";
 import { log } from "./utils";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -79,6 +80,53 @@ export async function encodeFirstSelectedProjectItem(
       presetPath,
       0 // 0 = entire, 1 = in/out, 2 = work area (only valid for sequence clipProjectItem input)
     );
+  } catch (e) {
+    log(`Error: ${e}`, "red");
+    return false;
+  }
+}
+
+
+let embeddedXMPState = false;
+export async function toggleEmbeddedXMP(): Promise<{ success: boolean; state: boolean }> {
+  try {
+    embeddedXMPState = !embeddedXMPState;
+    const encoderManager = ppro.EncoderManager.getManager();
+    const success = await encoderManager.setEmbeddedXMPEnabled(embeddedXMPState);
+    return { success, state: embeddedXMPState };
+  } catch (e) {
+    log(`Error: ${e}`, "red");
+    return { success: false, state: embeddedXMPState };
+  }
+}
+
+let sidecarXMPState = false;
+export async function toggleSidecarXMP(): Promise<{ success: boolean; state: boolean }> {
+  try {
+    sidecarXMPState = !sidecarXMPState;
+    const encoderManager = ppro.EncoderManager.getManager();
+    const success = await encoderManager.setSidecarXMPEnabled(sidecarXMPState);
+    return { success, state: sidecarXMPState };
+  } catch (e) {
+    log(`Error: ${e}`, "red");
+    return { success: false, state: sidecarXMPState };
+  }
+}
+
+export async function launchEncoder(): Promise<boolean> {
+  try {
+    const encoderManager = ppro.EncoderManager.getManager();
+    return encoderManager.launchEncoder();
+  } catch (e) {
+    log(`Error: ${e}`, "red");
+    return false;
+  }
+}
+
+export async function startBatchEncode(): Promise<boolean> {
+  try {
+    const encoderManager = ppro.EncoderManager.getManager();
+    return encoderManager.startBatchEncode();
   } catch (e) {
     log(`Error: ${e}`, "red");
     return false;
