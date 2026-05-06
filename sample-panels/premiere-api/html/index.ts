@@ -2423,11 +2423,13 @@ async function encodeFirstSelectedProjectItemClicked() {
 }
 
 async function toggleEmbeddedXMPClicked() {
-  await toggleEmbeddedXMP();
+  const { success, state } = await toggleEmbeddedXMP();
+  log(success ? `setEmbeddedXMPEnabled(${state}) succeeded` : `setEmbeddedXMPEnabled(${state}) failed`);
 }
 
 async function toggleSidecarXMPClicked() {
-  await toggleSidecarXMP();
+  const { success, state } = await toggleSidecarXMP();
+  log(success ? `setSidecarXMPEnabled(${state}) succeeded` : `setSidecarXMPEnabled(${state}) failed`);
 }
 
 async function launchEncoderClicked() {
