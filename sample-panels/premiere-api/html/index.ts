@@ -112,6 +112,7 @@ import {
   openProjectItem,
   play,
   getPosition,
+  setPosition as setSourceMonitorPosition,
   closeClip,
   closeAllClips,
 } from "./src/sourceMonitor";
@@ -530,6 +531,21 @@ async function exportAAFClicked() {
     log(`Successfully exported AAF to ${outputFilePath}`);
   } else {
     log(`Failed to export AAF`, "red");
+  }
+}
+
+async function setSourceMonitorPositionClicked() {
+  const project = await getProject();
+  if (!project) {
+    log(`Failed to get project`, "red");
+    return;
+  }
+
+  const success = await setSourceMonitorPosition(ppro.TickTime.TIME_ZERO);
+  if (success) {
+    log(`Successfully set source monitor position to 0 seconds`);
+  } else {
+    log(`Failed to set source monitor position. Make sure to open a project item in the source monitor first.`, "red");
   }
 }
 
@@ -2572,6 +2588,7 @@ window.addEventListener("load", async () => {
   registerClick("has-object-mask", hasObjectMaskClicked);
   registerClick("create-sequence-with-preset-path", createSequenceWithPresetPathClicked);
   registerClick("export-aaf", exportAAFClicked);
+  registerClick("set-source-monitor-position", setSourceMonitorPositionClicked);
   registerClick("query-supported-languages", querySupportedLanguagesClicked);
   registerClick("has-transcript", hasTranscriptClicked);
   registerClick("set-video-track-name", setVideoTrackNameClicked);
