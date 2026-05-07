@@ -12,7 +12,7 @@
  * written permission of Adobe.
  **************************************************************************/
 
-import type { premierepro, ProjectItem } from "@adobe/premierepro";
+import type { premierepro, ProjectItem, TickTime } from "@adobe/premierepro";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const ppro = require("premierepro") as premierepro;
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -125,6 +125,20 @@ export async function play() {
  */
 export async function getPosition() {
   return await ppro.SourceMonitor.getPosition();
+}
+
+/**
+ * Set the position of source monitor.
+ * 
+ * If no project item is opened at source monitor, this function will return
+ * false. Use {@link openProjectItem} to open a project item first.
+ *
+ * @param position position to set
+ * @returns true if set position succeed
+ * @see {@link openProjectItem}
+ */
+export async function setPosition(position: TickTime): Promise<boolean> {
+  return ppro.SourceMonitor.setPosition(position);
 }
 
 /**
