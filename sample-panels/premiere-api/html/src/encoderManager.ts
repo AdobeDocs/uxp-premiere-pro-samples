@@ -12,7 +12,7 @@
  * written permission of Adobe.
  **************************************************************************/
 
-import type { EncoderManager, premierepro, Project, ProjectItem } from "@adobe/premierepro";
+import type { premierepro, Project, ProjectItem } from "@adobe/premierepro";
 
 import { getSelectedProjectItems } from "./projectPanel.js";
 import { log } from "./utils";

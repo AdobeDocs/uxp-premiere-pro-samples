@@ -225,7 +225,7 @@ export async function setSequenceSelection(sequence: Sequence) {
     }
     trackItemSelection.addItem(videoTrackItems[0], false);
 
-    return await sequence.setSelection(trackItemSelection);
+    return sequence.setSelection(trackItemSelection);
   } else {
     log("No sequence found.");
   }
