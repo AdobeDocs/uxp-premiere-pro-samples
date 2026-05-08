@@ -2449,21 +2449,21 @@ async function toggleSidecarXMPClicked() {
 }
 
 async function launchEncoderClicked() {
-  const result = await launchEncoder();
-  log(
-    result
-      ? "launchEncoder() succeeded"
-      : "launchEncoder() failed"
-  );
+  try {
+    const success = await launchEncoder();
+    log(success ? "launchEncoder() succeeded" : "launchEncoder() failed");
+  } catch (err) {
+    log(`Error launching encoder: ${err}`, "red");
+  }
 }
 
 async function startBatchEncodeClicked() {
-  const result = await startBatchEncode();
-  log(
-    result
-      ? "startBatchEncode() succeeded"
-      : "startBatchEncode() failed"
-  );
+  try {
+    const success = await startBatchEncode()  ;
+    log(success ? "startBatchEncode() succeeded" : "startBatchEncode() failed");
+  } catch (err) {
+    log(`Error starting batch encode: ${err}`, "red");
+  }
 }
 
 // Transcript button events
