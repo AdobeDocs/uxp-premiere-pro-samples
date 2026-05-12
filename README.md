@@ -75,40 +75,16 @@ cd uxp-premiere-pro-samples
 
 ### 2. Build the sample you want to run
 
-Each sample has its own build (or no-build) requirements. Expand the section that applies.
+Each sample has its own build (or no-build) requirements.
 
-<details>
-<summary><strong><code>premiere-api</code> — TypeScript, requires a build</strong></summary>
+**[`premiere-api`](./sample-panels/premiere-api/README.md) — TypeScript, requires a build**
+See the [`premiere-api` README](./sample-panels/premiere-api/README.md) for full build and setup instructions.
 
-```bash
-cd sample-panels/premiere-api/html
-npm install
-npm run build
-```
+**[`metadata-handler`](./sample-panels/metadata-handler/README.md) — JavaScript, no build required**
+No installation or build step needed. See the [`metadata-handler` README](./sample-panels/metadata-handler/README.md) for setup instructions.
 
-The compiled plugin is written to `sample-panels/premiere-api/build-html/`. Point UDT at the `manifest.json` inside `build-html/`, not the one in `html/`.
-
-</details>
-
-<details>
-<summary><strong><code>metadata-handler</code> — JavaScript, no build required</strong></summary>
-
-No installation or build step is required. Point UDT directly at `sample-panels/metadata-handler/manifest.json`.
-
-</details>
-
-<details>
-<summary><strong><code>oauth-workflow-sample</code> — JavaScript with a local Node.js server</strong></summary>
-
-```bash
-cd sample-panels/oauth-workflow-sample/server
-npm install
-npm start
-```
-
-Point UDT at `sample-panels/oauth-workflow-sample/manifest.json`. You will also need to configure your Dropbox API credentials before first run — see the [sample's README](./sample-panels/oauth-workflow-sample/README.md) for instructions.
-
-</details>
+**[`oauth-workflow-sample`](./sample-panels/oauth-workflow-sample/README.md) — JavaScript with a local Node.js server**
+See the [`oauth-workflow-sample` README](./sample-panels/oauth-workflow-sample/README.md) for server setup and credential configuration before first run.
 
 ### 3. Load the plugin in Premiere Pro
 
