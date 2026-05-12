@@ -59,7 +59,7 @@ The values below are sourced directly from each sample's `manifest.json` and `pa
 | Sample                    | Min Premiere |  `@adobe/premierepro` | Manifest |
 | :------------------------ | :----------: | --------------------: | :------: |
 | `premiere-api`            | `25.1.0`     | `^26.3.0-beta.67`     | `v5`     |
-| `metadata-handler`        | `25.2.0`     | `^26.3.0-beta.54`     | `v5`     |
+| `metadata-handler`        | `25.2.0`     | `^26.3.0-beta.67`     | `v5`     |
 | `oauth-workflow-sample`   | `25.2.0`     | —                     | `v5`     |
 
 ---
