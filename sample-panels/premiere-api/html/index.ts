@@ -73,6 +73,8 @@ import {
   renameBin,
   removeItem,
   moveItem,
+  setInPoint,
+  setOutPoint,
   setInOutPoint,
   clearInOutPoint,
   setScaleToFrameSize,
@@ -1463,6 +1465,30 @@ async function moveItemClicked() {
   await moveItem(project);
 }
 
+async function setInPointClicked() {
+  const project = await getProject();
+  if (!project) return;
+
+  const success = await setInPoint(project);
+  if (!success) {
+    log("Failed to set In Point", "red");
+    return;
+  }
+  log("Successfully set In Point");
+}
+
+async function setOutPointClicked() {
+  const project = await getProject();
+  if (!project) return;
+
+  const success = await setOutPoint(project);
+  if (!success) {
+    log("Failed to set Out Point", "red");
+    return;
+  }
+  log("Successfully set Out Point");
+}
+
 async function setInOutPointClicked() {
   const project = await getProject();
   if (!project) return;
@@ -2711,6 +2737,8 @@ window.addEventListener("load", async () => {
   registerClick("rename-bin", renameBinClicked);
   registerClick("remove-item", removeItemClicked);
   registerClick("move-item", moveItemClicked);
+  registerClick("project-item-set-in-point", setInPointClicked);
+  registerClick("project-item-set-out-point", setOutPointClicked);
   registerClick("set-in-out-point", setInOutPointClicked);
   registerClick("clear-in-out-point", clearInOutPointClicked);
   registerClick("set-override-framerate", setOverrideFrameRateClicked);

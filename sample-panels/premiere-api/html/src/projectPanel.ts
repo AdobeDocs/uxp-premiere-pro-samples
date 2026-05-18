@@ -287,6 +287,42 @@ export async function moveItem(project: Project) {
   }, 1000);
 }
 
+export async function setInPoint(project: Project) {
+  const clipProjectItem = await getClipProjectItem(project);
+  const inPoint = ppro.TickTime.createWithSeconds(3);
+
+  let success = false;
+  try {
+    project.lockedAccess(() => {
+      success = project.executeTransaction((compoundAction) => {
+        const action = clipProjectItem.createSetInPointAction(inPoint);
+        compoundAction.addAction(action);
+      }, "set in point to 3 seconds");
+    });
+  } catch (err) {
+    log(`Error: ${err}`, "red");
+  }
+  return success;
+}
+
+export async function setOutPoint(project: Project) {
+  const clipProjectItem = await getClipProjectItem(project);
+  const outPoint = ppro.TickTime.createWithSeconds(5);
+
+  let success = false;
+  try {
+    project.lockedAccess(() => {
+      success = project.executeTransaction((compoundAction) => {
+        const action = clipProjectItem.createSetOutPointAction(outPoint);
+        compoundAction.addAction(action);
+      }, "set out point to 5 seconds");
+    });
+  } catch (err) {
+    log(`Error: ${err}`, "red");
+  }
+  return success;
+}
+
 export async function setInOutPoint(project: Project) {
   if (!project) {
     log(`No project found.`, "red");
