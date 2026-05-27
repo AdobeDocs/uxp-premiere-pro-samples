@@ -52,6 +52,7 @@ import {
   getVideoFrameRate,
   setVideoFrameRate,
   closeSequence,
+  checkIsDoneAnalyzingForVideoEffects,
 } from "./src/sequence";
 
 import {
@@ -1655,6 +1656,23 @@ async function renameFirstSelectedProjectItemClicked() {
   );
 }
 
+async function checkIsDoneAnalyzingForVideoEffectsClicked() {
+  const project = await getProject();
+  if (!project) {
+    log("No project found", "red");
+    return;
+  }
+
+  const sequence = await getActiveSequence(project);
+  if (!sequence) {
+    log("No sequence found", "red");
+    return;
+  }
+
+  const isDone = await checkIsDoneAnalyzingForVideoEffects(sequence);
+  log(`Sequence ${sequence.name} is ${isDone ? "done" : "not done"} analyzing for video effects`);
+}
+
 async function getMediaInfoClicked() {
   const project = await getActiveProject();
   if (!project) {
@@ -2758,6 +2776,10 @@ window.addEventListener("load", async () => {
   registerClick(
     "rename-first-selected-projectItem",
     renameFirstSelectedProjectItemClicked
+  );
+  registerClick(
+    "sequence-check-is-done-analyzing-for-video-effects",
+    checkIsDoneAnalyzingForVideoEffectsClicked
   );
 
   //Effects & transitions

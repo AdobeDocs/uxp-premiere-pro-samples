@@ -528,6 +528,20 @@ export async function setVideoFrameRate(
 }
 
 /**
+ * Check if the sequence is done analyzing for video effects
+ * @param sequence - The sequence to check if done analyzing for video effects
+ * @returns [boolean] True if done analyzing for video effects, false otherwise
+ */
+export async function checkIsDoneAnalyzingForVideoEffects(sequence: Sequence): Promise<boolean> {
+  try {
+    return sequence.isDoneAnalyzingForVideoEffects();
+  } catch (e) {
+    log(`Error checking if done analyzing for video effects: ${e}`, "red");
+    return false;
+  }
+}
+
+/**
  * Close a specific sequence in the project
  * @param project - The project containing the sequence
  * @param sequence - The sequence to close
