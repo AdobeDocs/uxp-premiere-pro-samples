@@ -14,6 +14,7 @@
 
 import type {
   ClipProjectItem,
+  FolderItem,
   premierepro,
   Project,
   ProjectItem,
@@ -145,6 +146,68 @@ export async function createSmartBin(project: Project) {
   }
 
   return success;
+}
+
+export async function createSubClips(project: Project): Promise<ProjectItem[]> {
+  if (!project) {
+    log(`No project found.`, "red");
+    return [];
+  }
+  
+  const selectedItems = await getSelectedProjectItems(project);
+  const subClipsToCreate = selectedItems
+    .reduce((acc, projectItem) => {
+      const clipProjectItem = ppro.ClipProjectItem.cast(projectItem);
+      if (clipProjectItem) {
+        acc.push({
+          clipProjectItem,
+          name: `${projectItem.name} - Sub Clip`,
+          // Each sub clip will be created in the same bin as its original clip.
+          parentBin: projectItem.getParentBin(),
+        });
+      }
+      return acc;
+    }, [] as { clipProjectItem: ClipProjectItem, name: string, parentBin: FolderItem }[]);
+
+  if (subClipsToCreate.length === 0) {
+    log(`Select one or more clips to create sub clip(s) from.`, "red");
+    return [];
+  }
+
+  project.lockedAccess(() => {
+    const actions = subClipsToCreate.map((entry) => {
+      // @ts-expect-error - createSubClipAction is not defined in the type definitions
+      return entry.clipProjectItem.createSubClipAction(
+        entry.name,
+        ppro.TickTime.createWithSeconds(0),
+        ppro.TickTime.createWithSeconds(1),
+        true, // hasHardBoundaries
+        // These are the default values for the options, but we can override them if needed.
+        {
+          takeAudio: true,
+          takeVideo: true,
+        }
+      );
+    });
+
+    project.executeTransaction((compoundAction) => {
+      actions.forEach((action) => {
+        compoundAction.addAction(action);
+      });
+    }, "Create Sub Clips");
+  });
+
+  // Collect the sub clips from the 
+  const subClips: ProjectItem[] = [];
+  for (const entry of subClipsToCreate) {
+    const items = await entry.parentBin.getItems();
+    const subClip = items.find((item) => item.name === entry.name);
+    if (subClip) {
+      subClips.push(subClip);
+    }
+  }
+
+  return subClips;
 }
 
 export async function renameBin(project: Project) {
