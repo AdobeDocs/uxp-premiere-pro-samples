@@ -96,6 +96,7 @@ import {
   getFirstProjectItemColorLabel,
   setFirstProjectItemColorLabel,
   getOriginatingProjectPath,
+  createSubClips,
 } from "./src/projectPanel";
 
 import {
@@ -534,6 +535,23 @@ async function exportAAFClicked() {
     log(`Successfully exported AAF to ${outputFilePath}`);
   } else {
     log(`Failed to export AAF`, "red");
+  }
+}
+
+async function createSubClipsFromSelectionClicked() {
+  const project = await getProject();
+  if (!project) {
+    log(`Failed to get project`, "red");
+    return;
+  }
+
+  try {
+    const subClips = await createSubClips(project);
+    if (subClips.length > 0) {
+      log(`Successfully created sub clip(s): "${subClips.map(subClip => subClip.name).join(', ')}"`);
+    }
+  } catch (error) {
+    log(`Error creating sub clip: ${error}`, "red");
   }
 }
 
@@ -2632,6 +2650,7 @@ window.addEventListener("load", async () => {
   registerClick("has-object-mask", hasObjectMaskClicked);
   registerClick("create-sequence-with-preset-path", createSequenceWithPresetPathClicked);
   registerClick("export-aaf", exportAAFClicked);
+  registerClick("project-panel-create-sub-clips", createSubClipsFromSelectionClicked);
   registerClick("set-source-monitor-position", setSourceMonitorPositionClicked);
   registerClick("query-supported-languages", querySupportedLanguagesClicked);
   registerClick("has-transcript", hasTranscriptClicked);
