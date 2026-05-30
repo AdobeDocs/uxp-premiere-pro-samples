@@ -176,7 +176,6 @@ export async function createSubClips(project: Project): Promise<ProjectItem[]> {
 
   project.lockedAccess(() => {
     const actions = subClipsToCreate.map((entry) => {
-      // @ts-expect-error - createSubClipAction is not defined in the type definitions
       return entry.clipProjectItem.createSubClipAction(
         entry.name,
         ppro.TickTime.createWithSeconds(0),
