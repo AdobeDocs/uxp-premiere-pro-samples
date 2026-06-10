@@ -19,16 +19,29 @@ import premierepro from "@adobe/eslint-plugin-premierepro";
 
 export default defineConfig(
   globalIgnores([
+    "dist/**",
     "scripts/**",
     "eslint.config.mjs",
   ]),
-  eslint.configs.recommended,
-  typescript.configs.recommended,
-  premierepro.configs.recommendedTypeChecked,
   {
+    files: ["**/*.ts"],
+    extends: [
+      eslint.configs.recommended,
+      typescript.configs.recommended,
+      premierepro.configs.recommendedTypeChecked,
+    ],
     languageOptions: {
       parserOptions: {
         projectService: true,
+      },
+    },
+  },
+  {
+    files: ["vite.config.mjs"],
+    extends: [eslint.configs.recommended, typescript.configs.recommended],
+    languageOptions: {
+      parserOptions: {
+        project: "./tsconfig.node.json",
       },
     },
   },
