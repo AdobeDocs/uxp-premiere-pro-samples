@@ -40,14 +40,14 @@
         {
           "width": 23,
           "height": 23,
-          "path": "icons/dark.png",
+          "path": "icons/dark.svg",
           "scale": [1, 2],
           "theme": ["darkest", "dark", "medium"]
         },
         {
           "width": 23,
           "height": 23,
-          "path": "icons/light.png",
+          "path": "icons/light.svg",
           "scale": [1, 2],
           "theme": ["lightest", "light"]
         }
@@ -58,7 +58,7 @@
     {
       "width": 48,
       "height": 48,
-      "path": "icons/plugin-icon.png",
+      "path": "icons/plugin-icon.svg",
       "scale": [1, 2],
       "theme": ["darkest", "dark", "medium", "lightest", "light", "all"],
       "species": ["pluginList"]
