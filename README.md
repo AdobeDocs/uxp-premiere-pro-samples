@@ -186,7 +186,7 @@ Yes. Most Premiere UXP APIs return Promises and must be awaited (or chained with
 Declare the required capabilities under `requiredPermissions` in your `manifest.json`:
 
 - The [`oauth-workflow-sample` manifest](./sample-panels/oauth-workflow-sample/manifest.json) demonstrates `network` and `launchProcess` permissions.
-- The [`premiere-api` manifest](./sample-panels/premiere-api/html/manifest.json) demonstrates `localFileSystem` and `clipboard` permissions.
+- The [`premiere-api` manifest](./sample-panels/premiere-api/html/public/manifest.json) demonstrates `localFileSystem` and `clipboard` permissions.
 
 </details>
 

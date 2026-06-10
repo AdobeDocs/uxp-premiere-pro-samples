@@ -13,22 +13,23 @@ The sample has a build step because it's written in TypeScript. The key thing to
 ```
 premiere-api/
 ├── html/                ← source files, edit here
+│   ├── public/          ← static assets copied to dist/ (manifest, HTML, icons)
 │   ├── src/             ← one .ts file per API area
 │   ├── assets/          ← preset files, transcript spec
-│   ├── scripts/         ← fix-imports.js (post-build)
 │   ├── index.ts         ← entry point, wires src/ to buttons
-│   ├── index.html       ← panel UI
-│   ├── manifest.json
 │   ├── package.json
 │   ├── tsconfig.json
+│   ├── vite.config.mjs
 │   └── eslint.config.mjs
-└── build-html/          ← compiled output (after npm run build)
-    └── manifest.json    ← point UDT here, not the one above
+└── html/dist/           ← compiled output (after npm run build)
+    └── manifest.json    ← point UDT here, not the one in public/
 ```
 
-`build-html/` doesn't exist until you run `npm run build` for the first time.
+`dist/` doesn't exist until you run `npm run build` (or `npm run dev`) for the first time.
 
-**`build-html/` is what UDT loads.** If you edit files in `html/` but forget to rebuild, your changes won't show up. This is the most common first-run mistake.
+**`dist/` is what UDT loads.** If you edit `.ts` files but forget to rebuild, your changes won't show up. This is the most common first-run mistake.
+
+Edit panel UI and manifest in `public/` (`index.html`, `manifest.json`, `icons/`). Vite copies them into `dist/` on each build.
 
 ### What's in `src/`
 
@@ -68,36 +69,32 @@ npm install
 npm run build
 ```
 
-`npm run build` does four things in order:
+[Vite](https://vite.dev/) compiles TypeScript into CommonJS modules under `dist/`, one `.js` file per source module. Static assets from `public/` are copied alongside the compiled output. TypeScript type-checking is handled separately by `tsc --noEmit`.
 
-1. Deletes the old `build-html/` folder.
-2. Copies all source files from `html/` into `build-html/`.
-3. Compiles the TypeScript into JavaScript.
-4. Runs a small post-build fix (see [below](#why-the-fix-imports-step-exists)).
-
-When the build finishes, point UDT at `sample-panels/premiere-api/build-html/manifest.json` and click **Load**.
+When the build finishes, point UDT at `sample-panels/premiere-api/html/dist/manifest.json` and click **Load**.
 
 ### Other commands
 
 ```bash
-npm run lint    # run ESLint (do this before committing)
-npm run clean   # delete build-html/
-npm run copy    # copy source to build-html/ without compiling (useful for HTML-only edits)
+npm run dev        # watch build + typecheck (recommended while developing)
+npm run typecheck  # typecheck only, no emit
+npm run lint       # run ESLint (do this before committing)
+npm run clean      # delete dist/
 ```
 
 ---
 
 ## Making changes
 
-UDT's **Watch** mode won't auto-reload TypeScript changes because a build step is needed first. Your usual loop while developing:
+Your usual loop while developing:
 
-1. Edit files in `html/src/` or `html/index.html`.
-2. Run `npm run build`.
+1. Run `npm run dev` in `html/` (rebuilds on save).
+2. Edit files in `html/src/`, `html/index.ts`, or `html/public/`.
 3. Click **Reload** in UDT.
 
-**Shortcut:** If you only changed `index.html` and didn't touch any `.ts` files, `npm run copy` + reload is faster than a full build.
+If you are not running `npm run dev`, run `npm run build` after each change instead.
 
-**Manifest changes** always need an **Unload → Load** in UDT, not just a reload.
+**Manifest or `public/` changes** always need an **Unload → Load** in UDT, not just a reload.
 
 ---
 
@@ -105,16 +102,6 @@ UDT's **Watch** mode won't auto-reload TypeScript changes because a build step i
 
 Click **Debug** in UDT next to the loaded plugin. That opens a Chromium DevTools window connected to your panel — you get the console, network tab, sources, and DOM inspector.
 
+The build emits separate `.js` files under `dist/` (for example `index.js`, `src/project.js`, `src/utils.js`), each with a source map. UDT's Sources panel lists these loaded modules the same way the old multi-file `tsc` build did, so you can set breakpoints and step through the original `.ts` sources.
+
 The panel also has a built-in console area at the top of the UI that logs the result of each button click directly in the panel, so you don't always need DevTools open.
-
----
-
-## Why the `fix-imports` step exists
-
-When TypeScript compiles `index.ts` to CommonJS, it adds this line to `index.js`:
-
-```js
-Object.defineProperty(exports, "__esModule", { value: true });
-```
-
-`index.js` has no exports at all, so this line doesn't belong there and can break the panel at runtime in UXP. The `scripts/fix-imports.js` post-build script strips it out automatically — you don't need to do anything. But if you ever see a blank panel after a clean build, this is the first thing to check.
