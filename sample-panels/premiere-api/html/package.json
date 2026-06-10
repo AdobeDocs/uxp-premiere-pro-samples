@@ -1,12 +1,10 @@
 {
   "type": "commonjs",
   "scripts": {
-    "clean": "rimraf ../build-html",
-    "copy": "cp-cli ../html ../build-html",
-    "compile": "tsc",
-    "fix-imports": "node ./scripts/fix-imports.js",
-    "build": "npm run clean && npm run copy && npm run compile && npm run fix-imports",
-    "build:vite": "vite build",
+    "clean": "rimraf dist",
+    "build": "vite build",
+    "dev": "concurrently -k -n vite,types \"vite build --watch\" \"tsc --watch --noEmit --preserveWatchOutput\"",
+    "typecheck": "tsc --noEmit",
     "lint": "eslint ."
   },
   "devDependencies": {
@@ -15,10 +13,9 @@
     "@adobe/premierepro": "^26.3.0-beta.85",
     "@eslint/js": "^9.39.4",
     "@types/node": "^22.10.2",
-    "cp-cli": "^2.0.0",
+    "concurrently": "^9.2.1",
     "eslint": "^9.39.4",
     "rimraf": "^6.0.1",
-    "tslib": "^2.8.1",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.58.1",
     "vite": "^8.0.0"

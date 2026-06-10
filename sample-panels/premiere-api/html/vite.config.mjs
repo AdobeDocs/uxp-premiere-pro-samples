@@ -11,9 +11,9 @@
  * governing permissions and limitations under the License.
  */
 
-import { defineConfig } from "vite";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { defineConfig } from "vite";
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
@@ -22,7 +22,7 @@ export default defineConfig({
   base: "./",
   build: {
     outDir: "dist",
-    emptyOutDir: true,
+    emptyOutDir: false,
     minify: false,
     sourcemap: true,
     target: "esnext",
@@ -30,9 +30,10 @@ export default defineConfig({
       input: resolve(__dirname, "index.ts"),
       external: ["premierepro", "uxp"],
       output: {
-        format: "iife",
-        entryFileNames: "index.js",
-        codeSplitting: false,
+        format: "cjs",
+        preserveModules: true,
+        preserveModulesRoot: __dirname,
+        entryFileNames: "[name].js",
       },
     },
   },
