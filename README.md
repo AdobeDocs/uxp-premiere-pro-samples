@@ -147,7 +147,7 @@ Autocomplete and inline documentation are then available in both TypeScript and 
 The `premiere-api` sample uses the official [`@adobe/eslint-plugin-premierepro`](https://www.npmjs.com/package/@adobe/eslint-plugin-premierepro) plugin to catch common mistakes when calling the Premiere UXP APIs. We recommend adopting the same plugin in your own projects.
 
 ```bash
-cd sample-panels/premiere-api/html
+cd sample-panels/premiere-api
 npm run lint
 ```
 
@@ -186,7 +186,7 @@ Yes. Most Premiere UXP APIs return Promises and must be awaited (or chained with
 Declare the required capabilities under `requiredPermissions` in your `manifest.json`:
 
 - The [`oauth-workflow-sample` manifest](./sample-panels/oauth-workflow-sample/manifest.json) demonstrates `network` and `launchProcess` permissions.
-- The [`premiere-api` manifest](./sample-panels/premiere-api/html/public/manifest.json) demonstrates `localFileSystem` and `clipboard` permissions.
+- The [`premiere-api` manifest](./sample-panels/premiere-api/public/manifest.json) demonstrates `localFileSystem` and `clipboard` permissions.
 
 </details>
 
@@ -207,7 +207,7 @@ Yes. See the [Hybrid Plugins](https://developer.adobe.com/premiere-pro/uxp/plugi
 <details>
 <summary><strong>Is the Premiere Pro transcript JSON format documented?</strong></summary>
 
-Yes. The full specification is included in this repository at [`sample-panels/premiere-api/html/assets/transcript_format_spec.json`](./sample-panels/premiere-api/html/assets/transcript_format_spec.json).
+Yes. The full specification is included in this repository at [`sample-panels/premiere-api/assets/transcript_format_spec.json`](./sample-panels/premiere-api/assets/transcript_format_spec.json).
 
 </details>
 

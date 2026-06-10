@@ -1,6 +1,6 @@
 # premiere-api
 
-A reference panel for the Premiere Pro UXP API. Click a button to try an API call, then find the code behind it in `html/src/`. Good starting point when you want to see how a specific API works before writing your own plugin.
+A reference panel for the Premiere Pro UXP API. Click a button to try an API call, then find the code behind it in `src/`. Good starting point when you want to see how a specific API works before writing your own plugin.
 
 > For setup, prerequisites, and how to load a plugin in UDT, see the [root README](../../README.md).
 
@@ -12,17 +12,16 @@ The sample has a build step because it's written in TypeScript. The key thing to
 
 ```
 premiere-api/
-├── html/                ← source files, edit here
-│   ├── public/          ← static assets copied to dist/ (manifest, HTML, icons)
-│   ├── src/             ← one .ts file per API area
-│   ├── assets/          ← preset files, transcript spec
-│   ├── index.ts         ← entry point, wires src/ to buttons
-│   ├── package.json
-│   ├── tsconfig.json
-│   ├── vite.config.mjs
-│   └── eslint.config.mjs
-└── html/dist/           ← compiled output (after npm run build)
-    └── manifest.json    ← point UDT here, not the one in public/
+├── assets/          ← preset files, transcript spec
+├── dist/            ← compiled output (after npm run build)
+|   └── manifest.json    ← point UDT here, not the one in public/
+├── public/          ← static assets copied to dist/ (manifest, HTML, icons)
+├── src/             ← one .ts file per API area
+├── index.ts         ← entry point, wires src/ to buttons
+├── package.json
+├── tsconfig.json
+├── vite.config.mjs
+├── eslint.config.mjs
 ```
 
 `dist/` doesn't exist until you run `npm run build` (or `npm run dev`) for the first time.
@@ -64,14 +63,14 @@ Each file covers one part of the API. If you're looking for a specific feature, 
 ## Build
 
 ```bash
-cd sample-panels/premiere-api/html
+cd sample-panels/premiere-api
 npm install
 npm run build
 ```
 
 [Vite](https://vite.dev/) compiles TypeScript into CommonJS modules under `dist/`, one `.js` file per source module. Static assets from `public/` are copied alongside the compiled output. TypeScript type-checking is handled separately by `tsc --noEmit`.
 
-When the build finishes, point UDT at `sample-panels/premiere-api/html/dist/manifest.json` and click **Load**.
+When the build finishes, point UDT at `sample-panels/premiere-api/dist/manifest.json` and click **Load**.
 
 ### Other commands
 
@@ -88,8 +87,8 @@ npm run clean      # delete dist/
 
 Your usual loop while developing:
 
-1. Run `npm run dev` in `html/` (rebuilds on save).
-2. Edit files in `html/src/`, `html/index.ts`, or `html/public/`.
+1. Run `npm run dev` (rebuilds on save).
+2. Edit files in `src/`, `index.ts`, or `public/`.
 3. Click **Reload** in UDT.
 
 If you are not running `npm run dev`, run `npm run build` after each change instead.
