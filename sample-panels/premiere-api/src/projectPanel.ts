@@ -779,3 +779,44 @@ export async function getOriginatingProjectPath(project: Project): Promise<strin
     return null;
   }
 }
+
+const mediaTypeToString = (mediaType: number): string => {
+  switch (mediaType) {
+    case ppro.Constants.MediaType.VIDEO:
+      return "VIDEO";
+    case ppro.Constants.MediaType.AUDIO:
+      return "AUDIO";
+  }
+};
+
+/**
+ * Gets the selected entries in the Project Panel and, for each ClipProjectItem,
+ * prints whether or not there is a component chain for each media type.
+ *
+ * @param project - The project to print the component chains for
+ */
+export async function printSelectedProjectItemComponentChains(project: Project): Promise<void> {
+  try {
+    const projectItems = await getSelectedProjectItems(project);
+    if (projectItems.length === 0) {
+      log("No project items selected", "red");
+      return;
+    }
+
+    for (const projectItem of projectItems) {
+      const clipProjectItem = ppro.ClipProjectItem.cast(projectItem);
+      if (!clipProjectItem) {
+        continue;
+      }
+
+      for (const mediaType of [ppro.Constants.MediaType.VIDEO, ppro.Constants.MediaType.AUDIO]) {
+        const componentChain = await clipProjectItem.getComponentChain(mediaType);
+        if (componentChain) {
+          log(`${projectItem.name} has a component chain for ${mediaTypeToString(mediaType)}`);
+        }
+      }
+    }
+  } catch (error) {
+    log(`Error printing has component chains: ${error}`, "red");
+  }
+}

@@ -97,6 +97,7 @@ import {
   setFirstProjectItemColorLabel,
   getOriginatingProjectPath,
   createSubClips,
+  printSelectedProjectItemComponentChains,
 } from "./src/projectPanel";
 
 import {
@@ -1691,6 +1692,15 @@ async function checkIsDoneAnalyzingForVideoEffectsClicked() {
   log(`Sequence ${sequence.name} is ${isDone ? "done" : "not done"} analyzing for video effects`);
 }
 
+async function printSelectedProjectItemComponentChainsClicked() {
+  const project = await getProject();
+  if (!project) {
+    log("No project found", "red");
+    return;
+  }
+  await printSelectedProjectItemComponentChains(project);
+}
+
 async function getMediaInfoClicked() {
   const project = await getActiveProject();
   if (!project) {
@@ -2799,6 +2809,10 @@ window.addEventListener("load", async () => {
   registerClick(
     "sequence-check-is-done-analyzing-for-video-effects",
     checkIsDoneAnalyzingForVideoEffectsClicked
+  );
+  registerClick(
+    "print-selected-project-item-component-chains",
+    printSelectedProjectItemComponentChainsClicked
   );
 
   //Effects & transitions
