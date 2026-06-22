@@ -50,8 +50,10 @@ export async function getMarkerObjects(project: Project) {
   return { sequenceMarkers, clipMarkers };
 }
 
-export async function createMarkerComment(project) {
-  const { sequenceMarkers } = await getMarkerObjects(project);
+export async function createMarkerComment(project: Project) {
+  const result = await getMarkerObjects(project);
+  if (!result) return;
+  const { sequenceMarkers } = result;
 
   let success = false;
 
@@ -77,7 +79,9 @@ export async function createMarkerComment(project) {
 }
 
 export async function createMarkerChapter(project: Project) {
-  const { sequenceMarkers } = await getMarkerObjects(project);
+  const result = await getMarkerObjects(project);
+  if (!result) return;
+  const { sequenceMarkers } = result;
 
   let success = false;
   try {
@@ -102,7 +106,9 @@ export async function createMarkerChapter(project: Project) {
 }
 
 export async function createMarkerWeblink(project: Project) {
-  const { sequenceMarkers } = await getMarkerObjects(project);
+  const result = await getMarkerObjects(project);
+  if (!result) return;
+  const { sequenceMarkers } = result;
 
   let success = false;
   try {
@@ -127,7 +133,9 @@ export async function createMarkerWeblink(project: Project) {
 }
 
 export async function createMarkerFlashCuePoint(project: Project) {
-  const { sequenceMarkers } = await getMarkerObjects(project);
+  const result = await getMarkerObjects(project);
+  if (!result) return;
+  const { sequenceMarkers } = result;
 
   let success = false;
   try {
@@ -152,9 +160,11 @@ export async function createMarkerFlashCuePoint(project: Project) {
 }
 
 export async function moveMarker(project: Project) {
-  const { sequenceMarkers } = await getMarkerObjects(project);
+  const result = await getMarkerObjects(project);
+  if (!result) return;
+  const { sequenceMarkers } = result;
 
-  const markerlist: Array<Marker> = await sequenceMarkers.getMarkers();
+  const markerlist: Array<Marker> = sequenceMarkers.getMarkers();
   const marker = markerlist[0];
 
   let success = false;
@@ -177,9 +187,11 @@ export async function moveMarker(project: Project) {
 }
 
 export async function removeMarker(project: Project) {
-  const { sequenceMarkers } = await getMarkerObjects(project);
+  const result = await getMarkerObjects(project);
+  if (!result) return;
+  const { sequenceMarkers } = result;
 
-  const markerlist = await sequenceMarkers.getMarkers();
+  const markerlist = sequenceMarkers.getMarkers();
 
   let success = false;
   try {
@@ -224,7 +236,7 @@ export async function getSequenceMarkerInfo(sequence: Sequence): Promise<MarkerI
       markerInfos.push(markerInfo);
     }
   } catch (error) {
-    log(error, "red");
+    log(String(error), "red");
   }
   return markerInfos;
 }
@@ -251,7 +263,7 @@ export async function setFirstSequenceMarkerColor(
     });
     return success;
   } catch (error) {
-    log(error, "red");
+    log(String(error), "red");
     return false;
   }
 }

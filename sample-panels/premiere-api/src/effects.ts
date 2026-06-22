@@ -13,7 +13,7 @@
  **************************************************************************/
 
 import { log } from "./utils";
-import type { premierepro, VideoComponentChain } from "@adobe/premierepro";
+import type { premierepro, Component, Project, VideoComponentChain } from "@adobe/premierepro";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const ppro = require("premierepro") as premierepro;
 
@@ -96,7 +96,7 @@ export async function getEffectsName() {
   return await filterFactory.getMatchNames();
 }
 
-export async function addEffects(project) {
+export async function addEffects(project: Project) {
   if (project) {
     const videoComponentChain = await getVideoComponentChain();
     if (!videoComponentChain) {
@@ -128,7 +128,7 @@ export async function addEffects(project) {
   }
 }
 
-export async function addMultipleEffects(project) {
+export async function addMultipleEffects(project: Project) {
   if (project) {
     const videoComponentChain = await getVideoComponentChain();
     if (!videoComponentChain) {
@@ -168,7 +168,7 @@ export async function addMultipleEffects(project) {
   }
 }
 
-export async function addVocalEnhancerEffect(project) {
+export async function addVocalEnhancerEffect(project: Project) {
   const audioComponentChain = await getAudioComponentChain();
   if (!audioComponentChain) {
     return false;
@@ -176,6 +176,9 @@ export async function addVocalEnhancerEffect(project) {
   let success = false;
   try {
     const trackItem = await getAudioClipTrackItem();
+    if (!trackItem) {
+      return false;
+    }
     const newComponent = await audioFilterFactory.createComponentByDisplayName(
       "Vocal Enhancer",
       trackItem
@@ -195,16 +198,16 @@ export async function addVocalEnhancerEffect(project) {
   return success;
 }
 
-export async function removeEffects(project) {
+export async function removeEffects(project: Project) {
   if (project) {
     const videoComponentChain = await getVideoComponentChain();
     if (!videoComponentChain) {
       return;
     }
-    let newComponentToBeDeleted;
+    let newComponentToBeDeleted: Component;
     let success;
     try {
-      await project.lockedAccess(() => {
+      project.lockedAccess(() => {
         const initialComponenetCount = videoComponentChain.getComponentCount();
         if (initialComponenetCount < 3) {
           log("There is no effects to be removed");
@@ -218,7 +221,6 @@ export async function removeEffects(project) {
             );
             compoundAction.addAction(action1);
           },
-          "createRemoveComponentAction",
           "createRemoveComponentAction"
         );
       });
