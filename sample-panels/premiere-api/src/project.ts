@@ -52,7 +52,7 @@ export async function getProjectFromId(projectId: Guid) {
   return ppro.Project.getProject(projectId);
 }
 
-export async function getInsertionBin(project) {
+export async function getInsertionBin(project: Project) {
   if (project) {
     return await project.getInsertionBin();
   } else {
@@ -131,6 +131,7 @@ export async function getColorSettings(project: Project) {
 export async function getSupportedGraphicsWhiteLuminances(project: Project) {
   if (project) {
     const colorSettings = await getColorSettings(project);
+    if (!colorSettings) return;
     return colorSettings.getSupportedGraphicsWhiteLuminances();
   } else {
     log("No project found.", "red");
@@ -140,6 +141,7 @@ export async function getSupportedGraphicsWhiteLuminances(project: Project) {
 export async function getCurrentGraphicsWhiteLuminance(project: Project) {
   if (project) {
     const colorSettings = await getColorSettings(project);
+    if (!colorSettings) return;
     return await colorSettings.getGraphicsWhiteLuminance();
   } else {
     log("No project found.", "red");

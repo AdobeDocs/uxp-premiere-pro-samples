@@ -25,7 +25,7 @@ import { log } from "./utils";
  * html component
  */
 export async function addProjectItemsOptions() {
-  const items = document.getElementById("project-items");
+  const items = document.getElementById("project-items")!;
   // get projectItems from current active project
   const proj = await ppro.Project.getActiveProject();
   if (!proj) {
@@ -52,7 +52,7 @@ export async function addProjectItemsOptions() {
  * clear options for projectItems under select
  */
 export async function clearProjectItemOptions() {
-  const items = document.getElementById("project-items");
+  const items = document.getElementById("project-items")!;
   items.innerHTML = "";
 }
 

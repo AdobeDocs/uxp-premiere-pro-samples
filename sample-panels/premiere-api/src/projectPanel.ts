@@ -15,6 +15,7 @@
 import type {
   ClipProjectItem,
   FolderItem,
+  Guid,
   premierepro,
   Project,
   ProjectItem,
@@ -233,6 +234,7 @@ export async function renameBin(project: Project) {
   const newItems: Array<ProjectItem> = await rootItem.getItems();
 
   const newBin = newItems.find((item) => item.name == "Bin3");
+  if (!newBin) return false;
 
   //rename Bin3 to Bin3_rename
   let success = false;
@@ -271,6 +273,7 @@ export async function removeItem(project: Project) {
   const newItems: Array<ProjectItem> = await rootItem.getItems();
 
   const newBin = newItems.find((item) => item.name == "Bin4");
+  if (!newBin) return false;
 
   //setTimeout is not mandatory here, wrapping inside setTimeout to make removeItem feature visisble on project panel.
   setTimeout(async () => {
@@ -324,6 +327,7 @@ export async function moveItem(project: Project) {
 
   const newBin1 = newItems.find((item) => item.name == "Bin5");
   const newBin2 = newItems.find((item) => item.name == "Bin6");
+  if (!newBin1 || !newBin2) return false;
 
   //setTimeout is not mandatory here, wrapping inside setTimeout to make moveitem feature visisble on project panel.
   setTimeout(async () => {
@@ -351,6 +355,7 @@ export async function moveItem(project: Project) {
 
 export async function setInPoint(project: Project) {
   const clipProjectItem = await getClipProjectItem(project);
+  if (!clipProjectItem) return false;
   const inPoint = ppro.TickTime.createWithSeconds(3);
 
   let success = false;
@@ -369,6 +374,7 @@ export async function setInPoint(project: Project) {
 
 export async function setOutPoint(project: Project) {
   const clipProjectItem = await getClipProjectItem(project);
+  if (!clipProjectItem) return false;
   const outPoint = ppro.TickTime.createWithSeconds(5);
 
   let success = false;
@@ -393,6 +399,7 @@ export async function setInOutPoint(project: Project) {
   const inPoint = ppro.TickTime.createWithSeconds(2);
   const outPoint = ppro.TickTime.createWithSeconds(4);
   const clipProjectItem = await getClipProjectItem(project, true);
+  if (!clipProjectItem) return false;
 
   let success = false;
   try {
@@ -419,6 +426,7 @@ export async function clearInOutPoint(project: Project) {
     return;
   }
   const clipProjectItem = await getClipProjectItem(project, true);
+  if (!clipProjectItem) return false;
 
   let success = false;
   try {
@@ -442,6 +450,7 @@ export async function setScaleToFrameSize(project: Project) {
     return;
   }
   const clipProjectItem = await getClipProjectItem(project);
+  if (!clipProjectItem) return false;
 
   let success = false;
   try {
@@ -460,6 +469,7 @@ export async function setScaleToFrameSize(project: Project) {
 }
 export async function refreshMedia(project: Project) {
   const clipProjectItem = await getClipProjectItem(project);
+  if (!clipProjectItem) return false;
   const success = await clipProjectItem.refreshMedia();
   return success;
 }
@@ -470,6 +480,7 @@ export async function setFootageInterpretation(project: Project) {
     return;
   }
   const clipProjectItem = await getClipProjectItem(project);
+  if (!clipProjectItem) return false;
   const interpretation = await clipProjectItem.getFootageInterpretation();
   await interpretation.setFrameRate(20);
   await interpretation.setPixelAspectRatio(1.5);
@@ -493,6 +504,7 @@ export async function setFootageInterpretation(project: Project) {
 }
 export async function setOverrideFrameRate(project: Project) {
   const clipProjectItem = await getClipProjectItem(project);
+  if (!clipProjectItem) return false;
 
   let success = false;
   try {
@@ -512,6 +524,7 @@ export async function setOverrideFrameRate(project: Project) {
 
 export async function setOverridePixelAspectRatio(project: Project) {
   const clipProjectItem = await getClipProjectItem(project);
+  if (!clipProjectItem) return false;
 
   let success = false;
   try {
@@ -539,6 +552,7 @@ export async function setOverridePixelAspectRatio(project: Project) {
  */
 export async function attachProxy(project: Project, proxyFile: string) {
   const clipProjectItem = await getClipProjectItem(project);
+  if (!clipProjectItem) return false;
   let success = false;
   try {
     success = await clipProjectItem.attachProxy(
@@ -554,6 +568,7 @@ export async function attachProxy(project: Project, proxyFile: string) {
 
 export async function changeMediaFilePath(project: Project, mediaFile: string) {
   const clipProjectItem = await getClipProjectItem(project);
+  if (!clipProjectItem) return false;
   let success = false;
   try {
     success = await clipProjectItem.changeMediaFilePath(mediaFile);
@@ -568,11 +583,11 @@ export async function getProjectViewIds() {
   return ppro.ProjectUtils.getProjectViewIds();
 }
 
-export async function getProjectFromViewId(viewId) {
+export async function getProjectFromViewId(viewId: Guid) {
   return ppro.ProjectUtils.getProjectFromViewId(viewId);
 }
 
-export async function getSelectedProjectItemsFromViewId(viewId) {
+export async function getSelectedProjectItemsFromViewId(viewId: Guid) {
   const projectItemSelection = await ppro.ProjectUtils.getSelectionFromViewId(
     viewId
   );
@@ -594,7 +609,7 @@ export async function renameFirstSelectedProjectItem(project: Project) {
       }, "rename projectItem to Item 1");
     });
   } catch (error) {
-    log(error, "red");
+    log(String(error), "red");
   }
   return success;
 }
@@ -604,10 +619,12 @@ export async function getMediaInfo(project: Project) {
     const clipProjectItem = await getClipProjectItem(project);
     if (!clipProjectItem) {
       log("No ClipProjectItem found in project panel");
+      return null;
     }
     const media = await clipProjectItem.getMedia();
     if (!media) {
       log("Failed to access media");
+      return null;
     }
     const start = await media.start;
     const duration = await media.duration;
@@ -617,7 +634,7 @@ export async function getMediaInfo(project: Project) {
       duration: duration.seconds,
     };
   } catch (error) {
-    log(error, "red");
+    log(String(error), "red");
   }
   return null;
 }
@@ -628,10 +645,12 @@ export async function setMediaStart(project: Project) {
     const clipProjectItem = await getClipProjectItem(project);
     if (!clipProjectItem) {
       log("No ClipProjectItem found in project panel");
+      return false;
     }
     const media = await clipProjectItem.getMedia();
     if (!media) {
       log("Failed to access media");
+      return false;
     }
     const duration = await media.duration;
     if (duration < ppro.TickTime.TIME_ONE_SECOND) {
@@ -647,7 +666,7 @@ export async function setMediaStart(project: Project) {
       }, "Set media start to 1 second");
     });
   } catch (error) {
-    log(error, "red");
+    log(String(error), "red");
   }
   return success;
 }
@@ -662,7 +681,7 @@ export async function getFirstProjectItemId(project: Project) {
           throw new Error("No ProjectItem found in project panel");
         })();
   } catch (error) {
-    log(error, "red");
+    log(String(error), "red");
   }
 }
 
@@ -694,7 +713,7 @@ export async function getFirstProjectItemType(project: Project) {
       return "UNKNOWN";
     }
   } catch (error) {
-    log(error, "red");
+    log(String(error), "red");
   }
 }
 
@@ -728,7 +747,7 @@ export async function getFirstProjectItemColorLabel(project: Project) {
     };
     return colorLabelDict[colorLabelIndex] || "NONE";
   } catch (error) {
-    log(error, "red");
+    log(String(error), "red");
   }
 }
 
@@ -749,7 +768,7 @@ export async function setFirstProjectItemColorLabel(project: Project) {
     });
     return success;
   } catch (error) {
-    log(error, "red");
+    log(String(error), "red");
     return false;
   }
 }

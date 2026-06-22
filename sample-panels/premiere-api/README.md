@@ -10,7 +10,7 @@ A reference panel for the Premiere Pro UXP API. Click a button to try an API cal
 
 The sample has a build step because it's written in TypeScript. The key thing to understand upfront:
 
-```
+```text
 premiere-api/
 ├── assets/          ← preset files, transcript spec
 ├── dist/            ← compiled output (after npm run build)
