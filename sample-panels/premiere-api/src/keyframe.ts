@@ -93,10 +93,14 @@ export async function changeTimeVarying(
 //Sets the value of the component parameter stream.
 export async function setValue() {
   const result = await getComponentParam();
+<<<<<<< HEAD
   if (!result) {
     return;
   }
   
+=======
+  if (!result) return;
+>>>>>>> origin/user/bbb/claude_fixes_ts
   const { componentParam, project } = result;
   const keyframe = componentParam.createKeyframe(300);
 
