@@ -109,7 +109,7 @@ export async function setSequenceSettings(
       }, "set sequence pixel aspect ratio to Square, and video frame rate to 32.987.");
     });
   } catch (err) {
-    log(err.toString(), "red");
+    log(String(err), "red");
   }
   return successPAR && successFrameRate;
 }
@@ -132,7 +132,7 @@ export async function setSequenceInOutPoint(
       }, "set sequence in point to 0 and out point to sequence end");
     });
   } catch (err) {
-    log(err.toString(), "red");
+    log(String(err), "red");
   }
   return success;
 }
@@ -236,7 +236,7 @@ export async function createSubsequence(sequence: Sequence) {
     try {
       return await sequence.createSubsequence(true);
     } catch (err) {
-      log("Error:" + err.toString());
+      log("Error:" + String(err));
     }
   } else {
     log("No sequence found.");
@@ -266,7 +266,7 @@ export async function trimSelectedItem(project: Project, sequence: Sequence) {
         throw new Error("no trackItem is selected at sequence");
       }
     } catch (err) {
-      log(err.toString(), "red");
+      log(String(err), "red");
       return success;
     }
   } else {
@@ -344,6 +344,9 @@ export async function addHandlesToTrackItem(
       const [mediaStartTime, mediaEndTime] = await getMediaStartEndTime(
         projItem
       );
+      if (!mediaStartTime || !mediaEndTime) {
+        throw new Error("Could not determine media start/end time.");
+      }
       // Get frame rate of media and sequence
       const footageInterpretation =
         await clipProjItem.getFootageInterpretation();
@@ -420,7 +423,7 @@ export async function addHandlesToTrackItem(
         );
       }
     } catch (err) {
-      log(err.toString(), "red");
+      log(String(err), "red");
     }
   } else {
     log("No track item provided.", "red");
@@ -447,7 +450,7 @@ export async function renameFirstSelectedTrackItem(
       }, "rename trackItem to TrackItem 1");
     });
   } catch (error) {
-    log(error, "red");
+    log(String(error), "red");
   }
   return success;
 }
@@ -474,7 +477,7 @@ export async function renameTrack(
       }, `rename track to ${prefix} ${track.name}`);
     });
   } catch (error) {
-    log(error, "red");
+    log(String(error), "red");
   }
   return success;
 }

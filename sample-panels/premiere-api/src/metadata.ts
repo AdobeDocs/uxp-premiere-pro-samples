@@ -12,7 +12,7 @@
  * written permission of Adobe.
  **************************************************************************/
 
-import type { premierepro, Project, ProjectItem } from "@adobe/premierepro";
+import type { premierepro, Project } from "@adobe/premierepro";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const ppro = require("premierepro") as premierepro;
 import { log } from "./utils";
@@ -39,6 +39,7 @@ export async function getProjectMetadata(project: Project) {
     return;
   }
   const projectItems = await getProjectItems(project);
+  if (!projectItems) return;
   const metadata = await ppro.Metadata.getProjectMetadata(projectItems[0]);
   return metadata;
 }
@@ -49,7 +50,8 @@ export async function getXMPMetadata(project: Project) {
     log(`No project found.`, "red");
     return;
   }
-  const projectItems: Array<ProjectItem> = await getProjectItems(project);
+  const projectItems = await getProjectItems(project);
+  if (!projectItems) return;
   const xmpMetadata = await ppro.Metadata.getXMPMetadata(projectItems[0]);
   return xmpMetadata;
 }
@@ -60,7 +62,8 @@ export async function getProjectColumnsMetadata(project: Project) {
     log(`No project found.`, "red");
     return;
   }
-  const projectItems: Array<ProjectItem> = await getProjectItems(project);
+  const projectItems = await getProjectItems(project);
+  if (!projectItems) return;
   const metadata = await ppro.Metadata.getProjectColumnsMetadata(
     projectItems[0]
   );
@@ -79,7 +82,8 @@ export async function setXMPMetadata(project: Project) {
     log(`No project found.`, "red");
     return;
   }
-  const projectItems: Array<ProjectItem> = await getProjectItems(project);
+  const projectItems = await getProjectItems(project);
+  if (!projectItems) return;
 
   if (!(projectItems.length >= 2)) {
     log("Required at least two projectitems", "red");
@@ -113,7 +117,8 @@ export async function setProjectMetadata(project: Project) {
     log(`No project found.`, "red");
     return;
   }
-  const projectItems: Array<ProjectItem> = await getProjectItems(project);
+  const projectItems = await getProjectItems(project);
+  if (!projectItems) return;
   const projectItem1 = projectItems[0];
 
   const metadata =

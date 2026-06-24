@@ -15,7 +15,6 @@
       "@types/node",
       "@adobe/premierepro"
     ],
-    "noImplicitAny": null,
     "esModuleInterop": true
   },
   "include": ["./**/*.ts"],
