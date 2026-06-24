@@ -42,13 +42,13 @@ type SequenceEvent = {
  * callback function for sequence close event
  * console sequence name closed and update active sequence name in case of no active seq
  */
-async function sequenceClosed(event: SequenceEvent) {
-  log(`Sequence Closed: ${event.name}`);
+async function sequenceClosed(event?: object) {
+  log(`Sequence Closed: ${(event as SequenceEvent).name}`);
   // check for case that no more active sequence exist
   const project = await getActiveProject();
   const sequence = await getActiveSequence(project);
   if (!sequence) {
-    document.getElementById("active-sequence-name").innerText =
+    document.getElementById("active-sequence-name")!.innerText =
       "No Active Sequence";
   }
 }
@@ -57,16 +57,16 @@ async function sequenceClosed(event: SequenceEvent) {
  * callback function for project open event
  * console project name opened
  */
-async function onProjectOpened(event: ProjectEvent) {
-  log(`Project Opened: ${event.name}`);
+async function onProjectOpened(event?: object) {
+  log(`Project Opened: ${(event as ProjectEvent).name}`);
 }
 
 /**
  * callback function for project close event
  * console project name closed
  */
-async function projectClosed(event: ProjectClosedEvent) {
-  log(`Project Closed: ${event.name}`);
+async function projectClosed(event?: object) {
+  log(`Project Closed: ${(event as ProjectClosedEvent).name}`);
   clearProjectItemOptions();
 }
 
@@ -74,25 +74,27 @@ async function projectClosed(event: ProjectClosedEvent) {
  * callback function for sequence activated event
  * add sequence close event listener and update active seq name
  */
-async function onSequenceActivated(event: SequenceEvent) {
+async function onSequenceActivated(event?: object) {
   // add close event listener for the current active sequence
   const project = await getActiveProject();
   const seq = await getActiveSequence(project);
-  ppro.EventManager.addEventListener(
-    seq,
-    ppro.Constants.SequenceEvent.CLOSED,
-    sequenceClosed,
-    false
-  );
+  if (seq) {
+    ppro.EventManager.addEventListener(
+      seq,
+      ppro.Constants.SequenceEvent.CLOSED,
+      sequenceClosed,
+      false
+    );
+  }
   // update active sequence name
-  document.getElementById("active-sequence-name").innerText = event.name;
+  document.getElementById("active-sequence-name")!.innerText = (event as SequenceEvent).name;
 }
 
 /**
  * callback function for project activated event
  * add project close event listener and update active project name
  */
-async function onProjectActivated(event: ProjectEvent) {
+async function onProjectActivated(event?: object) {
   // refresh current projectItem options
   await refreshProjectItemOptions();
   ppro.EventManager.addGlobalEventListener(
@@ -100,7 +102,7 @@ async function onProjectActivated(event: ProjectEvent) {
     projectClosed
   );
   // update active project name
-  document.getElementById("active-project-name").innerText = event.name;
+  document.getElementById("active-project-name")!.innerText = (event as ProjectEvent).name;
 }
 
 /**
@@ -115,10 +117,13 @@ async function onProjectDirty(/* event: ProjectEvent */) {
  * Callback function for sequence trackItem selection change event
  * Log selected trackItem's name in console
  */
-async function onSequenceSelectionChange(event: SequenceEvent) {
-  console.log(`Selection for ${event.name} changed`);
+async function onSequenceSelectionChange(event?: object) {
+  console.log(`Selection for ${(event as SequenceEvent).name} changed`);
   const project = await getActiveProject();
   const sequence = await getActiveSequence(project);
+  if (!sequence) {
+    return;
+  }
   const selection = await sequence.getSelection();
   const trackItems = await selection.getTrackItems();
   trackItems.forEach(async (item: VideoClipTrackItem | AudioClipTrackItem) => {
@@ -135,9 +140,10 @@ type RenderCompleteEvent = {
  * Callback function for encoder complete event
  * Log encoder complete in console when AME job complete
  */
-async function onEncoderComplete(event: RenderCompleteEvent) {
-  console.log(`Encoder process complete: ${event.outputFiles.length} files exported`);
-  event.outputFiles.forEach((file: string) => {
+async function onEncoderComplete(event?: object) {
+  const e = event as RenderCompleteEvent;
+  console.log(`Encoder process complete: ${e.outputFiles.length} files exported`);
+  e.outputFiles.forEach((file: string) => {
     console.log(`- ${file}`);
   });
 }
@@ -150,8 +156,8 @@ type RenderProgressEvent = {
  * Callback function for encoder cancel event
  * Log encoder in progress in console when AME job is in progress
  */
-async function onEncoderProgress(event: RenderProgressEvent) {
-  console.log(`Encoder in progress: ${event.progress * 100}%`);
+async function onEncoderProgress(event?: object) {
+  console.log(`Encoder in progress: ${(event as RenderProgressEvent).progress * 100}%`);
 }
 
 /**
@@ -209,11 +215,11 @@ export async function addProjSeqListeners() {
   // intialize active project and active sequence name, if any
   const project = await getActiveProject();
   if (project) {
-    document.getElementById("active-project-name").innerText = project.name;
+    document.getElementById("active-project-name")!.innerText = project.name;
   }
   const sequence = await getActiveSequence(project);
   if (sequence) {
-    document.getElementById("active-sequence-name").innerText = sequence.name;
+    document.getElementById("active-sequence-name")!.innerText = sequence.name;
   }
 
   // load projectItems for source monitor

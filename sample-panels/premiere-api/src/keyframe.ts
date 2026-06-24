@@ -24,8 +24,8 @@ import { log } from "./utils";
 
 //Gets the componenetParam
 export async function getComponentParam() {
-  let componentParam: ComponentParam;
-  let component: Component;
+  let componentParam!: ComponentParam;
+  let component!: Component;
   const proj = await ppro.Project.getActiveProject();
   if (!proj) {
     log("No active project", "red");
@@ -74,7 +74,7 @@ export async function changeTimeVarying(
   project: Project,
   value: boolean
 ) {
-  let success: boolean;
+  let success!: boolean;
   try {
     project.lockedAccess(() => {
       const setTimeVaryingAction =
@@ -92,7 +92,16 @@ export async function changeTimeVarying(
 
 //Sets the value of the component parameter stream.
 export async function setValue() {
-  const { componentParam, project } = await getComponentParam();
+  const result = await getComponentParam();
+<<<<<<< HEAD
+  if (!result) {
+    return;
+  }
+  
+=======
+  if (!result) return;
+>>>>>>> origin/user/bbb/claude_fixes_ts
+  const { componentParam, project } = result;
   const keyframe = componentParam.createKeyframe(300);
 
   let success = await changeTimeVarying(componentParam, project, false);
@@ -120,7 +129,9 @@ export async function setValue() {
 
 //Gets the value of the component parameter stream.
 export async function getStartValue() {
-  const { componentParam, project } = await getComponentParam();
+  const result = await getComponentParam();
+  if (!result) return;
+  const { componentParam, project } = result;
 
   const success = await changeTimeVarying(componentParam, project, false);
 
@@ -134,7 +145,9 @@ export async function getStartValue() {
 
 //Adds a keyframe to the component parameter stream.
 export async function addKeyframe() {
-  const { componentParam, project } = await getComponentParam();
+  const result = await getComponentParam();
+  if (!result) return;
+  const { componentParam, project } = result;
 
   let success = await changeTimeVarying(componentParam, project, true);
   try {
@@ -161,15 +174,19 @@ export async function addKeyframe() {
 
 //Gets all the keyframes of componentParam stream.
 export async function getKeyframes() {
-  const { componentParam } = await getComponentParam();
+  const result = await getComponentParam();
+  if (!result) return;
+  const { componentParam } = result;
   return componentParam.getKeyframeListAsTickTimes();
 }
 
 //Gets all the keyframes of a componentParam at specific time.
 export async function getKeyframe() {
-  const { componentParam } = await getComponentParam();
+  const result = await getComponentParam();
+  if (!result) return;
+  const { componentParam } = result;
   try {
-    const keyframePtr = await componentParam.getKeyframePtr(
+    const keyframePtr = componentParam.getKeyframePtr(
       ppro.TickTime.createWithSeconds(0)
     );
     return keyframePtr;
@@ -200,7 +217,9 @@ export async function getKeyframe() {
 
 // 8 kfInterpMode_TimeTransitionEnd
 export async function setInterpolation() {
-  const { componentParam, project } = await getComponentParam();
+  const result = await getComponentParam();
+  if (!result) return;
+  const { componentParam, project } = result;
 
   let success = await changeTimeVarying(componentParam, project, true);
   try {

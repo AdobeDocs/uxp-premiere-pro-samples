@@ -25,7 +25,7 @@ export async function importFiles(project: Project, filePaths: string[]) {
   return await project.importFiles(
     filePaths,
     true, // suppressUI
-    null, // Project bin unset, should import it to project root
+    undefined, // Project bin unset, should import it to project root
     false // importAsNumberedStills
   );
 }

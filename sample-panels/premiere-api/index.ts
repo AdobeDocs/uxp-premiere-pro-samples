@@ -359,7 +359,8 @@ entrypoints.setup({
           case "toggle-checked":
             // "this" refers to the (UxpPanelInfo) panel itself, allowing
             // access the panel's menu items and other properties.
-            this.menuItems.getItem(id).checked = !this.menuItems.getItem(id).checked;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (this.menuItems as any).getItem(id).checked = !(this.menuItems as any).getItem(id).checked;
             break;
 
           case "submenu-item1":
@@ -654,6 +655,7 @@ async function getActiveSequenceClicked() {
 
 async function getProjectFromIdClicked() {
   const baseProject = await getProject();
+  if (!baseProject) return;
   const projectId = baseProject.guid;
 
   const project = await getProjectFromId(projectId);
@@ -680,7 +682,7 @@ async function getAllSequencesClicked() {
   const project = await getProject();
   if (!project) return;
 
-  const sequences: Array<Sequence> = await getAllSequences(project);
+  const sequences: Array<Sequence> = (await getAllSequences(project)) ?? [];
   if (sequences.length === 0) {
     log("No sequences found.", "red");
   } else {
@@ -695,7 +697,7 @@ async function openSequenceClicked() {
   const project = await getProject();
   if (!project) return;
 
-  const sequences = await getAllSequences(project);
+  const sequences = (await getAllSequences(project)) ?? [];
   if (sequences.length === 0) {
     log("No sequences found.", "red");
     return;
@@ -707,13 +709,13 @@ async function openSequenceClicked() {
     );
     return;
   }
-  const activeSequence: Sequence = await getActiveSequence(project);
+  const activeSequence: Sequence | undefined = await getActiveSequence(project);
   if (!activeSequence) {
     log(`Failed to find active sequence`, "red");
     return;
   }
 
-  const proposedSequence: Sequence = sequences.find(
+  const proposedSequence: Sequence | undefined = sequences.find(
     (seq: Sequence) => seq.name != activeSequence.name
   );
 
@@ -734,7 +736,7 @@ async function openSequenceClicked() {
   log(
     newActiveSequence && proposedSequence.name === newActiveSequence.name
       ? `Sequence ${newActiveSequence.name} opened`
-      : `Failed to open ${newActiveSequence.name}`
+      : `Failed to open ${newActiveSequence?.name ?? proposedSequence.name}`
   );
 }
 
@@ -780,7 +782,7 @@ async function getSupportedGraphicsWhiteLuminancesClicked() {
   if (!project) return;
 
   const supportedColors = await getSupportedGraphicsWhiteLuminances(project);
-  if (supportedColors.length === 0) {
+  if (!supportedColors || supportedColors.length === 0) {
     log("No supported colors found.", "red");
     return;
   }
@@ -895,8 +897,8 @@ async function getSequenceClicked() {
   if (!project) return;
 
   //Finding the last sequence id
-  let sequenceGuid: Guid;
-  const sequences = await getAllSequences(project);
+  let sequenceGuid: Guid | undefined;
+  const sequences = (await getAllSequences(project)) ?? [];
   sequences.forEach((sequence: Sequence) => {
     sequenceGuid = sequence.guid;
   });
@@ -921,8 +923,8 @@ async function setActiveSequenceClicked() {
   if (!project) return;
 
   //Finding the last sequence id
-  let proposedSequence;
-  const sequences = await getAllSequences(project);
+  let proposedSequence: Sequence | undefined;
+  const sequences = (await getAllSequences(project)) ?? [];
   sequences.forEach((sequence) => {
     proposedSequence = sequence;
   });
@@ -977,7 +979,7 @@ async function getCaptionTrackCountClicked() {
   const sequence = await project.getActiveSequence();
   const captionTrackCount = await getCaptionTrackCount(sequence);
   log(
-    captionTrackCount > 0
+    captionTrackCount != null && captionTrackCount > 0
       ? `Number of caption tracks found: ${captionTrackCount}`
       : `No caption tracks found`
   );
@@ -1002,6 +1004,10 @@ async function getSequenceSelectionClicked() {
 
   const sequence = await project.getActiveSequence();
   const trackItemSelection = await getSequenceSelection(sequence);
+  if (!trackItemSelection) {
+    log("No sequence selection found", "red");
+    return;
+  }
   const trackItems = await trackItemSelection.getTrackItems();
   if (!trackItems.length) {
     log("No track items selected", "red");
@@ -1114,8 +1120,10 @@ async function removeSelectedItemClicked() {
 
 async function trimSelectedItemClicked() {
   const project = await getProject();
-  const sequence = await getActiveSequence(project);
   if (!project) return;
+
+  const sequence = await getActiveSequence(project);
+  if (!sequence) return;
 
   const success = await trimSelectedItem(project, sequence);
   log(
@@ -1169,6 +1177,7 @@ async function renameFirstSelectedTrackItemClicked() {
   const sequence = await getActiveSequence(project);
   if (!sequence) {
     log("No sequences found");
+    return;
   }
   const success = await renameFirstSelectedTrackItem(project, sequence);
   log(
@@ -2315,6 +2324,11 @@ async function importSequencesClicked() {
   log(`Please open the project which you'd to import all its sequences`);
   // let user open the project containing sequences they'd like to import
   const newProject = await openProject();
+
+  if (!newProject) {
+    log(`Failed to open project for import`, "red");
+    return;
+  }
 
   // if no sequence exist, return and alert user
   const sequences: Array<Sequence> = await newProject.getSequences();
