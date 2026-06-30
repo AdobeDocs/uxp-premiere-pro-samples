@@ -16,11 +16,14 @@ import type {
   premierepro,
   Application,
   AudioClipTrackItem,
+  AudioTrack,
   OperationCompleteEvent,
   ProjectClosedEvent,
   ProjectEvent,
   ProjectItem,
   VideoClipTrackItem,
+  VideoTrack,
+  TickTime,
 } from "@adobe/premierepro";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const ppro = require("premierepro") as premierepro;
@@ -32,6 +35,90 @@ import {
   clearProjectItemOptions,
   refreshProjectItemOptions,
 } from "./sourceMonitor";
+
+/**
+ * Fired on a {@link VideoTrack} or {@link AudioTrack} whenever any property
+ * of the track changes in a way that requires the UI to update, including
+ * everything that fires `TRACK_CHANGED`/`LOCK_CHANGED`, plus purely visual or
+ * metadata changes, e.g.:
+ *
+ * - A clip's **display label, color, or name** changes without moving
+ * - **Preview renders** for the track are invalidated (e.g. after media reconnect).
+ *
+ * `INFO_CHANGED` is the broadest of the three events; subscribe to it when
+ * you need to react to any track change and don't need to distinguish the cause.
+ *
+ * `start` and `end` indicate the portion of the sequence timeline that was
+ * affected:
+ * - For clip operations, they bound the clip(s) that changed.
+ * - For whole-track changes (lock, mute, effects), they span the entire sequence.
+ */
+interface TrackInfoChangedEvent {
+  readonly end: TickTime;
+  readonly start: TickTime;
+  readonly track: VideoTrack | AudioTrack;
+}
+
+/**
+ * Fired on a {@link VideoTrack} or {@link AudioTrack} specifically when the
+ * track's **lock state** is toggled:
+ *
+ * - User clicks the **lock icon** in the track header to lock a track.
+ * - User clicks again to **unlock** the track.
+ * - Undo/redo of a lock operation.
+ *
+ * Locking a track prevents any edits to its clips. Unlocking re-enables editing.
+ *
+ * `LOCK_CHANGED` **always fires alongside `INFO_CHANGED`**; both events are
+ * emitted for the same lock toggle. Subscribe to `LOCK_CHANGED` when you need
+ * to react specifically to lock state (e.g. to disable edit controls)
+ * without being triggered by every other track change.
+ */
+interface TrackLockChangedEvent {
+  readonly track: VideoTrack | AudioTrack;
+}
+
+/**
+ * Fired on a {@link VideoTrack} or {@link AudioTrack} when the **structural
+ * content** of the track changes. This event fires for changes like:
+ *
+ * - A clip is **added** to the track (drag from Project panel, paste, overwrite edit)
+ * - A clip is **removed** from the track (delete, lift, extract)
+ * - A clip's **position or duration** changes (trim, ripple trim, slip, slide, move)
+ * - An **effect** is added, removed, or its parameters change on the track
+ * - The track's **audio channel matrix** changes (e.g. channel assignment in Audio Track Mixer)
+ * - The track is **muted or unmuted**
+ *
+ * `TRACK_CHANGED` **always fires alongside `INFO_CHANGED`** for the same
+ * operation. If you are already listening to `INFO_CHANGED`, you do not need
+ * to additionally listen to `TRACK_CHANGED` unless you specifically need the
+ * `changes` or time-range fields to scope your work.
+ *
+ * `start` and `end` indicate the portion of the sequence timeline that was
+ * affected:
+ * - For clip operations, they bound the clip(s) that changed.
+ * - For whole-track changes (mute, effects), they span the entire sequence.
+ */
+interface TrackChangedEvent {
+  readonly end: TickTime;
+  readonly start: TickTime;
+  readonly track: VideoTrack | AudioTrack;
+}
+
+function onTrackInfoChanged(event?: object) {
+  const e = event as TrackInfoChangedEvent;
+  console.log("Track info changed", e);
+}
+
+function onTrackLockChanged(event?: object) {
+  const e = event as TrackLockChangedEvent;
+  console.log("Track lock changed", e);
+}
+
+function onTrackChanged(event?: object) {
+  const e = event as TrackChangedEvent;
+  console.log("Track changed", e);
+}
 
 interface SequenceEvent {
   readonly currentTarget: Application;
@@ -84,6 +171,58 @@ async function onSequenceActivated(event?: object) {
       onSequenceClosed,
       false
     );
+
+    const videoTrackCount = await sequence.getVideoTrackCount();
+    for (let i = 0; i < videoTrackCount; i++) {
+      const videoTrack = await sequence.getVideoTrack(i);
+
+      ppro.EventManager.addEventListener(
+        videoTrack,
+        // @ts-expect-error - EventManager typing is incomplete for VideoTrack
+        ppro.Constants.VideoTrackEvent.INFO_CHANGED,
+        onTrackInfoChanged
+      );
+
+      ppro.EventManager.addEventListener(
+        videoTrack,
+        // @ts-expect-error - EventManager typing is incomplete for VideoTrack
+        ppro.Constants.VideoTrackEvent.LOCK_CHANGED,
+        onTrackLockChanged
+      );
+
+      ppro.EventManager.addEventListener(
+        videoTrack,
+        // @ts-expect-error - EventManager typing is incomplete for VideoTrack
+        ppro.Constants.VideoTrackEvent.TRACK_CHANGED,
+        onTrackChanged
+      );
+    }
+
+    const audioTrackCount = await sequence.getAudioTrackCount();
+    for (let i = 0; i < audioTrackCount; i++) {
+      const audioTrack = await sequence.getAudioTrack(i);
+
+      ppro.EventManager.addEventListener(
+        audioTrack,
+        // @ts-expect-error - EventManager typing is incomplete for AudioTrack
+        ppro.Constants.AudioTrackEvent.INFO_CHANGED,
+        onTrackInfoChanged
+      );
+
+      ppro.EventManager.addEventListener(
+        audioTrack,
+        // @ts-expect-error - EventManager typing is incomplete for AudioTrack
+        ppro.Constants.AudioTrackEvent.LOCK_CHANGED,
+        onTrackLockChanged
+      );
+
+      ppro.EventManager.addEventListener(
+        audioTrack,
+        // @ts-expect-error - EventManager typing is incomplete for AudioTrack
+        ppro.Constants.AudioTrackEvent.TRACK_CHANGED,
+        onTrackChanged
+      );
+    }
   }
 
   // update active sequence name
