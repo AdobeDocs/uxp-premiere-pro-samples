@@ -33,11 +33,11 @@ import {
   refreshProjectItemOptions,
 } from "./sourceMonitor";
 
-type SequenceEvent = {
-  currentTarget: Application;
-  id: string;
-  name: string;
-  target: Application;
+interface SequenceEvent {
+  readonly currentTarget: Application;
+  readonly id: string;
+  readonly name: string;
+  readonly target: Application;
 }
 
 /**
