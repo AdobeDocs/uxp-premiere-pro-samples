@@ -425,6 +425,16 @@ export function addEncoderListeners() {
 }
 
 /**
+ * Callback function for clip extend reached event. This fires during a trim
+ * operation when a clip reaches the boundary of its source media (no more
+ * frames to extend into). This event is only fired once at the limit, not on
+ * every frame held there.
+ */
+function onClipExtendReached(event?: object) {
+  console.log("Clip extend reached", event as OperationCompleteEvent);
+}
+
+/**
  * Callback function for effect drop event. This fires when dropping an
  * effect from the Effects panel onto a track item.
  */
@@ -438,6 +448,51 @@ export function onEffectDropped(event?: object) {
  */
 function onEffectDraggedOver(event?: object) {
   console.log("Effect dragged over", event as OperationCompleteEvent);
+}
+
+/**
+ * Callback function for export media complete event. This fires when an
+ * in-app export operation completes; exporting media via AME is instead
+ * handled by the EncoderManager event listeners.
+ * 
+ * Currently this only fires on successful exports.
+ */
+function onExportMediaComplete(event?: object) {
+  console.log("Export media complete", event as OperationCompleteEvent);
+}
+
+/**
+ * Callback function for generative extend complete event. Fires when a
+ * Generative Extend (AI fill) background job completes.
+ * 
+ * Check `event.state` for success, cancellation, or failure. For example:
+ * ```
+ * if (event.state === ppro.Constants.OperationCompleteState.SUCCESS) {
+ *   console.log("Generative extend successful");
+ * } else {
+ *   console.log("Generative extend failed");
+ * }
+ * ```
+ */
+function onGenerativeExtendComplete(event?: object) {
+  console.log("Generative extend complete", event as OperationCompleteEvent);
+}
+
+/**
+ * Callback function for import media complete event. This fires when an
+ * import media operation completes.
+ * 
+ * Check `event.state` for success, cancellation, or failure. For example:
+ * ```
+ * if (event.state === ppro.Constants.OperationCompleteState.SUCCESS) {
+ *   console.log("Import media successful");
+ * } else {
+ *   console.log("Import media failed");
+ * }
+ * ```
+ */
+function onImportMediaComplete(event?: object) {
+  console.log("Import media complete", event as OperationCompleteEvent);
 }
 
 /**
@@ -566,12 +621,28 @@ export async function addProjSeqListeners() {
 
   // add operation complete event listeners
   ppro.EventManager.addGlobalEventListener(
+    ppro.Constants.OperationCompleteEvent.CLIP_EXTEND_REACHED,
+    onClipExtendReached
+  );
+  ppro.EventManager.addGlobalEventListener(
     ppro.Constants.OperationCompleteEvent.EFFECT_DRAG_OVER,
     onEffectDraggedOver
   );
   ppro.EventManager.addGlobalEventListener(
     ppro.Constants.OperationCompleteEvent.EFFECT_DROP_COMPLETE,
     onEffectDropped
+  );
+  ppro.EventManager.addGlobalEventListener(
+    ppro.Constants.OperationCompleteEvent.EXPORT_MEDIA_COMPLETE,
+    onExportMediaComplete
+  );
+  ppro.EventManager.addGlobalEventListener(
+    ppro.Constants.OperationCompleteEvent.GENERATIVE_EXTEND_COMPLETE,
+    onGenerativeExtendComplete
+  );
+  ppro.EventManager.addGlobalEventListener(
+    ppro.Constants.OperationCompleteEvent.IMPORT_MEDIA_COMPLETE,
+    onImportMediaComplete
   );
 
   // add snap event listeners
