@@ -216,6 +216,8 @@ import {
   exportAsOpenTimelineIO,
 } from "./src/projectConverter";
 
+import { logHostBackgroundColor, logHostInfo } from "./src/uxpHost";
+
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const ppro = require("premierepro") as premierepro;
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -380,6 +382,12 @@ entrypoints.setup({
     },
   },
 });
+
+/* 26.5.0 button events */
+
+async function logHostBackgroundColorClicked() {
+  await logHostBackgroundColor();
+}
 
 /* 26.3.0 button events */
 
@@ -2666,7 +2674,16 @@ async function exportAsOpenTimelineIOClicked() {
   );
 }
 
+/* UXP Host Environment button events */
+
+async function logUXPHostInfoClicked() {
+  await logHostInfo();
+}
+
 window.addEventListener("load", async () => {
+  /* 26.5.0 button events registering */
+  registerClick("log-host-background-color", logHostBackgroundColorClicked);
+
   /* 26.3.0 button events registering */
   registerClick("set-audio-track-name", setAudioTrackNameClicked);
   registerClick("set-caption-track-name", setCaptionTrackNameClicked);
@@ -2888,6 +2905,9 @@ window.addEventListener("load", async () => {
   // ProjectConverter controls
   registerClick("export-fcpxml", exportAsFinalCutProXMLClicked);
   registerClick("export-otio", exportAsOpenTimelineIOClicked);
+
+  // UXP Host Environment
+  registerClick("log-uxp-host-info", logUXPHostInfoClicked);
 
   document
     .querySelector(".clear-btn")!
