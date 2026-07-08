@@ -32,6 +32,8 @@ import {
   isProjectFile,
 } from "./src/project";
 
+import { purgeMediaCache } from "./src/mediaManager";
+
 import {
   getSequence,
   setActiveSequence,
@@ -387,6 +389,17 @@ entrypoints.setup({
 
 async function logHostBackgroundColorClicked() {
   await logHostBackgroundColor();
+}
+
+// MediaManager
+
+async function purgeMediaCacheClicked() {
+  const success = await purgeMediaCache();
+  if (success) {
+    log("Successfully purged media cache");
+  } else {
+    log("Failed to purge media cache", "red");
+  }
 }
 
 /* 26.3.0 button events */
@@ -2682,6 +2695,7 @@ async function logUXPHostInfoClicked() {
 
 window.addEventListener("load", async () => {
   /* 26.5.0 button events registering */
+  registerClick("media-manager-purge-media-cache", purgeMediaCacheClicked);
   registerClick("log-host-background-color", logHostBackgroundColorClicked);
 
   /* 26.3.0 button events registering */
