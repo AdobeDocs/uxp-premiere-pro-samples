@@ -28,7 +28,7 @@ export default defineConfig({
     target: "esnext",
     rolldownOptions: {
       input: resolve(__dirname, "index.ts"),
-      external: ["premierepro", "uxp"],
+      external: ["os", "premierepro", "uxp"],
       output: {
         format: "cjs",
         preserveModules: true,
