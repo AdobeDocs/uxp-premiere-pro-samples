@@ -31,6 +31,39 @@ export async function logHostInfo() {
   await logHostBackgroundColor();
 }
 
+declare module "uxp" {
+  interface Host {
+    /**
+     * Gets the current background color of the Premiere host.
+     * 
+     * The color information is returned as a stringified JSON object with the following structure:
+     * ```json
+     * {
+     *   "type": "rgb",
+     *   "value": {
+     *     "alpha": number,
+     *     "red": number,
+     *     "green": number,
+     *     "blue": number
+     *   }
+     * }
+     * ```
+     *
+     * The `type` property is currently set to `"rgb"`.
+     *
+     * The `value` property is an object with the following properties:
+     * - `alpha`: The alpha value of the color (0-1).
+     * - `red`: The red value of the color (0-255).
+     * - `green`: The green value of the color (0-255).
+     * - `blue`: The blue value of the color (0-255).
+     *
+     * @since 26.5
+     * @returns The background color of the Premiere host.
+     */
+    getBackgroundColor(): Promise<string>;
+  }
+}
+
 /**
  * Logs the host background color to the console.
  * 
@@ -38,7 +71,6 @@ export async function logHostInfo() {
  */
 export async function logHostBackgroundColor() {
   if ("getBackgroundColor" in host) {
-    // @ts-expect-error - backgroundColor is host-specific to Premiere as of 26.5
     const backgroundColor = JSON.parse(await host.getBackgroundColor());
 
     // type: rgb
