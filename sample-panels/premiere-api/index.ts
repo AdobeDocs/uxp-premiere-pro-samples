@@ -217,6 +217,13 @@ import {
   exportAsFinalCutProXML,
   exportAsOpenTimelineIO,
 } from "./src/projectConverter";
+import {
+  getWorkAreaInPoint,
+  getWorkAreaOutPoint,
+  setWorkAreaInOutPoints,
+  setWorkAreaInPoint,
+  setWorkAreaOutPoint
+} from "./src/workAreaUtils";
 
 import { logHostBackgroundColor, logHostInfo } from "./src/uxpHost";
 
@@ -400,6 +407,88 @@ async function purgeMediaCacheClicked() {
   } else {
     log("Failed to purge media cache", "red");
   }
+}
+
+async function getWorkAreaInPointClicked() {
+  const project = await getProject();
+  if (!project) {
+    log(`Failed to get project`, "red");
+    return;
+  }
+
+  const sequence = await project.getActiveSequence();
+  if (!sequence) {
+    log(`Failed to get active sequence`, "red");
+    return;
+  }
+
+  const workAreaInPoint = getWorkAreaInPoint(sequence);
+  log(`Sequence work area in point: ${workAreaInPoint.seconds} seconds`);
+}
+
+async function getWorkAreaOutPointClicked() {
+  const project = await getProject();
+  if (!project) {
+    log(`Failed to get project`, "red");
+    return;
+  }
+
+  const sequence = await project.getActiveSequence();
+  if (!sequence) {
+    log(`Failed to get active sequence`, "red");
+    return;
+  }
+
+  const workAreaOutPoint = getWorkAreaOutPoint(sequence);
+  log(`Sequence work area out point: ${workAreaOutPoint.seconds} seconds`);
+}
+
+async function setWorkAreaInPointClicked() {
+  const project = await getProject();
+  if (!project) {
+    log(`Failed to get project`, "red");
+    return;
+  }
+
+  const sequence = await project.getActiveSequence();
+  if (!sequence) {
+    log(`Failed to get active sequence`, "red");
+    return;
+  }
+
+  setWorkAreaInPoint(sequence);
+}
+
+async function setWorkAreaOutPointClicked() {
+  const project = await getProject();
+  if (!project) {
+    log(`Failed to get project`, "red");
+    return;
+  }
+
+  const sequence = await project.getActiveSequence();
+  if (!sequence) {
+    log(`Failed to get active sequence`, "red");
+    return;
+  }
+
+  setWorkAreaOutPoint(sequence);
+}
+
+async function setWorkAreaInOutPointsClicked() {
+  const project = await getProject();
+  if (!project) {
+    log(`Failed to get project`, "red");
+    return;
+  }
+
+  const sequence = await project.getActiveSequence();
+  if (!sequence) {
+    log(`Failed to get active sequence`, "red");
+    return;
+  }
+
+  setWorkAreaInOutPoints(sequence);
 }
 
 /* 26.3.0 button events */
@@ -2697,6 +2786,11 @@ window.addEventListener("load", async () => {
   /* 26.5.0 button events registering */
   registerClick("media-manager-purge-media-cache", purgeMediaCacheClicked);
   registerClick("log-host-background-color", logHostBackgroundColorClicked);
+  registerClick("workareautils-get-work-area-in-point", getWorkAreaInPointClicked);
+  registerClick("workareautils-get-work-area-out-point", getWorkAreaOutPointClicked);
+  registerClick("workareautils-set-work-area-in-point", setWorkAreaInPointClicked);
+  registerClick("workareautils-set-work-area-out-point", setWorkAreaOutPointClicked);
+  registerClick("workareautils-set-work-area-in-out-points", setWorkAreaInOutPointsClicked);
 
   /* 26.3.0 button events registering */
   registerClick("set-audio-track-name", setAudioTrackNameClicked);
