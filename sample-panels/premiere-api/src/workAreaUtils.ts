@@ -24,7 +24,6 @@ const ppro = require("premierepro") as premierepro;
  * @returns The in point of the work area for the sequence.
  */
 export function getWorkAreaInPoint(sequence: Sequence): TickTime {
-  // @ts-expect-error - WorkAreaUtils is not available in the type definitions
   return ppro.WorkAreaUtils.getWorkAreaInPoint(sequence);
 }
 
@@ -34,7 +33,6 @@ export function getWorkAreaInPoint(sequence: Sequence): TickTime {
  * @returns The out point of the work area for the sequence.
  */
 export function getWorkAreaOutPoint(sequence: Sequence): TickTime {
-  // @ts-expect-error - WorkAreaUtils is not available in the type definitions
   return ppro.WorkAreaUtils.getWorkAreaOutPoint(sequence);
 }
 
@@ -48,7 +46,6 @@ export function setWorkAreaInPoint(
   sequence: Sequence,
   inPoint: TickTime = ppro.TickTime.TIME_ZERO
 ): boolean {
-  // @ts-expect-error - WorkAreaUtils is not available in the type definitions
   const success = ppro.WorkAreaUtils.setWorkAreaInPoint(sequence, inPoint);
   if (success) {
     log(`Sequence work area in point set to ${inPoint.seconds} seconds`, "green");
@@ -68,7 +65,6 @@ export function setWorkAreaOutPoint(
   sequence: Sequence,
   outPoint: TickTime = ppro.TickTime.TIME_MAX
 ): boolean {
-  // @ts-expect-error - WorkAreaUtils is not available in the type definitions
   const success = ppro.WorkAreaUtils.setWorkAreaOutPoint(sequence, outPoint);
   if (success) {
     log(`Sequence work area out point set to ${outPoint.seconds} seconds`, "green");
@@ -90,7 +86,6 @@ export function setWorkAreaInOutPoints(
   inPoint: TickTime = ppro.TickTime.TIME_ONE_SECOND,
   outPoint: TickTime = ppro.TickTime.createWithSeconds(10),
 ): boolean {
-  // @ts-expect-error - WorkAreaUtils is not available in the type definitions
   const success = ppro.WorkAreaUtils.setWorkAreaInOutPoints(sequence, inPoint, outPoint);
   if (success) {
     log(`Sequence work area in and out points set to ${inPoint.seconds} seconds and ${outPoint.seconds} seconds`, "green");
