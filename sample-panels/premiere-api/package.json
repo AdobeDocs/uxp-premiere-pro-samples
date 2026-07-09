@@ -9,8 +9,8 @@
   },
   "devDependencies": {
     "@adobe/cc-ext-uxp-types": "^7.3.1",
-    "@adobe/eslint-plugin-premierepro": "^26.5.0-beta.29",
-    "@adobe/premierepro": "^26.5.0-beta.29",
+    "@adobe/eslint-plugin-premierepro": "^26.5.0-beta.59",
+    "@adobe/premierepro": "^26.5.0-beta.59",
     "@eslint/js": "^9.39.4",
     "@types/node": "^22.10.2",
     "concurrently": "^9.2.1",
