@@ -626,8 +626,8 @@ export async function getMediaInfo(project: Project) {
       log("Failed to access media");
       return null;
     }
-    const start = await media.start;
-    const duration = await media.duration;
+    const start = media.getStart();
+    const duration = media.getDuration();
     return {
       name: clipProjectItem.name,
       start: start.seconds,
@@ -652,7 +652,7 @@ export async function setMediaStart(project: Project) {
       log("Failed to access media");
       return false;
     }
-    const duration = await media.duration;
+    const duration = media.getDuration();
     if (duration < ppro.TickTime.TIME_ONE_SECOND) {
       log("Media Duration is smaller than 1 second");
     }
