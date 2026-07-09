@@ -225,7 +225,7 @@ import {
   setWorkAreaOutPoint
 } from "./src/workAreaUtils";
 
-import { logHostBackgroundColor, logHostInfo } from "./src/uxpHost";
+import { logHostApplicationPath, logHostBackgroundColor, logHostInfo } from "./src/uxpHost";
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const ppro = require("premierepro") as premierepro;
@@ -394,10 +394,6 @@ entrypoints.setup({
 
 /* 26.5.0 button events */
 
-async function logHostBackgroundColorClicked() {
-  await logHostBackgroundColor();
-}
-
 // MediaManager
 
 async function purgeMediaCacheClicked() {
@@ -408,6 +404,18 @@ async function purgeMediaCacheClicked() {
     log("Failed to purge media cache", "red");
   }
 }
+
+// UXP Host
+
+async function logHostApplicationPathClicked() {
+  logHostApplicationPath();
+}
+
+async function logHostBackgroundColorClicked() {
+  await logHostBackgroundColor();
+}
+
+// WorkAreaUtils
 
 async function getWorkAreaInPointClicked() {
   const project = await getProject();
@@ -2785,6 +2793,7 @@ async function logUXPHostInfoClicked() {
 window.addEventListener("load", async () => {
   /* 26.5.0 button events registering */
   registerClick("media-manager-purge-media-cache", purgeMediaCacheClicked);
+  registerClick("log-host-application-path", logHostApplicationPathClicked);
   registerClick("log-host-background-color", logHostBackgroundColorClicked);
   registerClick("workareautils-get-work-area-in-point", getWorkAreaInPointClicked);
   registerClick("workareautils-get-work-area-out-point", getWorkAreaOutPointClicked);

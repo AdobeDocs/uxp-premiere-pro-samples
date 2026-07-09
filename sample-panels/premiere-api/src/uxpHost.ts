@@ -28,11 +28,20 @@ export async function logHostInfo() {
   log(`Plugin Version: v${versions.plugin}`);
   log(`UI Locale: ${host.uiLocale}`);
 
+  logHostApplicationPath();
   await logHostBackgroundColor();
 }
 
 declare module "uxp" {
   interface Host {
+    /**
+     * The absolute path to the current Premiere application on disk.
+     *
+     * @readonly
+     * @since 26.5
+     */
+    applicationPath: string;
+
     /**
      * Gets the current background color of the Premiere host.
      * 
@@ -61,6 +70,17 @@ declare module "uxp" {
      * @returns The background color of the Premiere host.
      */
     getBackgroundColor(): Promise<string>;
+  }
+}
+
+/**
+ * Logs the host application path to the console.
+ * 
+ * @since 26.5
+ */
+export function logHostApplicationPath() {
+  if ("applicationPath" in host) {
+    log(`Application Path: ${host.applicationPath}`);
   }
 }
 
