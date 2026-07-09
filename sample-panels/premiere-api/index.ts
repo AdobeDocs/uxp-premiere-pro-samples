@@ -394,16 +394,6 @@ entrypoints.setup({
 
 /* 26.5.0 button events */
 
-// UXP Host
-
-async function logHostApplicationPathClicked() {
-  logHostApplicationPath();
-}
-
-async function logHostBackgroundColorClicked() {
-  await logHostBackgroundColor();
-}
-
 // MediaManager
 
 async function purgeMediaCacheClicked() {
@@ -414,6 +404,18 @@ async function purgeMediaCacheClicked() {
     log("Failed to purge media cache", "red");
   }
 }
+
+// UXP Host
+
+async function logHostApplicationPathClicked() {
+  logHostApplicationPath();
+}
+
+async function logHostBackgroundColorClicked() {
+  await logHostBackgroundColor();
+}
+
+// WorkAreaUtils
 
 async function getWorkAreaInPointClicked() {
   const project = await getProject();
