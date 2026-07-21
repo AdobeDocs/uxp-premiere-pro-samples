@@ -14,6 +14,9 @@
 
 //module imports
 import { log, clearLog, registerClick } from "./src/utils";
+
+import { getManifestForFile } from "./src/c2pa";
+
 import {
   openProject,
   openInputProject,
@@ -393,6 +396,22 @@ entrypoints.setup({
 });
 
 /* 26.5.0 button events */
+
+// C2PAService
+
+function getC2paManifestClicked() {
+  const filePath = (document.getElementById("c2pa-service-get-manifest-path") as HTMLInputElement)?.value;
+  if (!filePath) {
+    log("No file path provided", "red");
+    return;
+  }
+
+  try {
+    getManifestForFile(filePath);
+  } catch (error) {
+    log(`Error getting C2PA manifest for file: ${error}`, "red");
+  }
+}
 
 // MediaManager
 
@@ -2792,6 +2811,7 @@ async function logUXPHostInfoClicked() {
 
 window.addEventListener("load", async () => {
   /* 26.5.0 button events registering */
+  registerClick("c2pa-service-get-manifest", getC2paManifestClicked);
   registerClick("media-manager-purge-media-cache", purgeMediaCacheClicked);
   registerClick("log-host-application-path", logHostApplicationPathClicked);
   registerClick("log-host-background-color", logHostBackgroundColorClicked);
