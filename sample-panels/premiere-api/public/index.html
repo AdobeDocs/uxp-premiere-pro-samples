@@ -47,7 +47,7 @@
       font-size: 1.1em;
     }
 
-    #ae-component-name, #sequence-preset-path {
+    #ae-component-name, #sequence-preset-path, #c2pa-service-get-manifest-path {
       height: 20px;
       border-radius: 0.5em;
       font-size: 1.1em;
@@ -123,6 +123,15 @@
     </div>
     <footer>
       <h3>&#x2728; New APIs Coming in 26.5 (Beta)</h3>
+      <div class="section">
+        <h4>C2PAService</h4>
+        <sp-button id="c2pa-service-get-manifest">Get Manifest</sp-button>
+        <input
+          type="text"
+          id="c2pa-service-get-manifest-path"
+          placeholder="path/to/media/file.mp4"
+        />
+      </div>
       <div class="section">
         <h4>MediaManager</h4>
         <sp-button id="media-manager-purge-media-cache">Purge Media Cache</sp-button>
