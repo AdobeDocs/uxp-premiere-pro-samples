@@ -68,6 +68,75 @@ export async function hasTranscript(project: Project): Promise<void> {
   }
 }
 
+/**
+ * Attempt to transcribe all selected (Clip) Project Items for the given `project`.
+ * 
+ * Only `ClipProjectItem`s which are _not_ themselves `Sequence`s can be
+ * processed here and will be skipped. Multiple selected clips may be queued
+ * before being transcribed. Larger clips may take longer to transcribe.
+ * 
+ * NOTE: Because large clips may take seconds to minutes to process, this
+ * function does not await on
+ * 
+ * Log messages are printed to the UI console to cover various scenarios and
+ * provide details as far as clip detection and transcription processing goes.
+ * 
+ * @param project The project to get the current selection from
+ * @returns A Promise which resolves after processing all
+ */
+export async function transcribeClipProjectItem(project: Project): Promise<PromiseSettledResult<void>[]> {
+  const projectItems = await getSelectedProjectItems(project);
+  if (!projectItems || projectItems.length === 0) {
+    log("Select at least one clip project item to transcribe.", "red");
+    return [];
+  }
+
+  let count = 0;
+  const promises = [];
+  for (const projectItem of projectItems) {
+    const clipProjectItem = ppro.ClipProjectItem.cast(projectItem);
+    if (!clipProjectItem) {
+      continue;
+    }
+
+    if (await clipProjectItem.isSequence()) {
+      log(`Clip "${clipProjectItem.name}" is a sequence and cannot be transcribed directly.`, "red");
+      continue;
+    }
+
+    if (ppro.Transcript.hasTranscript(clipProjectItem)) {
+      log(`Clip "${clipProjectItem.name}" already has a transcript available.`);
+    } else {
+      // Default to using the current language code preference
+      // Fire and forget since transcriptions may get queued if many clips are selected
+      const promise = ppro.Transcript.transcribeClipProjectItem(clipProjectItem, /* options */).then(
+        (success: boolean) => {
+          if (success) {
+            log(`Successfully transribed clip "${clipProjectItem.name}"`, "green");
+          } else {
+            log(`Failed to transcribe clip "${clipProjectItem.name}"`, "red");
+          }
+        },
+        (err: string | Error) => {
+          log(`Failed to transcribe clip "${clipProjectItem.name}": ${err}`, "red");
+
+          throw err;
+        }
+      );
+      promises.push(promise);
+      count += 1;
+    }
+  }
+
+  if (count > 0) {
+    log(`Transcription started for ${count} clip(s).`, "green");
+  } else {
+    log(`Transcription skipped; all selected Project Items are either transcribed or are not Clips`, "red");
+  }
+
+  return Promise.allSettled(promises);
+}
+
 export async function exportTranscript(project: Project) {
   try {
     const clipProjectItem = await getClipProjectItem(project, true);
