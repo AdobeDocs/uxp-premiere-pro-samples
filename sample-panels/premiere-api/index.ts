@@ -214,7 +214,12 @@ import {
   launchEncoder,
   startBatchEncode,
 } from "./src/encoderManager";
-import { exportTranscript, hasTranscript, importTranscript } from "./src/transcript";
+import {
+  exportTranscript,
+  hasTranscript,
+  transcribeClipProjectItem,
+  importTranscript,
+} from "./src/transcript";
 import {
   exportAAF,
   exportAsFinalCutProXML,
@@ -422,6 +427,18 @@ async function purgeMediaCacheClicked() {
   } else {
     log("Failed to purge media cache", "red");
   }
+}
+
+// Transcript
+
+async function transcribeClipProjectItemClicked() {
+  const project = await getProject();
+  if (!project) {
+    log(`Failed to get project`, "red");
+    return;
+  }
+
+  transcribeClipProjectItem(project);
 }
 
 // UXP Host
@@ -2813,6 +2830,7 @@ window.addEventListener("load", async () => {
   /* 26.5.0 button events registering */
   registerClick("c2pa-service-get-manifest", getC2paManifestClicked);
   registerClick("media-manager-purge-media-cache", purgeMediaCacheClicked);
+  registerClick("transcript-transcribe-clipprojectitem", transcribeClipProjectItemClicked);
   registerClick("log-host-application-path", logHostApplicationPathClicked);
   registerClick("log-host-background-color", logHostBackgroundColorClicked);
   registerClick("workareautils-get-work-area-in-point", getWorkAreaInPointClicked);
