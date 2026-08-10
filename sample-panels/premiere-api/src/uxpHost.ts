@@ -21,10 +21,11 @@ import { log } from "./utils";
 export async function logHostInfo() {
   log("=== Host Environment ===");
 
+  logFullHostNameAndVersion();
+
   // Available as of Premiere 25.6
   log(`OS: ${os.platform()} ${os.release()}`);
-  log(`Application: ${host.name} v${host.version}`);
-  log(`UXP Runtime: v${versions.uxp}`);
+  log(`UXP Runtime: ${versions.uxp}`);
   log(`Plugin Version: v${versions.plugin}`);
   log(`UI Locale: ${host.uiLocale}`);
 
@@ -40,7 +41,7 @@ declare module "uxp" {
      * @readonly
      * @since 26.5
      */
-    applicationPath: string;
+    readonly applicationPath: string;
 
     /**
      * Gets the current background color of the Premiere host.
@@ -70,7 +71,34 @@ declare module "uxp" {
      * @returns The background color of the Premiere host.
      */
     getBackgroundColor(): Promise<string>;
+
+    /**
+     * The current Premiere build number.
+     *
+     * @readonly
+     * @since 27.0
+     */
+    readonly buildNumber: string;
   }
+}
+
+/**
+ * Prints the application name and full version details, e.g.:
+ *
+ *   Application: premierepro v26.5.0
+ *
+ * Versions of Premiere which expose a build number property will print the
+ * build number as well:
+ *
+ *   Application: premierepro v27.0.0 Build 1
+ */
+export function logFullHostNameAndVersion() {
+  let version = `v${host.version}`;
+  if ("buildNumber" in host) {
+    version = `${version} Build ${host.buildNumber}`;
+  }
+
+  log(`Application: ${host.name} ${version}`);
 }
 
 /**
