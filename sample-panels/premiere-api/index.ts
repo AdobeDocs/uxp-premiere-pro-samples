@@ -233,7 +233,12 @@ import {
   setWorkAreaOutPoint
 } from "./src/workAreaUtils";
 
-import { logHostApplicationPath, logHostBackgroundColor, logHostInfo } from "./src/uxpHost";
+import {
+  logFullHostNameAndVersion,
+  logHostApplicationPath,
+  logHostBackgroundColor,
+  logHostInfo,
+} from "./src/uxpHost";
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const ppro = require("premierepro") as premierepro;
@@ -399,6 +404,14 @@ entrypoints.setup({
     },
   },
 });
+
+/* 27.0.0 button events */
+
+// UXP Host
+
+function logFullHostNameAndVersionClicked() {
+  logFullHostNameAndVersion();
+}
 
 /* 26.5.0 button events */
 
@@ -2827,6 +2840,9 @@ async function logUXPHostInfoClicked() {
 }
 
 window.addEventListener("load", async () => {
+  /* 27.0.0 button events registering */
+  registerClick("log-full-host-name-and-version", logFullHostNameAndVersionClicked);
+
   /* 26.5.0 button events registering */
   registerClick("c2pa-service-get-manifest", getC2paManifestClicked);
   registerClick("media-manager-purge-media-cache", purgeMediaCacheClicked);
