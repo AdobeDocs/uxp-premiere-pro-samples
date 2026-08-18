@@ -799,14 +799,10 @@ export async function getOriginatingProjectPath(project: Project): Promise<strin
   }
 }
 
-const mediaTypeToString = (mediaType: number): string => {
-  switch (mediaType) {
-    case ppro.Constants.MediaType.VIDEO:
-      return "VIDEO";
-    case ppro.Constants.MediaType.AUDIO:
-      return "AUDIO";
-  }
-};
+const MEDIA_TYPE_TO_STRING_MAP = {
+  [ppro.Constants.MediaType.VIDEO]: "VIDEO",
+  [ppro.Constants.MediaType.AUDIO]: "AUDIO",
+}
 
 /**
  * Gets the selected entries in the Project Panel and, for each ClipProjectItem,
@@ -831,7 +827,7 @@ export async function printSelectedProjectItemComponentChains(project: Project):
       for (const mediaType of [ppro.Constants.MediaType.VIDEO, ppro.Constants.MediaType.AUDIO]) {
         const componentChain = await clipProjectItem.getComponentChain(mediaType);
         if (componentChain) {
-          log(`${projectItem.name} has a component chain for ${mediaTypeToString(mediaType)}`);
+          log(`${projectItem.name} has a component chain for ${MEDIA_TYPE_TO_STRING_MAP[mediaType]}`);
         }
       }
     }
