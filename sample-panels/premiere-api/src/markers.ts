@@ -68,7 +68,7 @@ export async function createMarkerComment(project: Project) {
           "This is a comment marker"
         );
         compoundAction.addAction(addMarkerAction);
-      });
+      }, "Create Comment Marker");
     });
   } catch (err) {
     log(`Error: ${err}`, "red");
