@@ -12,11 +12,80 @@
  * written permission of Adobe.
  **************************************************************************/
 
-//module imports
-import { log, clearLog, registerClick } from "./src/utils";
+import type {
+  premierepro,
+  ProjectItem,
+  Guid,
+  Sequence,
+  VideoClipTrackItem,
+  AudioClipTrackItem,
+} from "@adobe/premierepro";
 
+import {
+  getPreferenceSetting,
+  setPreferenceSetting,
+} from "./src/appPreference";
 import { getManifestForFile } from "./src/c2pa";
-
+import {
+  getEffectsName,
+  addEffects,
+  addMultipleEffects,
+  removeEffects,
+  addVocalEnhancerEffect,
+} from "./src/effects";
+import {
+  encodeFile,
+  encodeFirstSelectedProjectItem,
+  toggleEmbeddedXMP,
+  toggleSidecarXMP,
+  launchEncoder,
+  startBatchEncode,
+} from "./src/encoderManager";
+import { addProjSeqListeners, addEncoderListeners } from "./src/eventManager";
+import {
+  exportSequenceFrame,
+  exportSequence,
+  getExportFileExtension,
+} from "./src/export";
+import {
+  importFiles,
+  importSequences,
+  importAeComponent,
+  importAllAeComponents,
+} from "./src/import";
+import {
+  setValue,
+  getStartValue,
+  addKeyframe,
+  getKeyframes,
+  getKeyframe,
+  setInterpolation,
+} from "./src/keyframe";
+import {
+  createMarkerComment,
+  createMarkerChapter,
+  createMarkerWeblink,
+  createMarkerFlashCuePoint,
+  moveMarker,
+  removeMarker,
+  getSequenceMarkerInfo,
+  setFirstSequenceMarkerColor,
+} from "./src/markers";
+import { purgeMediaCache } from "./src/mediaManager";
+import {
+  addPropertiesToMetadataSchema,
+  setProjectPanelMetadata,
+  setProjectMetadata,
+  setXMPMetadata,
+  getProjectPanelMetadata,
+  getProjectMetadata,
+  getXMPMetadata,
+  getProjectColumnsMetadata,
+} from "./src/metadata";
+import {
+  getActiveProduction,
+  getScratchDiskSettings,
+} from "./src/prProduction";
 import {
   openProject,
   openInputProject,
@@ -34,42 +103,11 @@ import {
   closeProject,
   isProjectFile,
 } from "./src/project";
-
-import { purgeMediaCache } from "./src/mediaManager";
-
 import {
-  getSequence,
-  setActiveSequence,
-  createSequence,
-  createSequenceFromMedia,
-  getCaptionTrackCount,
-  getVideoTrack,
-  getSequenceSelection,
-  setSequenceSelection,
-  createSubsequence,
-  trimSelectedItem,
-  addHandlesToTrackItem,
-  getVideoSettingsInfo,
-  setSequenceSettings,
-  setSequenceInOutPoint,
-  renameFirstSelectedTrackItem,
-  renameTrack,
-  getVideoFrameRate,
-  setVideoFrameRate,
-  closeSequence,
-  checkIsDoneAnalyzingForVideoEffects,
-} from "./src/sequence";
-
-import {
-  createMarkerComment,
-  createMarkerChapter,
-  createMarkerWeblink,
-  createMarkerFlashCuePoint,
-  moveMarker,
-  removeMarker,
-  getSequenceMarkerInfo,
-  setFirstSequenceMarkerColor,
-} from "./src/markers";
+  exportAAF,
+  exportAsFinalCutProXML,
+  exportAsOpenTimelineIO,
+} from "./src/projectConverter";
 import {
   getProjectItems,
   getSelectedProjectItems,
@@ -104,18 +142,46 @@ import {
   createSubClips,
   printSelectedProjectItemComponentChains,
 } from "./src/projectPanel";
-
 import {
-  addPropertiesToMetadataSchema,
-  setProjectPanelMetadata,
-  setProjectMetadata,
-  setXMPMetadata,
-  getProjectPanelMetadata,
-  getProjectMetadata,
-  getXMPMetadata,
-  getProjectColumnsMetadata,
-} from "./src/metadata";
-
+  getSequenceSampleProperty,
+  setSampleSequenceProperty,
+  clearSampleSequenceProperty,
+} from "./src/properties";
+import {
+  getSequence,
+  setActiveSequence,
+  createSequence,
+  createSequenceFromMedia,
+  getCaptionTrackCount,
+  getVideoTrack,
+  getSequenceSelection,
+  setSequenceSelection,
+  createSubsequence,
+  trimSelectedItem,
+  addHandlesToTrackItem,
+  getVideoSettingsInfo,
+  setSequenceSettings,
+  setSequenceInOutPoint,
+  renameFirstSelectedTrackItem,
+  renameTrack,
+  getVideoFrameRate,
+  setVideoFrameRate,
+  closeSequence,
+  checkIsDoneAnalyzingForVideoEffects,
+} from "./src/sequence";
+import {
+  overwriteTrackItem,
+  insertTrackItem,
+  insertMogrt,
+  cloneSelectedTrackItem,
+  removeSelectedTrackItems,
+} from "./src/sequenceEditor";
+import {
+  getScratchDiskSetting,
+  setScratchDiskSettings,
+  getIngestEnabled,
+  setIngestEnabled,
+} from "./src/settings";
 import {
   getProjectItemAtSourceMonitor,
   openFilePath,
@@ -126,94 +192,6 @@ import {
   closeClip,
   closeAllClips,
 } from "./src/sourceMonitor";
-
-import {
-  setValue,
-  getStartValue,
-  addKeyframe,
-  getKeyframes,
-  getKeyframe,
-  setInterpolation,
-} from "./src/keyframe";
-
-import {
-  getEffectsName,
-  addEffects,
-  addMultipleEffects,
-  removeEffects,
-  addVocalEnhancerEffect,
-} from "./src/effects";
-
-import {
-  getTransitionNames,
-  addTransitionStart,
-  addTransitionEnd,
-  removeTransitionStart,
-} from "./src/transition";
-
-import {
-  getSequenceSampleProperty,
-  setSampleSequenceProperty,
-  clearSampleSequenceProperty,
-} from "./src/properties";
-
-import {
-  getScratchDiskSetting,
-  setScratchDiskSettings,
-  getIngestEnabled,
-  setIngestEnabled,
-} from "./src/settings";
-
-import {
-  getActiveProduction,
-  getScratchDiskSettings,
-} from "./src/prProduction";
-
-import { addProjSeqListeners, addEncoderListeners } from "./src/eventManager";
-
-import {
-  exportSequenceFrame,
-  exportSequence,
-  getExportFileExtension,
-} from "./src/export";
-
-import {
-  importFiles,
-  importSequences,
-  importAeComponent,
-  importAllAeComponents,
-} from "./src/import";
-
-import {
-  getPreferenceSetting,
-  setPreferenceSetting,
-} from "./src/appPreference";
-
-import {
-  overwriteTrackItem,
-  insertTrackItem,
-  insertMogrt,
-  cloneSelectedTrackItem,
-  removeSelectedTrackItems,
-} from "./src/sequenceEditor";
-
-//global objects.
-import type {
-  premierepro,
-  ProjectItem,
-  Guid,
-  Sequence,
-  VideoClipTrackItem,
-  AudioClipTrackItem,
-} from "@adobe/premierepro";
-import {
-  encodeFile,
-  encodeFirstSelectedProjectItem,
-  toggleEmbeddedXMP,
-  toggleSidecarXMP,
-  launchEncoder,
-  startBatchEncode,
-} from "./src/encoderManager";
 import { logActiveSequenceTimecode, logTimecodeAsTickTime } from "./src/tickTime";
 import {
   exportTranscript,
@@ -222,10 +200,18 @@ import {
   importTranscript,
 } from "./src/transcript";
 import {
-  exportAAF,
-  exportAsFinalCutProXML,
-  exportAsOpenTimelineIO,
-} from "./src/projectConverter";
+  getTransitionNames,
+  addTransitionStart,
+  addTransitionEnd,
+  removeTransitionStart,
+} from "./src/transition";
+import { log, clearLog, registerClick } from "./src/utils";
+import {
+  logFullHostNameAndVersion,
+  logHostApplicationPath,
+  logHostBackgroundColor,
+  logHostInfo,
+} from "./src/uxpHost";
 import {
   getWorkAreaInPoint,
   getWorkAreaOutPoint,
@@ -233,13 +219,6 @@ import {
   setWorkAreaInPoint,
   setWorkAreaOutPoint
 } from "./src/workAreaUtils";
-
-import {
-  logFullHostNameAndVersion,
-  logHostApplicationPath,
-  logHostBackgroundColor,
-  logHostInfo,
-} from "./src/uxpHost";
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const ppro = require("premierepro") as premierepro;
