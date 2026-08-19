@@ -12,220 +12,206 @@
  * written permission of Adobe.
  **************************************************************************/
 
-//module imports
-import { log, clearLog, registerClick } from "./src/utils";
-
-import { getManifestForFile } from "./src/c2pa";
-
-import {
-  openProject,
-  openInputProject,
-  getActiveProject,
-  getActiveSequence,
-  getProjectFromId,
-  getInsertionBin,
-  getAllSequences,
-  openSequence,
-  pauseGrowing,
-  saveProject,
-  saveAsProject,
-  getSupportedGraphicsWhiteLuminances,
-  getCurrentGraphicsWhiteLuminance,
-  closeProject,
-  isProjectFile,
-} from "./src/project";
-
-import { purgeMediaCache } from "./src/mediaManager";
-
-import {
-  getSequence,
-  setActiveSequence,
-  createSequence,
-  createSequenceFromMedia,
-  getCaptionTrackCount,
-  getVideoTrack,
-  getSequenceSelection,
-  setSequenceSelection,
-  createSubsequence,
-  trimSelectedItem,
-  addHandlesToTrackItem,
-  getVideoSettingsInfo,
-  setSequenceSettings,
-  setSequenceInOutPoint,
-  renameFirstSelectedTrackItem,
-  renameTrack,
-  getVideoFrameRate,
-  setVideoFrameRate,
-  closeSequence,
-  checkIsDoneAnalyzingForVideoEffects,
-} from "./src/sequence";
-
-import {
-  createMarkerComment,
-  createMarkerChapter,
-  createMarkerWeblink,
-  createMarkerFlashCuePoint,
-  moveMarker,
-  removeMarker,
-  getSequenceMarkerInfo,
-  setFirstSequenceMarkerColor,
-} from "./src/markers";
-import {
-  getProjectItems,
-  getSelectedProjectItems,
-  getMediaFilePath,
-  createBin,
-  createSmartBin,
-  renameBin,
-  removeItem,
-  moveItem,
-  setInPoint,
-  setOutPoint,
-  setInOutPoint,
-  clearInOutPoint,
-  setScaleToFrameSize,
-  refreshMedia,
-  setFootageInterpretation,
-  setOverrideFrameRate,
-  setOverridePixelAspectRatio,
-  attachProxy,
-  changeMediaFilePath,
-  getProjectViewIds,
-  getProjectFromViewId,
-  getSelectedProjectItemsFromViewId,
-  renameFirstSelectedProjectItem,
-  getMediaInfo,
-  setMediaStart,
-  getFirstProjectItemId,
-  getFirstProjectItemType,
-  getFirstProjectItemColorLabel,
-  setFirstProjectItemColorLabel,
-  getOriginatingProjectPath,
-  createSubClips,
-  printSelectedProjectItemComponentChains,
-} from "./src/projectPanel";
-
-import {
-  addPropertiesToMetadataSchema,
-  setProjectPanelMetadata,
-  setProjectMetadata,
-  setXMPMetadata,
-  getProjectPanelMetadata,
-  getProjectMetadata,
-  getXMPMetadata,
-  getProjectColumnsMetadata,
-} from "./src/metadata";
-
-import {
-  getProjectItemAtSourceMonitor,
-  openFilePath,
-  openProjectItem,
-  play,
-  getPosition,
-  setPosition as setSourceMonitorPosition,
-  closeClip,
-  closeAllClips,
-} from "./src/sourceMonitor";
-
-import {
-  setValue,
-  getStartValue,
-  addKeyframe,
-  getKeyframes,
-  getKeyframe,
-  setInterpolation,
-} from "./src/keyframe";
-
-import {
-  getEffectsName,
-  addEffects,
-  addMultipleEffects,
-  removeEffects,
-  addVocalEnhancerEffect,
-} from "./src/effects";
-
-import {
-  getTransitionNames,
-  addTransitionStart,
-  addTransitionEnd,
-  removeTransitionStart,
-} from "./src/transition";
-
-import {
-  getSequenceSampleProperty,
-  setSampleSequenceProperty,
-  clearSampleSequenceProperty,
-} from "./src/properties";
-
-import {
-  getScratchDiskSetting,
-  setScratchDiskSettings,
-  getIngestEnabled,
-  setIngestEnabled,
-} from "./src/settings";
-
-import {
-  getActiveProduction,
-  getScratchDiskSettings,
-} from "./src/prProduction";
-
-import { addProjSeqListeners, addEncoderListeners } from "./src/eventManager";
-
-import {
-  exportSequenceFrame,
-  exportSequence,
-  getExportFileExtension,
-} from "./src/export";
-
-import {
-  importFiles,
-  importSequences,
-  importAeComponent,
-  importAllAeComponents,
-} from "./src/import";
+import type {
+  premierepro,
+  AudioClipTrackItem,
+  Guid,
+  ProjectItem,
+  Sequence,
+  VideoClipTrackItem,
+} from "@adobe/premierepro";
 
 import {
   getPreferenceSetting,
   setPreferenceSetting,
 } from "./src/appPreference";
-
+import { getManifestForFile } from "./src/c2pa";
 import {
-  overwriteTrackItem,
-  insertTrackItem,
-  insertMogrt,
-  cloneSelectedTrackItem,
-  removeSelectedTrackItems,
-} from "./src/sequenceEditor";
-
-//global objects.
-import type {
-  premierepro,
-  ProjectItem,
-  Guid,
-  Sequence,
-  VideoClipTrackItem,
-  AudioClipTrackItem,
-} from "@adobe/premierepro";
+  addEffects,
+  addMultipleEffects,
+  addVocalEnhancerEffect,
+  getEffectsName,
+  removeEffects,
+} from "./src/effects";
 import {
   encodeFile,
   encodeFirstSelectedProjectItem,
-  toggleEmbeddedXMP,
-  toggleSidecarXMP,
   launchEncoder,
   startBatchEncode,
+  toggleEmbeddedXMP,
+  toggleSidecarXMP,
 } from "./src/encoderManager";
-import { logActiveSequenceTimecode, logTimecodeAsTickTime } from "./src/tickTime";
+import { addEncoderListeners, addProjSeqListeners } from "./src/eventManager";
 import {
-  exportTranscript,
-  hasTranscript,
-  transcribeClipProjectItem,
-  importTranscript,
-} from "./src/transcript";
+  exportSequence,
+  exportSequenceFrame,
+  getExportFileExtension,
+} from "./src/export";
+import {
+  importAeComponent,
+  importAllAeComponents,
+  importFiles,
+  importSequences,
+} from "./src/import";
+import {
+  addKeyframe,
+  getKeyframe,
+  getKeyframes,
+  getStartValue,
+  setInterpolation,
+  setValue,
+} from "./src/keyframe";
+import {
+  createMarkerChapter,
+  createMarkerComment,
+  createMarkerFlashCuePoint,
+  createMarkerWeblink,
+  getSequenceMarkerInfo,
+  moveMarker,
+  removeMarker,
+  setFirstSequenceMarkerColor,
+} from "./src/markers";
+import { purgeMediaCache } from "./src/mediaManager";
+import {
+  addPropertiesToMetadataSchema,
+  getProjectColumnsMetadata,
+  getProjectMetadata,
+  getProjectPanelMetadata,
+  getXMPMetadata,
+  setProjectMetadata,
+  setProjectPanelMetadata,
+  setXMPMetadata,
+} from "./src/metadata";
+import {
+  getActiveProduction,
+  getScratchDiskSettings,
+} from "./src/prProduction";
+import {
+  closeProject,
+  getActiveProject,
+  getActiveSequence,
+  getAllSequences,
+  getCurrentGraphicsWhiteLuminance,
+  getInsertionBin,
+  getProjectFromId,
+  getSupportedGraphicsWhiteLuminances,
+  isProjectFile,
+  openInputProject,
+  openProject,
+  openSequence,
+  pauseGrowing,
+  saveAsProject,
+  saveProject,
+} from "./src/project";
 import {
   exportAAF,
   exportAsFinalCutProXML,
   exportAsOpenTimelineIO,
 } from "./src/projectConverter";
+import {
+  attachProxy,
+  changeMediaFilePath,
+  clearInOutPoint,
+  createBin,
+  createSmartBin,
+  createSubClips,
+  getFirstProjectItemColorLabel,
+  getFirstProjectItemId,
+  getFirstProjectItemType,
+  getMediaFilePath,
+  getMediaInfo,
+  getOriginatingProjectPath,
+  getProjectFromViewId,
+  getProjectItems,
+  getProjectViewIds,
+  getSelectedProjectItems,
+  getSelectedProjectItemsFromViewId,
+  moveItem,
+  printSelectedProjectItemComponentChains,
+  refreshMedia,
+  removeItem,
+  renameBin,
+  renameFirstSelectedProjectItem,
+  setFirstProjectItemColorLabel,
+  setFootageInterpretation,
+  setInOutPoint,
+  setInPoint,
+  setMediaStart,
+  setOutPoint,
+  setOverrideFrameRate,
+  setOverridePixelAspectRatio,
+  setScaleToFrameSize,
+} from "./src/projectPanel";
+import {
+  clearSampleSequenceProperty,
+  getSequenceSampleProperty,
+  setSampleSequenceProperty,
+} from "./src/properties";
+import {
+  addHandlesToTrackItem,
+  checkIsDoneAnalyzingForVideoEffects,
+  closeSequence,
+  createSequence,
+  createSequenceFromMedia,
+  createSubsequence,
+  getCaptionTrackCount,
+  getSequence,
+  getSequenceSelection,
+  getVideoFrameRate,
+  getVideoSettingsInfo,
+  getVideoTrack,
+  renameFirstSelectedTrackItem,
+  renameTrack,
+  setActiveSequence,
+  setSequenceInOutPoint,
+  setSequenceSelection,
+  setSequenceSettings,
+  setVideoFrameRate,
+  trimSelectedItem,
+} from "./src/sequence";
+import {
+  cloneSelectedTrackItem,
+  insertMogrt,
+  insertTrackItem,
+  overwriteTrackItem,
+  removeSelectedTrackItems,
+} from "./src/sequenceEditor";
+import {
+  getIngestEnabled,
+  getScratchDiskSetting,
+  setIngestEnabled,
+  setScratchDiskSettings,
+} from "./src/settings";
+import {
+  closeAllClips,
+  closeClip,
+  getPosition,
+  getProjectItemAtSourceMonitor,
+  openFilePath,
+  openProjectItem,
+  play,
+  setPosition as setSourceMonitorPosition,
+} from "./src/sourceMonitor";
+import { logActiveSequenceTimecode, logTimecodeAsTickTime } from "./src/tickTime";
+import {
+  exportTranscript,
+  hasTranscript,
+  importTranscript,
+  transcribeClipProjectItem,
+} from "./src/transcript";
+import {
+  addTransitionEnd,
+  addTransitionStart,
+  getTransitionNames,
+  removeTransitionStart,
+} from "./src/transition";
+import { log, clearLog, registerClick } from "./src/utils";
+import {
+  logFullHostNameAndVersion,
+  logHostApplicationPath,
+  logHostBackgroundColor,
+  logHostInfo,
+} from "./src/uxpHost";
 import {
   getWorkAreaInPoint,
   getWorkAreaOutPoint,
@@ -233,13 +219,6 @@ import {
   setWorkAreaInPoint,
   setWorkAreaOutPoint
 } from "./src/workAreaUtils";
-
-import {
-  logFullHostNameAndVersion,
-  logHostApplicationPath,
-  logHostBackgroundColor,
-  logHostInfo,
-} from "./src/uxpHost";
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const ppro = require("premierepro") as premierepro;
