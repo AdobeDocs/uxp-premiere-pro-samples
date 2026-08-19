@@ -214,6 +214,7 @@ import {
   launchEncoder,
   startBatchEncode,
 } from "./src/encoderManager";
+import { logActiveSequenceTimecode, logTimecodeAsTickTime } from "./src/tickTime";
 import {
   exportTranscript,
   hasTranscript,
@@ -406,6 +407,48 @@ entrypoints.setup({
 });
 
 /* 27.0.0 button events */
+
+// Time Utilities
+
+async function logActiveSequenceTimecodeClicked() {
+  const project = await ppro.Project.getActiveProject();
+  if (!project) {
+    log(`Failed to get project`, "red");
+    return;
+  }
+
+  const sequence = await project.getActiveSequence();
+  if (!sequence) {
+    log(`Failed to get active sequence`, "red");
+    return;
+  }
+
+  await logActiveSequenceTimecode(sequence);
+}
+
+async function logTimecodeAsTickTimeClicked() {
+  const timecode = (
+    document.getElementById("ticktime-timecodetotime-value") as HTMLInputElement
+  )?.value;
+  if (!timecode) {
+    log("No timecode provided", "red");
+    return;
+  }
+
+  const project = await ppro.Project.getActiveProject();
+  if (!project) {
+    log(`Failed to get project`, "red");
+    return;
+  }
+
+  const sequence = await project.getActiveSequence();
+  if (!sequence) {
+    log(`Failed to get active sequence`, "red");
+    return;
+  }
+
+  await logTimecodeAsTickTime(sequence, timecode);
+}
 
 // UXP Host
 
@@ -2841,6 +2884,8 @@ async function logUXPHostInfoClicked() {
 
 window.addEventListener("load", async () => {
   /* 27.0.0 button events registering */
+  registerClick("ticktime-timetotimecode", logActiveSequenceTimecodeClicked);
+  registerClick("ticktime-timecodetotime", logTimecodeAsTickTimeClicked);
   registerClick("log-full-host-name-and-version", logFullHostNameAndVersionClicked);
 
   /* 26.5.0 button events registering */
