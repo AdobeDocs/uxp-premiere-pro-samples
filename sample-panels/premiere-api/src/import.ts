@@ -18,14 +18,15 @@ import type { Guid, Project, ProjectItem } from "@adobe/premierepro";
  * Import files into project
  * @param project Input PPro project object
  * @param filePaths Array of string file paths to import
- * @returns [Boolean] if import successful
+ * @returns true if import successful
  */
-export async function importFiles(project: Project, filePaths: string[]) {
+export async function importFiles(project: Project, filePaths: string[]): Promise<boolean> {
   // import into current project if any
-  return await project.importFiles(
+  return project.importFiles(
     filePaths,
     true, // suppressUI
-    undefined, // Project bin unset, should import it to project root
+    // @ts-expect-error TypeScript incorrectly suggests undefined instead of `null` for default
+    null, // targetBin; `null` will default to project root
     false // importAsNumberedStills
   );
 }
