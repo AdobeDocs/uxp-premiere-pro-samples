@@ -2482,11 +2482,10 @@ async function getExportFileExtensionClicked() {
 
 //import button events
 async function importFilesClicked() {
-  let success = false;
   // @ts-expect-error - uxp.storage.localFileSystem is not typed correctly
   const files = await uxp.storage.localFileSystem.getFileForOpening({
-    allowMultiple: true,
-  }); // allow multiple files selection
+    allowMultiple: true, // allow multiple files selection
+  });
   const filePaths = [];
   if (files.length === 0) {
     log(`No file selected`);
@@ -2500,18 +2499,21 @@ async function importFilesClicked() {
     }
   }
 
-  // import into current active project
   const project = await getProject();
-  if (project) {
-    success = await importFiles(project, filePaths);
-  } else {
+  if (!project) {
     log(`no active project found for import`);
+    return;
   }
 
-  if (success) {
-    log(`Import files succeed`);
-  } else {
-    log(`Failed to import files`);
+  try {
+    const success = await importFiles(project, filePaths);
+    if (success) {
+      log("Import files succeeded");
+    } else {
+      log("Failed to import files")
+    }
+  } catch (err) {
+    log(`Error attempting to import files to active project: ${err}`, "red");
   }
 }
 
