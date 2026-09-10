@@ -36,30 +36,30 @@ Each file covers one part of the API. If you're looking for a specific feature, 
 
 | File | What it covers |
 | :--- | :--- |
-| `project.ts` | Open, save, close projects; active project; graphics white luminance |
-| `sequence.ts` | Create sequences; tracks; in/out points; frame rate; sequence settings |
-| `projectPanel.ts` | Project items; bins; media paths; proxy; color labels; footage interpretation |
-| `markers.ts` | Create, move, and remove sequence markers; marker colors |
-| `metadata.ts` | Read and write XMP metadata; project panel columns; metadata schema |
+| `appPreference.ts` | Read and write application preferences |
+| `c2pa.ts` | Content Authenticity functionality |
 | `effects.ts` | Add, apply, and remove effects |
-| `transition.ts` | Add and remove transitions at clip start and end |
-| `keyframe.ts` | Set values, add keyframes, get and set interpolation |
-| `sourceMonitor.ts` | Open clips, play/pause, get/set position, close clips |
 | `encoderManager.ts` | Encode files and project items; toggle embedded/sidecar XMP; launch encoder |
+| `eventManager.ts` | Listen to project and encoder events |
 | `export.ts` | Export sequence frames and full sequences |
 | `import.ts` | Import files, sequences, and After Effects components |
-| `eventManager.ts` | Listen to project and encoder events |
-| `sequenceEditor.ts` | Overwrite/insert track items; insert MOGRTs; clone and remove items |
-| `transcript.ts` | Export and import transcripts |
+| `keyframe.ts` | Set values, add keyframes, get and set interpolation |
+| `markers.ts` | Create, move, and remove sequence markers; marker colors |
+| `mediaManager.ts` | Utility functions for use with MediaManager |
+| `metadata.ts` | Read and write XMP metadata; project panel columns; metadata schema |
+| `project.ts` | Open, save, close projects; active project; graphics white luminance |
 | `projectConverter.ts` | Export as AAF, Final Cut Pro XML, or OpenTimelineIO |
-| `settings.ts` | Scratch disk and ingest settings |
-| `appPreference.ts` | Read and write application preferences |
+| `projectPanel.ts` | Project items; bins; media paths; proxy; color labels; footage interpretation |
 | `properties.ts` | Get, set, and clear sequence properties |
 | `prProduction.ts` | Active production; production scratch disk settings |
-| `utils.ts` | Shared logging helper used across all modules |
-| `c2pa.ts` | Content Authenticity functionality |
-| `mediaManager.ts` | Utility functions for use with MediaManager |
+| `sequence.ts` | Create sequences; tracks; in/out points; frame rate; sequence settings |
+| `sequenceEditor.ts` | Overwrite/insert track items; insert MOGRTs; clone and remove items |
+| `settings.ts` | Scratch disk and ingest settings |
+| `sourceMonitor.ts` | Open clips, play/pause, get/set position, close clips |
 | `tickTime.ts` | Utility functions for use with TickTime |
+| `transcript.ts` | Export and import transcripts |
+| `transition.ts` | Add and remove transitions at clip start and end |
+| `utils.ts` | Shared logging helper used across all modules |
 | `uxpHost.ts` | Features related to UXP host properties available in Premiere |
 | `workAreaUtils.ts` | Managing in and out points for the work area |
 
