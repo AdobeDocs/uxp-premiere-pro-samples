@@ -57,6 +57,11 @@ Each file covers one part of the API. If you're looking for a specific feature, 
 | `properties.ts` | Get, set, and clear sequence properties |
 | `prProduction.ts` | Active production; production scratch disk settings |
 | `utils.ts` | Shared logging helper used across all modules |
+| `c2pa.ts` | Content Authenticity functionality |
+| `mediaManager.ts` | Utility functions for use with MediaManager |
+| `tickTime.ts` | Utility functions for use with TickTime |
+| `uxpHost.ts` | Features related to UXP host properties available in Premiere |
+| `workAreaUtils.ts` | Managing in and out points for the work area |
 
 ---
 
