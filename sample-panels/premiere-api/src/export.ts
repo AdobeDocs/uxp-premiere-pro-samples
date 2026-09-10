@@ -23,20 +23,27 @@ import { log } from "./utils";
  * Export current active sequence's current frame as PNG file
  */
 export async function exportSequenceFrame(sequence: Sequence) {
+  let exportFolder;
+  log("Please select folder for export");
   // @ts-expect-error - uxp.storage.localFileSystem is not typed correctly
   const folder = await uxp.storage.localFileSystem.getFolder();
-  const folderDir = await folder.nativePath;
+  if (folder?.isFolder && folder.nativePath) {
+    exportFolder = folder.nativePath
+  } else {
+    log("Selection of folder for export failed. Please try again");
+    return false;
+  }
 
-  const playerPos = await sequence.getPlayerPosition(); // ticktime obj
+  const playerPos = await sequence.getPlayerPosition();
   const exportName = "output.png";
 
-  log("Exporting output.png.png *(We do double extension)*");
+  log(`Exporting to "${exportFolder + path.sep + exportName}"...`);
 
   return ppro.Exporter.exportSequenceFrame(
     sequence,
     playerPos,
     exportName,
-    folderDir,
+    exportFolder,
     600, // width
     500 // height
   );
@@ -60,18 +67,23 @@ export async function exportSequence(sequence: Sequence) {
     return false;
   }
 
-  log("Please select folder for export");
   // let user choose dir for export output mpg file into
+  let outputFolder;
+  log("Please select folder for export");
   // @ts-expect-error - uxp.storage.localFileSystem is not typed correctly
   const folder = await uxp.storage.localFileSystem.getFolder();
-  const folderDir = await folder.nativePath;
-  if (!folderDir) {
+  if (folder?.isFolder && folder.nativePath) {
+    outputFolder = folder.nativePath;
+  } else {
     log("Selection of folder for export failed. Please try again");
     return false;
   }
 
-  const exportPath = folderDir + path.sep + "output.mpg"; // export to MPEG2
-  const encoder = await ppro.EncoderManager.getManager();
+  const exportName = "output.mpg"; // export to MPEG2
+  const exportPath = outputFolder + path.sep + exportName;
+  log(`Exporting to "${exportPath}"...`);
+
+  const encoder = ppro.EncoderManager.getManager();
   return encoder.exportSequence(
     sequence,
     ppro.Constants.ExportType.IMMEDIATELY, // export in Premiere Pro
