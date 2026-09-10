@@ -6,6 +6,19 @@ A reference panel for the Premiere Pro UXP API. Click a button to try an API cal
 
 ---
 
+## Drag and drop (3rd-party)
+
+The **Drag and Drop** section at the top of the panel shows how a third-party panel can
+let users drag media into Premiere Pro's **Project panel** or **Timeline**. Add local
+files, then drag them onto a supported target and Premiere Pro imports them.
+
+It uses standard HTML5 drag and drop: on `dragstart` the panel attaches a small JSON
+payload (as plain text) describing the items, and the host imports them on drop. See
+`src/dragAndDrop.ts` for the payload shape and the drag wiring. Third-party panels
+reference **local files only** (`file://`).
+
+---
+
 ## How the code is organized
 
 The sample has a build step because it's written in TypeScript. The key thing to understand upfront:
@@ -48,6 +61,7 @@ Each file covers one part of the API. If you're looking for a specific feature, 
 | `encoderManager.ts` | Encode files and project items; toggle embedded/sidecar XMP; launch encoder |
 | `export.ts` | Export sequence frames and full sequences |
 | `import.ts` | Import files, sequences, and After Effects components |
+| `dragAndDrop.ts` | Drag local media from the panel into the Project panel or Timeline (3rd-party drag and drop) |
 | `eventManager.ts` | Listen to project and encoder events |
 | `sequenceEditor.ts` | Overwrite/insert track items; insert MOGRTs; clone and remove items |
 | `transcript.ts` | Export and import transcripts |

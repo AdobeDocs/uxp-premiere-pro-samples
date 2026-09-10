@@ -99,6 +99,37 @@
       z-index: 1000;
       margin-right: 20px;
     }
+
+    .dnd-instructions {
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+
+    #dnd-items {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .dnd-item {
+      padding: 6px 8px;
+      border: 1px solid #808080;
+      border-radius: 4px;
+      cursor: grab;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-user-drag: element;
+    }
+
+    .dnd-item.selected {
+      border-color: #2680eb;
+      background-color: #2680eb;
+    }
+
+    .dnd-item:active {
+      cursor: grabbing;
+    }
   </style>
 
   <body>
@@ -122,6 +153,21 @@
       </div>
     </div>
     <footer>
+      <div style="width: 100%; height: 1px; background-color: #808080; margin: 12px 0;"></div>
+      <div class="section">
+        <h4>Drag Media into Premiere Pro</h4>
+        <div class="dnd-instructions">
+          Add local media files, then drag them into the <b>Project panel</b> or
+          <b>Timeline</b>. Click to select; Shift/Cmd-click to select several and
+          drag them together.
+        </div>
+        <div id="dnd-items"></div>
+        <sp-button id="dnd-add-files">Add Local Files</sp-button>
+        <sp-button id="dnd-clear">Clear</sp-button>
+      </div>
+
+      <div style="width: 100%; height: 1px; background-color: #808080; margin: 12px 0;"></div>
+
       <h3>&#x2728; New APIs Coming in 27.0 (Beta)</h3>
       <div class"section">
         <h4>Time Utilities</h4>

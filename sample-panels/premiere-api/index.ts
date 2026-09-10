@@ -27,6 +27,11 @@ import {
 } from "./src/appPreference";
 import { getManifestForFile } from "./src/c2pa";
 import {
+  addDragAndDropFiles,
+  clearDragAndDropFiles,
+  renderDragAndDropList,
+} from "./src/dragAndDrop";
+import {
   addEffects,
   addMultipleEffects,
   addVocalEnhancerEffect,
@@ -2863,7 +2868,22 @@ async function logUXPHostInfoClicked() {
   await logHostInfo();
 }
 
+/* Drag and Drop (3rd-Party) button events */
+
+async function addDragAndDropFilesClicked() {
+  await addDragAndDropFiles();
+}
+
+function clearDragAndDropFilesClicked() {
+  clearDragAndDropFiles();
+}
+
 window.addEventListener("load", async () => {
+  /* Drag and Drop (3rd-Party) registering */
+  registerClick("dnd-add-files", addDragAndDropFilesClicked);
+  registerClick("dnd-clear", clearDragAndDropFilesClicked);
+  renderDragAndDropList();
+
   /* 27.0.0 button events registering */
   registerClick("ticktime-timetotimecode", logActiveSequenceTimecodeClicked);
   registerClick("ticktime-timecodetotime", logTimecodeAsTickTimeClicked);
