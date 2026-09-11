@@ -157,6 +157,7 @@ export function renderDragAndDropList(): void {
   if (dragFiles.length === 0) {
     const empty = document.createElement("em");
     empty.textContent = "No files added yet.";
+    empty.style.color = "#8f8f8f";
     container.appendChild(empty);
     return;
   }

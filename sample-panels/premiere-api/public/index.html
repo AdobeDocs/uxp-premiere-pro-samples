@@ -7,8 +7,11 @@
     body {
       color: white;
       padding: 0 16px;
-      overflow-y: auto;
       height: 100vh;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
     }
 
     li:before {
@@ -34,7 +37,10 @@
       display: flex;
       flex-wrap: wrap;
       justify-content: flex-start;
-      margin-top: 300px;
+      align-content: flex-start;
+      flex: 1 1 auto;
+      overflow-y: auto;
+      min-height: 0;
     }
 
     footer > * {
@@ -91,13 +97,14 @@
       padding-bottom: 15px;
     }
 
+    .title-heading.hidden {
+      display: none;
+    }
+
     .fixed {
-      position: fixed;
-      top: 0;
-      width: calc(100% - 32px);
+      flex: 0 0 auto;
       background-color: #222;
-      z-index: 1000;
-      margin-right: 20px;
+      padding-top: 8px;
     }
 
     .dnd-instructions {
@@ -130,10 +137,46 @@
     .dnd-item:active {
       cursor: grabbing;
     }
+
+    .tab-bar {
+      display: flex;
+      gap: 4px;
+      width: 100%;
+      border-bottom: 1px solid #808080;
+      margin-bottom: 12px;
+    }
+
+    .tab-btn {
+      padding: 6px 14px;
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+      color: var(--uxp-host-text-color-secondary, white);
+      border-bottom: 2px solid transparent;
+      font-size: 1.3em;
+    }
+
+    .tab-btn.active {
+      border-bottom-color: #2680eb;
+      color: #2680eb;
+    }
+
+    .tab-panel {
+      display: none;
+      width: 100%;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
   </style>
 
   <body>
     <div class="fixed">
+      <div class="tab-bar">
+        <div id="tab-btn-apis" class="tab-btn active">Premiere APIs</div>
+        <div id="tab-btn-dnd" class="tab-btn">Drag &amp; Drop</div>
+      </div>
       <h4>Console</h4>
       <div class="main-div">
         <sp-body id="plugin-body"></sp-body>
@@ -153,21 +196,21 @@
       </div>
     </div>
     <footer>
-      <div style="width: 100%; height: 1px; background-color: #808080; margin: 12px 0;"></div>
-      <div class="section">
-        <h4>Drag Media into Premiere Pro</h4>
-        <div class="dnd-instructions">
-          Add local media files, then drag them into the <b>Project panel</b> or
-          <b>Timeline</b>. Click to select; Shift/Cmd-click to select several and
-          drag them together.
+      <div id="tab-dnd" class="tab-panel">
+        <div class="section">
+          <h4>Drag Media into Premiere Pro</h4>
+          <div class="dnd-instructions">
+            Add local media files, then drag them into the <b>Project panel</b> or
+            <b>Timeline</b>. Click to select; Shift/Cmd-click to select several and
+            drag them together.
+          </div>
+          <div id="dnd-items"></div>
+          <sp-button id="dnd-add-files">Add Local Files</sp-button>
+          <sp-button id="dnd-clear">Clear</sp-button>
         </div>
-        <div id="dnd-items"></div>
-        <sp-button id="dnd-add-files">Add Local Files</sp-button>
-        <sp-button id="dnd-clear">Clear</sp-button>
       </div>
 
-      <div style="width: 100%; height: 1px; background-color: #808080; margin: 12px 0;"></div>
-
+      <div id="tab-apis" class="tab-panel active">
       <h3>&#x2728; New APIs Coming in 27.0 (Beta)</h3>
       <div class"section">
         <h4>Time Utilities</h4>
@@ -590,6 +633,7 @@
       <div class="section">
         <h4>UXP Host Environment</h4>
         <sp-button id="log-uxp-host-info">Log UXP Host Information</sp-button>
+      </div>
       </div>
     </footer>
   </body>

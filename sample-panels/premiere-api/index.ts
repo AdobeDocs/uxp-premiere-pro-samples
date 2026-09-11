@@ -2878,7 +2878,31 @@ function clearDragAndDropFilesClicked() {
   clearDragAndDropFiles();
 }
 
+/* Tab switching */
+
+function showTab(tab: "apis" | "dnd") {
+  clearLog();
+  for (const name of ["apis", "dnd"] as const) {
+    const isActive = name === tab;
+    document.querySelector(`#tab-${name}`)?.classList.toggle("active", isActive);
+    document
+      .querySelector(`#tab-btn-${name}`)
+      ?.classList.toggle("active", isActive);
+  }
+  // Active Project/Sequence context isn't relevant to drag & drop
+  document
+    .querySelector(".title-heading")
+    ?.classList.toggle("hidden", tab === "dnd");
+}
+
+function setupTabs() {
+  registerClick("tab-btn-apis", () => showTab("apis"));
+  registerClick("tab-btn-dnd", () => showTab("dnd"));
+}
+
 window.addEventListener("load", async () => {
+  setupTabs();
+
   /* Drag and Drop (3rd-Party) registering */
   registerClick("dnd-add-files", addDragAndDropFilesClicked);
   registerClick("dnd-clear", clearDragAndDropFilesClicked);
