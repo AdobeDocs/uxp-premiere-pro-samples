@@ -8,7 +8,7 @@ A reference panel for the Premiere Pro UXP API. Click a button to try an API cal
 
 ## Drag and drop (3rd-party)
 
-The **Drag and Drop** section at the top of the panel shows how a third-party panel can
+The **Drag & Drop** tab shows how a third-party panel can
 let users drag media into Premiere Pro's **Project panel** or **Timeline**. Add local
 files, then drag them onto a supported target and Premiere Pro imports them.
 
