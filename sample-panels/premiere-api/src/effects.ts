@@ -12,177 +12,189 @@
  * written permission of Adobe.
  **************************************************************************/
 
+import type {
+  premierepro,
+  AudioClipTrackItem,
+  Project,
+  Sequence,
+  VideoClipTrackItem,
+} from "@adobe/premierepro";
+
 import { log } from "./utils";
-import type { premierepro, Component, Project, VideoComponentChain } from "@adobe/premierepro";
+
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const ppro = require("premierepro") as premierepro;
 
-const filterFactory = ppro.VideoFilterFactory;
-const audioFilterFactory = ppro.AudioFilterFactory;
-
-export async function getVideoComponentChain() {
-  let videoComponentChain: VideoComponentChain | undefined;
-
-  const proj = await ppro.Project.getActiveProject();
-  if (!proj) {
-    log("No active project", "red");
-    return;
-  } else {
-    const sequence = await proj.getActiveSequence();
-    if (!sequence) {
-      log("No sequence found", "red");
-      return;
-    } else {
-      const videoTrack = await sequence.getVideoTrack(0);
-      if (!videoTrack) {
-        log("No videoTrack found", "red");
-        return;
-      } else {
-        const trackItems = await videoTrack.getTrackItems(
-          ppro.Constants.TrackItemType.CLIP,
-          false
-        );
-        if (trackItems.length === 0) {
-          log("No trackItems found", "red");
-          return;
-        } else {
-          videoComponentChain = await trackItems[0].getComponentChain();
-        }
-      }
-    }
-  }
-  return videoComponentChain;
+/**
+ * Retrieves a list of currently selected VideoClipTrackItems in the given sequence.
+ *
+ * @param sequence 
+ * @returns 
+ */
+export async function getCurrentVideoClipTrackItemsSelected(
+  sequence: Sequence
+): Promise<VideoClipTrackItem[]> {
+  const selection = await sequence.getSelection();
+  const trackItems = await selection.getTrackItems();
+  return trackItems.filter(isVideoClipTrackItem);
 }
 
-async function getAudioClipTrackItem() {
-  const proj = await ppro.Project.getActiveProject();
-  if (!proj) {
-    log("No active project", "red");
-  } else {
-    const sequence = await proj.getActiveSequence();
-    if (!sequence) {
-      log("No sequence found", "red");
-    } else {
-      const audioTrack = await sequence.getAudioTrack(0);
-      if (!audioTrack) {
-        log("No videoTrack found", "red");
-      } else {
-        const trackItems = await audioTrack.getTrackItems(
-          ppro.Constants.TrackItemType.CLIP,
-          false
-        );
-        if (trackItems.length === 0) {
-          log("No trackItems found", "red");
-        } else {
-          return trackItems[0];
-        }
-      }
-    }
-  }
-  return null;
+/**
+ * Retrieves a list of currently selected AudioCLipTrackItems in the given sequence.
+ * @param sequence 
+ * @returns 
+ */
+export async function getCurrentAudioClipTrackItemsSelected(
+  sequence: Sequence
+): Promise<AudioClipTrackItem[]> {
+  const selection = await sequence.getSelection();
+  const trackItems = await selection.getTrackItems();
+  return trackItems.filter(isAudioClipTrackItem);
 }
 
-export async function getAudioComponentChain() {
-  const audioTrackItem = await getAudioClipTrackItem();
-  let audioComponentChain = undefined;
-  if (audioTrackItem) {
-    audioComponentChain = await audioTrackItem.getComponentChain();
-  }
-  return audioComponentChain;
+// Type guard predicate function used to help statically verify that the given
+// trackItem _is_ a VideoClipTrackItem.
+function isVideoClipTrackItem(
+  trackItem: AudioClipTrackItem | VideoClipTrackItem
+): trackItem is VideoClipTrackItem {
+  // @ts-expect-error static typing does not have "hasInstance" details
+  return trackItem instanceof ppro.VideoClipTrackItem;
 }
 
-//Gets all the effects matchNames.
-export async function getEffectsName() {
-  return await filterFactory.getMatchNames();
+// Type guard predicate function used to help statically verify that the given
+// trackItem _is_ an AudioClipTrackItem.
+function isAudioClipTrackItem(
+  trackItem: AudioClipTrackItem | VideoClipTrackItem
+): trackItem is AudioClipTrackItem {
+  // @ts-expect-error static typing does not have "hasInstance" details
+  return trackItem instanceof ppro.AudioClipTrackItem;
 }
 
-export async function addEffects(project: Project) {
-  if (project) {
-    const videoComponentChain = await getVideoComponentChain();
-    if (!videoComponentChain) {
-      return;
-    }
-    const newComponent = await filterFactory.createComponent(
-      "PR.ADBE Gamma Correction"
-    );
-
-    let success = false;
-    try {
-      project.lockedAccess(() => {
-        success = project.executeTransaction((compoundAction) => {
-          const action1 = videoComponentChain.createInsertComponentAction(
-            newComponent,
-            2
-          );
-          compoundAction.addAction(action1);
-        }, "createInsertComponentAction");
-      });
-    } catch (err) {
-      log(`Error: ${err}`, "red");
-      return false;
-    }
-
-    return success;
-  } else {
-    log(`No project found.`, "red");
-  }
+/**
+ * Returns a list of the available video filter effect match names.
+ * 
+ * Match names align with specific video effects Premiere uses to find and
+ * create, whereas display name values vary depending on current language.
+ *
+ * @returns 
+ */
+export async function getEffectsName(): Promise<string[]> {
+  return await ppro.VideoFilterFactory.getMatchNames();
 }
 
-export async function addMultipleEffects(project: Project) {
-  if (project) {
-    const videoComponentChain = await getVideoComponentChain();
-    if (!videoComponentChain) {
-      return;
-    }
-    const newComponent1 = await filterFactory.createComponent(
-      "PR.ADBE Gamma Correction"
-    );
-
-    const newComponent2 = await filterFactory.createComponent(
-      "PR.ADBE Extract"
-    );
-
-    let success = false;
-    try {
-      project.lockedAccess(() => {
-        success = project.executeTransaction((compoundAction) => {
-          const action1 = videoComponentChain.createInsertComponentAction(
-            newComponent1,
-            2
-          );
-          const action2 = videoComponentChain.createInsertComponentAction(
-            newComponent2,
-            2
-          );
-          compoundAction.addAction(action1);
-          compoundAction.addAction(action2);
-        }, "Add Multiple Effects");
-      });
-    } catch (err) {
-      log(`Error: ${err}`, "red");
-      return false;
-    }
-    return success;
-  } else {
-    log(`No project found.`, "red");
-  }
-}
-
-export async function addVocalEnhancerEffect(project: Project) {
-  const audioComponentChain = await getAudioComponentChain();
-  if (!audioComponentChain) {
+/**
+ * Adds a Gamma Correction effect to the currently selected video track
+ * for the given project and sequence.
+ *
+ * @param project 
+ * @param sequence
+ * @returns 
+ */
+export async function addEffects(project: Project, sequence: Sequence): Promise<boolean> {
+  const selection = await getCurrentVideoClipTrackItemsSelected(sequence);
+  if (selection == null || selection.length !== 1) {
+    log("Please select one video clip to add a Gamma Correction effect to", "red");
     return false;
   }
-  let success = false;
+
+  const videoComponentChain = await selection[0].getComponentChain();
+  const newComponent = await ppro.VideoFilterFactory.createComponent(
+    "PR.ADBE Gamma Correction"
+  );
+
   try {
-    const trackItem = await getAudioClipTrackItem();
-    if (!trackItem) {
-      return false;
-    }
-    const newComponent = await audioFilterFactory.createComponentByDisplayName(
-      "Vocal Enhancer",
-      trackItem
-    );
+    let success = false;
+
+    project.lockedAccess(() => {
+      success = project.executeTransaction((compoundAction) => {
+        const action1 = videoComponentChain.createInsertComponentAction(
+          newComponent,
+          2
+        );
+        compoundAction.addAction(action1);
+      }, "createInsertComponentAction");
+    });
+
+    return success;
+  } catch (err) {
+    log(`Error: ${err}`, "red");
+    return false;
+  }
+}
+
+/**
+ * Adds Gamma Correction and Extract effects to the currently selected video track
+ * item for the given project and sequence.
+ *
+ * @param project 
+ * @param sequence 
+ * @returns 
+ */
+export async function addMultipleEffects(project: Project, sequence: Sequence): Promise<boolean> {
+  const selection = await getCurrentVideoClipTrackItemsSelected(sequence);
+  if (selection == null || selection.length !== 1) {
+    log("Please select one video clip to add Gamma Correction and Extract effects to", "red");
+    return false;
+  }
+
+  const videoComponentChain = await selection[0].getComponentChain();
+  const newComponent1 = await ppro.VideoFilterFactory.createComponent(
+    "PR.ADBE Gamma Correction"
+  );
+  const newComponent2 = await ppro.VideoFilterFactory.createComponent(
+    "PR.ADBE Extract"
+  );
+
+  try {
+    let success = false;
+
+    project.lockedAccess(() => {
+      success = project.executeTransaction((compoundAction) => {
+        const action1 = videoComponentChain.createInsertComponentAction(
+          newComponent1,
+          2
+        );
+        const action2 = videoComponentChain.createInsertComponentAction(
+          newComponent2,
+          2
+        );
+        compoundAction.addAction(action1);
+        compoundAction.addAction(action2);
+      }, "Add Multiple Effects");
+    });
+
+    return success;
+  } catch (err) {
+    log(`Error: ${err}`, "red");
+    return false;
+  }
+}
+
+/**
+ * Adds a Vocal Enhancer effect to the currently selected audio track item
+ * for the given project and sequence.
+ *
+ * @param project 
+ * @param sequence 
+ * @returns 
+ */
+export async function addVocalEnhancerEffect(project: Project, sequence: Sequence): Promise<boolean> {
+  const selection = await getCurrentAudioClipTrackItemsSelected(sequence);
+  if (selection == null || selection.length !== 1) {
+    log("Please select one audio clip to add a Vocal Enhancer effect to", "red");
+    return false;
+  }
+
+  const [trackItem] = selection;
+  const audioComponentChain = await trackItem.getComponentChain();
+  const newComponent = await ppro.AudioFilterFactory.createComponentByDisplayName(
+    "Vocal Enhancer",
+    trackItem
+  );
+
+  try {
+    let success = false;
+
     project.lockedAccess(() => {
       success = project.executeTransaction((compoundAction) => {
         const action1 = audioComponentChain.createInsertComponentAction(
@@ -192,45 +204,56 @@ export async function addVocalEnhancerEffect(project: Project) {
         compoundAction.addAction(action1);
       }, "createInsertComponentAction");
     });
-  } catch (err) {
-    log(`Error: ${err}`, "red");
-  }
-  return success;
-}
-
-export async function removeEffects(project: Project) {
-  if (project) {
-    const videoComponentChain = await getVideoComponentChain();
-    if (!videoComponentChain) {
-      return;
-    }
-    let newComponentToBeDeleted: Component;
-    let success;
-    try {
-      project.lockedAccess(() => {
-        const initialComponenetCount = videoComponentChain.getComponentCount();
-        if (initialComponenetCount < 3) {
-          log("There is no effects to be removed");
-        }
-        newComponentToBeDeleted = videoComponentChain.getComponentAtIndex(2);
-
-        success = project.executeTransaction(
-          (compoundAction) => {
-            const action1 = videoComponentChain.createRemoveComponentAction(
-              newComponentToBeDeleted
-            );
-            compoundAction.addAction(action1);
-          },
-          "createRemoveComponentAction"
-        );
-      });
-    } catch (err) {
-      log(`Error: ${err}`, "red");
-      return false;
-    }
 
     return success;
-  } else {
-    log(`No project found.`, "red");
+  } catch (err) {
+    log(`Error: ${err}`, "red");
+    return false;
+  }
+}
+
+/**
+ * Removes the last effect from the end of the component chain for the currently
+ * selected video track item of the given project and sequence.
+ *
+ * @param project 
+ * @param sequence 
+ * @returns 
+ */
+export async function removeEffects(project: Project, sequence: Sequence): Promise<boolean> {
+  const selection = await getCurrentVideoClipTrackItemsSelected(sequence);
+  if (selection == null || selection.length != 1) {
+    log("Please select one video clip to remove the last effect from", "red");
+    return false;
+  }
+
+  const videoComponentChain = await selection[0].getComponentChain();
+
+  try {
+    let success = false;
+
+    project.lockedAccess(() => {
+      const initialComponentCount = videoComponentChain.getComponentCount();
+      if (initialComponentCount < 3) {
+        log("There are no effects to be removed");
+        return;
+      }
+
+      const newComponentToBeDeleted = videoComponentChain.getComponentAtIndex(initialComponentCount);
+      success = project.executeTransaction(
+        (compoundAction) => {
+          const action1 = videoComponentChain.createRemoveComponentAction(
+            newComponentToBeDeleted
+          );
+          compoundAction.addAction(action1);
+        },
+        "createRemoveComponentAction"
+      );
+    });
+
+    return success;
+  } catch (err) {
+    log(`Error: ${err}`, "red");
+    return false;
   }
 }
