@@ -2180,23 +2180,51 @@ async function getEffectsNameClicked() {
 }
 async function addEffectsClicked() {
   const project = await getProject();
-  if (!project) return;
+  if (!project) {
+    log("No project found", "red");
+    return;
+  }
 
-  const success = await addEffects(project);
+  const sequence = await project.getActiveSequence();
+  if (!sequence) {
+    log("No active sequence found", "red");
+    return;
+  }
+
+  const success = await addEffects(project, sequence);
   log(success ? "Successfully added the effect" : "Failed to add the effect");
 }
 async function addMultipleEffectsClicked() {
   const project = await getProject();
-  if (!project) return;
+  if (!project) {
+    log("No project found", "red");
+    return;
+  }
 
-  const success = await addMultipleEffects(project);
+  const sequence = await project.getActiveSequence();
+  if (!sequence) {
+    log("No active sequence found", "red");
+    return;
+  }
+
+  const success = await addMultipleEffects(project, sequence);
   log(success ? "Successfully added the effects" : "Failed to add the effect");
 }
+
 async function removeEffectsClicked() {
   const project = await getProject();
-  if (!project) return;
+  if (!project) {
+    log("No project found", "red");
+    return;
+  }
 
-  const success = await removeEffects(project);
+  const sequence = await project.getActiveSequence();
+  if (!sequence) {
+    log("No active sequence found", "red");
+    return;
+  }
+
+  const success = await removeEffects(project, sequence);
   log(
     success ? "Successfully removed the effect" : "Failed to remove the effect"
   );
@@ -2251,9 +2279,18 @@ async function removeTransitionStartClicked() {
 
 async function addVocalEnhancerEffectClicked() {
   const project = await getProject();
-  if (!project) return;
+  if (!project) {
+    log("No project found", "red");
+    return;
+  }
 
-  const success = await addVocalEnhancerEffect(project);
+  const sequence = await project.getActiveSequence();
+  if (!sequence) {
+    log("No active sequence found", "red");
+    return;
+  }
+
+  const success = await addVocalEnhancerEffect(project, sequence);
   log(
     success
       ? "Successfully add vocal enhancer effect to ptrackitem"
