@@ -32,7 +32,6 @@ export async function logActiveSequenceTimecode(sequence: Sequence): Promise<voi
     );
     const timeDisplay = await sequence.getSequenceVideoTimeDisplayFormat();
 
-    // @ts-expect-error - timeToTimecode is not yet part of the published @adobe/premierepro types
     const timecode = ppro.TickTime.timeToTimecode(
       playerPosition,
       frameRate,
@@ -63,7 +62,6 @@ export async function logTimecodeAsTickTime(
     );
     const timeDisplay = await sequence.getSequenceVideoTimeDisplayFormat();
 
-    // @ts-expect-error - timecodeToTime is not yet part of the published @adobe/premierepro types
     const tickTime: TickTime = ppro.TickTime.timecodeToTime(
       timecode,
       frameRate,

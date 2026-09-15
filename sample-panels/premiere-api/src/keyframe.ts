@@ -13,9 +13,14 @@
  **************************************************************************/
 
 import type {
+  Color,
   Component,
   ComponentParam,
+  Keyframe,
+  MogrtComment,
+  MogrtText,
   premierepro,
+  PointKeyframe,
   Project,
 } from "@adobe/premierepro";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -123,18 +128,20 @@ export async function setValue() {
 }
 
 //Gets the value of the component parameter stream.
-export async function getStartValue() {
+export async function getStartValue(): Promise<Keyframe | PointKeyframe | Color | MogrtComment | MogrtText | null> {
   const result = await getComponentParam();
-  if (!result) return;
+  if (!result) {
+    return null;
+  }
   const { componentParam, project } = result;
 
   const success = await changeTimeVarying(componentParam, project, false);
 
   if (success) {
     log(`Getting the start value of ${componentParam.displayName}`);
-    return await componentParam.getStartValue();
+    return componentParam.getStartValue();
   } else {
-    return;
+    return null;
   }
 }
 
@@ -252,3 +259,39 @@ export async function setInterpolation() {
 
   return success;
 }
+
+function makeInstanceOfGuard<T>(ctor: unknown) {
+  return (value: unknown): value is T =>
+    // @ts-expect-error static typing does not have "hasInstance" details
+    value instanceof ctor;
+}
+
+/**
+ * Type guard predicate function to help coerce a ComponentParam value to a
+ * Color value.
+ */
+export const isColor = makeInstanceOfGuard<Color>(ppro.Color);
+
+/**
+ * Type guard predicate function to help coerce a ComponentParam value to a
+ * Keyframe value.
+ */
+export const isKeyframe = makeInstanceOfGuard<Keyframe>(ppro.Keyframe);
+
+/**
+ * Type guard predicate function to help coerce a ComponentParam value to a
+ * PointKeyframe value.
+ */
+export const isPointKeyframe = makeInstanceOfGuard<PointKeyframe>(ppro.PointKeyframe);
+
+/**
+ * Type guard predicate function to help coerce a ComponentParam value to a
+ * MogrtComment value.
+ */
+export const isMogrtComment = makeInstanceOfGuard<MogrtComment>(ppro.MogrtComment);
+
+/**
+ * Type guard predicate function to help coerce a ComponentParam value to a
+ * MogrtText value.
+ */
+export const isMogrtText = makeInstanceOfGuard<MogrtText>(ppro.MogrtText);
