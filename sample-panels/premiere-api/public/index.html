@@ -116,7 +116,6 @@
       margin-top: 10px;
       display: flex;
       flex-direction: column;
-      gap: 4px;
     }
 
     .dnd-item {
@@ -124,9 +123,7 @@
       border: 1px solid #808080;
       border-radius: 4px;
       cursor: grab;
-      user-select: none;
-      -webkit-user-select: none;
-      -webkit-user-drag: element;
+      margin-bottom: 4px;
     }
 
     .dnd-item.selected {
@@ -140,7 +137,6 @@
 
     .tab-bar {
       display: flex;
-      gap: 4px;
       width: 100%;
       border-bottom: 1px solid #808080;
       margin-bottom: 12px;
@@ -149,8 +145,7 @@
     .tab-btn {
       padding: 6px 14px;
       cursor: pointer;
-      user-select: none;
-      -webkit-user-select: none;
+      margin-right: 4px;
       color: var(--uxp-host-text-color-secondary, white);
       border-bottom: 2px solid transparent;
       font-size: 1.3em;
@@ -201,7 +196,7 @@
           <h4>Drag Media into Premiere Pro</h4>
           <div class="dnd-instructions">
             Add local media files, then drag them into the <b>Project panel</b> or
-            <b>Timeline</b>. Click to select; Shift/Cmd-click to select several and
+            <b>Timeline</b>. Click to select; Shift/Cmd/Ctrl-click to select several and
             drag them together.
           </div>
           <div id="dnd-items"></div>

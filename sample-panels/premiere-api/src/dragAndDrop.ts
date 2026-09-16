@@ -52,23 +52,30 @@ const CONTENT_TYPE_BY_EXTENSION: Record<string, string> = {
   tif: "image/tiff",
   tiff: "image/tiff",
   webp: "image/webp",
-  svg: "image/svg+xml",
 };
 
-interface DragFile {
-  name: string;
-  nativePath: string;
-}
-
-// Shape of a file returned by the UXP file picker (loosely typed).
+// Shape of a file returned by the UXP file picker. UXP doesn't type this well
+// (see the @ts-expect-error at the picker call), so this is a minimal local shim.
 interface PickedFile {
   name: string;
   nativePath?: string;
 }
 
+// A PickedFile that passed validation: a real local path plus a resolved,
+// supported content type. Produced by addDragAndDropFiles().
+interface DragFile extends PickedFile {
+  nativePath: string;
+  contentType: string;
+}
+
 // Local files the user has added, and the current selection (by index).
 const dragFiles: DragFile[] = [];
 const selectedIndices = new Set<number>();
+
+// Anchor for Shift range-selection: index of the last item clicked without
+// Shift. -1 means no anchor yet. Indices are stable because files are only
+// appended or cleared wholesale, never removed individually.
+let lastAnchorIndex = -1;
 
 function extensionOf(fileName: string): string {
   const dot = fileName.lastIndexOf(".");
@@ -90,17 +97,32 @@ function pathToFileUri(path: string): string {
   return "file://" + encodeURI(normalized);
 }
 
-// Build the JSON payload Premiere Pro expects. 3P panels send LOCAL files only.
-function buildDragPayload(files: DragFile[]): string {
-  return JSON.stringify({
+// Shape of a single item in the drag payload (one local file).
+interface DragPayloadItem {
+  name: string;
+  content_type: string;
+  uri: string;
+}
+
+// The payload Premiere Pro reads from the drag's text/plain data. 3P panels send
+// LOCAL files only (file:// URIs). The caller serializes this with JSON.stringify().
+interface DragPayload {
+  version: "1.0.0";
+  source: string;
+  items: DragPayloadItem[];
+}
+
+// Build the structured drag payload. Serialization is left to the caller.
+function buildDragPayload(files: DragFile[]): DragPayload {
+  return {
     version: "1.0.0",
     source: DRAG_SOURCE,
     items: files.map((file) => ({
       name: file.name,
-      content_type: contentTypeOf(file.name),
+      content_type: file.contentType,
       uri: pathToFileUri(file.nativePath),
     })),
-  });
+  };
 }
 
 // Open the file picker and add the chosen local files to the drag list.
@@ -111,9 +133,8 @@ export async function addDragAndDropFiles(): Promise<void> {
     const result = await uxp.storage.localFileSystem.getFileForOpening({
       allowMultiple: true,
     });
-    const picked = (Array.isArray(result) ? result : [result]).filter(
-      Boolean
-    ) as PickedFile[];
+
+    const picked = (Array.isArray(result) ? result : []) as PickedFile[];
 
     if (picked.length === 0) {
       log("No files selected for drag and drop");
@@ -123,11 +144,16 @@ export async function addDragAndDropFiles(): Promise<void> {
     let added = 0;
     for (const file of picked) {
       if (!file.nativePath) continue;
-      if (!contentTypeOf(file.name)) {
+      const contentType = contentTypeOf(file.name);
+      if (!contentType) {
         log(`Skipping "${file.name}": unsupported media type`, "orange");
         continue;
       }
-      dragFiles.push({ name: file.name, nativePath: file.nativePath });
+      if (dragFiles.some((f) => f.nativePath === file.nativePath)) {
+        log(`Skipping "${file.name}": already added`, "orange");
+        continue;
+      }
+      dragFiles.push({ name: file.name, nativePath: file.nativePath, contentType });
       added += 1;
     }
 
@@ -144,6 +170,7 @@ export async function addDragAndDropFiles(): Promise<void> {
 export function clearDragAndDropFiles(): void {
   dragFiles.length = 0;
   selectedIndices.clear();
+  lastAnchorIndex = -1;
   renderDragAndDropList();
   log("Cleared drag and drop files");
 }
@@ -176,16 +203,28 @@ export function renderDragAndDropList(): void {
     label.textContent = file.name;
     item.appendChild(label);
 
-    // Click selects; Shift/Cmd/Ctrl-click adds to (or toggles) the selection.
+    // Plain click selects a single item; Cmd/Ctrl-click toggles one item in or
+    // out of the selection; Shift-click selects the contiguous range from the
+    // anchor (the last item clicked without Shift) to the clicked item.
     item.addEventListener("click", (event) => {
-      const additive = event.shiftKey || event.metaKey || event.ctrlKey;
-      if (!additive) {
+      if (event.shiftKey && lastAnchorIndex >= 0) {
+        selectedIndices.clear();
+        const lo = Math.min(lastAnchorIndex, index);
+        const hi = Math.max(lastAnchorIndex, index);
+        for (let i = lo; i <= hi; i++) {
+          selectedIndices.add(i);
+        }
+      } else if (event.metaKey || event.ctrlKey) {
+        if (selectedIndices.has(index)) {
+          selectedIndices.delete(index);
+        } else {
+          selectedIndices.add(index);
+        }
+        lastAnchorIndex = index;
+      } else {
         selectedIndices.clear();
         selectedIndices.add(index);
-      } else if (selectedIndices.has(index)) {
-        selectedIndices.delete(index);
-      } else {
-        selectedIndices.add(index);
+        lastAnchorIndex = index;
       }
       renderDragAndDropList();
     });
@@ -197,7 +236,7 @@ export function renderDragAndDropList(): void {
         selectedIndices.has(index) && selectedIndices.size > 0
           ? Array.from(selectedIndices).map((i) => dragFiles[i])
           : [file];
-      const payload = buildDragPayload(filesToDrag);
+      const payload = JSON.stringify(buildDragPayload(filesToDrag));
       const dataTransfer = event.dataTransfer;
       if (!dataTransfer) return;
       dataTransfer.setData("text/plain", payload);
