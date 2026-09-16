@@ -253,6 +253,48 @@ export function renderDragAndDropList(): void {
       dataTransfer.effectAllowed = "copyMove";
       dataTransfer.dropEffect = "copy";
 
+      
+      if (filesToDrag.length > 1) {
+        // Clear any stray badge left behind by a drag that never fired dragend.
+        document
+          .querySelectorAll(".dnd-count-badge")
+          .forEach((el) => el.remove());
+
+        const badge = document.createElement("div");
+        badge.className = "dnd-count-badge";
+        badge.textContent = `${filesToDrag.length}`;
+        badge.style.cssText =
+          "position:fixed;z-index:1;pointer-events:none;box-sizing:border-box;" +
+          "display:flex;align-items:center;justify-content:center;" +
+          "min-width:18px;height:18px;padding:0 5px;border-radius:9px;" +
+          "background:#e34850;color:#fff;font:11px sans-serif;" +
+          "box-shadow:0 1px 3px rgba(0,0,0,0.4);";
+        document.body.appendChild(badge);
+
+        const moveBadge = (e: any) => {
+          if (e.clientX === 0 && e.clientY === 0) return; // ignore stray (0,0)
+          badge.style.left = `${e.clientX + 12}px`;
+          badge.style.top = `${e.clientY + 12}px`;
+        };
+        // UXP doesn't reliably fire dragend (e.g. a drag that fizzles without
+        // moving), so also tear down on drop and on mouse release.
+        const cleanup = () => {
+          item.removeEventListener("drag", moveBadge);
+          document.removeEventListener("dragover", moveBadge);
+          item.removeEventListener("dragend", cleanup);
+          document.removeEventListener("drop", cleanup);
+          document.removeEventListener("mouseup", cleanup);
+          badge.remove();
+        };
+
+        moveBadge(event);
+        item.addEventListener("drag", moveBadge);
+        document.addEventListener("dragover", moveBadge);
+        item.addEventListener("dragend", cleanup);
+        document.addEventListener("drop", cleanup);
+        document.addEventListener("mouseup", cleanup);
+      }
+
       log(`Dragging ${filesToDrag.length} item(s)…`);
     });
 
