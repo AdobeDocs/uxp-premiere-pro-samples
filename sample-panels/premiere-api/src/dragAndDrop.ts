@@ -71,10 +71,6 @@ interface DragFile extends PickedFile {
 // Local files the user has added, and the current selection (by index).
 const dragFiles: DragFile[] = [];
 const selectedIndices = new Set<number>();
-
-// Anchor for Shift range-selection: index of the last item clicked without
-// Shift. -1 means no anchor yet. Indices are stable because files are only
-// appended or cleared wholesale, never removed individually.
 let lastAnchorIndex = -1;
 
 function extensionOf(fileName: string): string {
@@ -229,13 +225,26 @@ export function renderDragAndDropList(): void {
       renderDragAndDropList();
     });
 
-    // dragstart attaches the JSON payload as plain text. If the item is part of
-    // the current selection, drag the whole selection; otherwise just this item.
+    // dragstart attaches the JSON payload as plain text and drags the current
+    // selection. If the grabbed item isn't in the selection, make it the
+    // selection first so what's dragged always matches what's highlighted. The
+    // highlight is updated in place — a full re-render here would remove the
+    // drag-source node and cancel the drag.
     item.addEventListener("dragstart", (event) => {
-      const filesToDrag =
-        selectedIndices.has(index) && selectedIndices.size > 0
-          ? Array.from(selectedIndices).map((i) => dragFiles[i])
-          : [file];
+      if (!selectedIndices.has(index)) {
+        selectedIndices.clear();
+        selectedIndices.add(index);
+        lastAnchorIndex = index;
+        container
+          .querySelectorAll(".dnd-item.selected")
+          .forEach((el) => el.classList.remove("selected"));
+        item.classList.add("selected");
+      }
+
+      // Drag in list order, not selection (click) order.
+      const filesToDrag = Array.from(selectedIndices)
+        .sort((a, b) => a - b)
+        .map((i) => dragFiles[i]);
       const payload = JSON.stringify(buildDragPayload(filesToDrag));
       const dataTransfer = event.dataTransfer;
       if (!dataTransfer) return;
@@ -243,6 +252,7 @@ export function renderDragAndDropList(): void {
       dataTransfer.setData("text", payload); // some hosts read "text"
       dataTransfer.effectAllowed = "copyMove";
       dataTransfer.dropEffect = "copy";
+
       log(`Dragging ${filesToDrag.length} item(s)…`);
     });
 
