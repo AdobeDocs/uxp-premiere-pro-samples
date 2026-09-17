@@ -58,6 +58,11 @@ import {
   getKeyframe,
   getKeyframes,
   getStartValue,
+  isColor,
+  isKeyframe,
+  isMogrtComment,
+  isMogrtText,
+  isPointKeyframe,
   setInterpolation,
   setValue,
 } from "./src/keyframe";
@@ -2125,12 +2130,21 @@ async function setValueClicked() {
   log(success ? "Successfully set the value" : "Failed to set the value");
 }
 async function getStartValueClicked() {
-  const startValueKeyframe = await getStartValue();
-  log(
-    startValueKeyframe
-      ? `start value: "${startValueKeyframe.value.value}"`
-      : "Failed to get the start value"
-  );
+  const startValue = await getStartValue();
+  if (startValue == null) {
+    log("Failed to get the start value", "red");
+    return;
+  }
+
+  if (isKeyframe(startValue) || isPointKeyframe(startValue)) {
+    log(`start value: "${startValue.value.value}"`);
+  } else if (isColor(startValue)) {
+    log(`start value: rgba(${startValue.red}, ${startValue.green}, ${startValue.blue}, ${startValue.alpha})`)
+  } else if (isMogrtComment(startValue) || isMogrtText(startValue)) {
+    log(`start value: "${startValue.getText()}"`)
+  } else {
+    log(`Unknown start value type: ${startValue}`);
+  }
 }
 
 async function addKeyframeClicked() {
