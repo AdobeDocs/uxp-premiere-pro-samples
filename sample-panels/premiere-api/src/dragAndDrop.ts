@@ -28,8 +28,6 @@ const uxp = require("uxp") as typeof import("uxp");
  * Third-party panels reference LOCAL files only (file:// URIs).
  */
 
-// The plugin id from manifest.json. Sent as the drag payload "source".
-const DRAG_SOURCE = "com.adobe.ppro.samples";
 
 // Content types Premiere Pro accepts for drag-and-drop import, keyed by file
 // extension. Files whose type is not listed here are skipped by the host.
@@ -105,7 +103,6 @@ interface DragPayloadItem {
 // LOCAL files only (file:// URIs). The caller serializes this with JSON.stringify().
 interface DragPayload {
   version: "1.0.0";
-  source: string;
   items: DragPayloadItem[];
 }
 
@@ -113,7 +110,6 @@ interface DragPayload {
 function buildDragPayload(files: DragFile[]): DragPayload {
   return {
     version: "1.0.0",
-    source: DRAG_SOURCE,
     items: files.map((file) => ({
       name: file.name,
       content_type: file.contentType,
