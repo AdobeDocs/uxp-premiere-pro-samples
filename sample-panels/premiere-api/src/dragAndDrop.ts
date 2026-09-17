@@ -271,7 +271,6 @@ export function renderDragAndDropList(): void {
       const dataTransfer = event.dataTransfer;
       if (!dataTransfer) return;
       dataTransfer.setData("text/plain", payload);
-      dataTransfer.setData("text", payload); // some hosts read "text"
       dataTransfer.effectAllowed = "copyMove";
       dataTransfer.dropEffect = "copy";
 
