@@ -63,6 +63,8 @@ import {
   isMogrtComment,
   isMogrtText,
   isPointKeyframe,
+  printMogrtCommentParamDetails,
+  printMogrtTextParamDetails,
   setInterpolation,
   setValue,
 } from "./src/keyframe";
@@ -391,6 +393,40 @@ entrypoints.setup({
 });
 
 /* 27.0.0 button events */
+
+// Keyframe
+
+async function printMogrtCommentParamDetailsClicked() {
+  const project = await ppro.Project.getActiveProject();
+  if (!project) {
+    log(`Failed to get project`, "red");
+    return;
+  }
+
+  const sequence = await project.getActiveSequence();
+  if (!sequence) {
+    log(`Failed to get active sequence`, "red");
+    return;
+  }
+
+  await printMogrtCommentParamDetails(project, sequence);
+}
+
+async function printMogrtTextParamDetailsClicked() {
+  const project = await ppro.Project.getActiveProject();
+  if (!project) {
+    log(`Failed to get project`, "red");
+    return;
+  }
+
+  const sequence = await project.getActiveSequence();
+  if (!sequence) {
+    log(`Failed to get active sequence`, "red");
+    return;
+  }
+
+  await printMogrtTextParamDetails(project, sequence);
+}
 
 // Time Utilities
 
@@ -2916,6 +2952,8 @@ async function logUXPHostInfoClicked() {
 
 window.addEventListener("load", async () => {
   /* 27.0.0 button events registering */
+  registerClick("keyframe-print-mogrtcomment-details", printMogrtCommentParamDetailsClicked)
+  registerClick("keyframe-print-mogrttext-details", printMogrtTextParamDetailsClicked)
   registerClick("ticktime-timetotimecode", logActiveSequenceTimecodeClicked);
   registerClick("ticktime-timecodetotime", logTimecodeAsTickTimeClicked);
   registerClick("log-full-host-name-and-version", logFullHostNameAndVersionClicked);

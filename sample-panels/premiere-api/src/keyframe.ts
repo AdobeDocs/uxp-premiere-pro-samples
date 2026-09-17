@@ -22,10 +22,15 @@ import type {
   premierepro,
   PointKeyframe,
   Project,
+  Sequence,
+  VideoClipTrackItem,
 } from "@adobe/premierepro";
+
+import { getCurrentVideoClipTrackItemsSelected } from "./effects";
+import { log } from "./utils";
+
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const ppro = require("premierepro") as premierepro;
-import { log } from "./utils";
 
 //Gets the componenetParam
 export async function getComponentParam() {
@@ -199,25 +204,6 @@ export async function getKeyframe() {
 }
 
 //Sets the keyframe interpolation.
-// Must be one of the following:
-
-// 0 KF_Interp_Mode_Linear
-
-// 1 kfInterpMode_EaseIn_Obsolete
-
-// 2 kfInterpMode_EaseOut_Obsolete
-
-// 3 kfInterpMode_EaseInEaseOut_Obsolete
-
-// 4 KF_Interp_Mode_Hold
-
-// 5 KF_Interp_Mode_Bezier
-
-// 6 KF_Interp_Mode_Time
-
-// 7 kfInterpMode_TimeTransitionStart
-
-// 8 kfInterpMode_TimeTransitionEnd
 export async function setInterpolation() {
   const result = await getComponentParam();
   if (!result) return;
@@ -258,6 +244,108 @@ export async function setInterpolation() {
   }
 
   return success;
+}
+
+// Loop through and find all MoGRT-based Components using the component's
+// match name to identify them.
+async function getMogrtComponentParams(
+  videoTrack: VideoClipTrackItem,
+): Promise<Component[]> {
+  const componentChain = await videoTrack.getComponentChain();
+  const count = componentChain.getComponentCount();
+
+  const mogrtComponents: Component[] = [];
+  for (let i = 0; i < count; i += 1) {
+    const comp = componentChain.getComponentAtIndex(i);
+    const matchName = await comp.getMatchName();
+
+    if (matchName === "AE.ADBE Capsule") {
+      mogrtComponents.push(comp);
+    }
+  }
+
+  return mogrtComponents;
+}
+
+/**
+ * Print some basic details about any MoGRT-based effect which contains source
+ * text details.
+ *
+ * @param project
+ * @param sequence
+ * @returns
+ */
+export async function printMogrtTextParamDetails(
+  _project: Project,
+  sequence: Sequence,
+): Promise<boolean> {
+  const selection = await getCurrentVideoClipTrackItemsSelected(sequence);
+  if (selection == null || selection.length !== 1) {
+    log("Please select one video clip to print MoGRT details for.", "red");
+    return false;
+  }
+
+  const mogrtComponents = await getMogrtComponentParams(selection[0]);
+  if (!mogrtComponents.length) {
+    log(`There are no MoGRT effects for the selected track item.`, "red");
+    return false;
+  }
+
+  for (const component of mogrtComponents) {
+    const paramCount = component.getParamCount();
+    for (let i = 0; i < paramCount; i += 1) {
+      const param = component.getParam(i);
+      const value = await param.getStartValue();
+      if (isMogrtText(value)) {
+        log(`Found MogrtText component param "${param.displayName}" with details:`);
+        log(` - Has uniform styling? ${value.isUniformStyling()}`);
+        log(` - Has editable font name? ${value.isFontNameEditable()}`);
+        log(` - Has editable font size? ${value.isFontSizeEditable()}`);
+        log(` - Has editable faux styles? ${value.isFauxStylesEditable()}`)
+        log(` - Text content: "${value.getText()}"`);
+      }
+    }
+  }
+
+  return true;
+}
+
+/**
+ * Print some basic details about any MoGRT-based effect which contains comments
+ *
+ * @param project
+ * @param sequence
+ * @returns
+ */
+export async function printMogrtCommentParamDetails(
+  _project: Project,
+  sequence: Sequence,
+): Promise<boolean> {
+  const selection = await getCurrentVideoClipTrackItemsSelected(sequence);
+  if (selection == null || selection.length !== 1) {
+    log("Please select one video clip to print MoGRT details for.", "red");
+    return false;
+  }
+
+  const mogrtComponents = await getMogrtComponentParams(selection[0]);
+  if (!mogrtComponents.length) {
+    log(`There are no MoGRT effects for the selected track item.`, "red");
+    return false;
+  }
+
+  for (const component of mogrtComponents) {
+    const paramCount = component.getParamCount();
+    for (let i = 0; i < paramCount; i += 1) {
+      const param = component.getParam(i);
+      const value = await param.getStartValue();
+      if (isMogrtComment(value)) {
+        log(`Found MogrtComment component param "${param.displayName}":`);
+        log(` - With comment: "${value.getText()}"`);
+      }
+    }
+  }
+
+  return true;
 }
 
 function makeInstanceOfGuard<T>(ctor: unknown) {
