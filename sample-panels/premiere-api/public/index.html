@@ -131,8 +131,23 @@
       background-color: #2680eb;
     }
 
-    .dnd-item:active {
-      cursor: grabbing;
+    /* Drag events must fire on the row, not its text. */
+    .dnd-item span {
+      pointer-events: none;
+    }
+
+    .dnd-empty {
+      color: #8f8f8f;
+    }
+
+    /* Off-list clone that covers the dragged row while it's relabeled for the
+       drag-image snapshot. Position/size are set in JS from the row's rect. */
+    .dnd-drag-cover {
+      position: fixed;
+      box-sizing: border-box;
+      margin: 0;
+      pointer-events: none;
+      z-index: 2147483647;
     }
 
     .tab-bar {
@@ -198,6 +213,8 @@
             Add local media files, then drag them into the <b>Project panel</b> or
             <b>Timeline</b>. Click to select; Shift/Cmd/Ctrl-click to select several and
             drag them together.
+            <br />
+            <em>Requires Premiere Pro 25.4.0 or later.</em>
           </div>
           <div id="dnd-items"></div>
           <sp-button id="dnd-add-files">Add Local Files</sp-button>

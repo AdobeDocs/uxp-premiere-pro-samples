@@ -73,6 +73,7 @@ const dragFiles: DragFile[] = [];
 const selectedIndices = new Set<number>();
 let lastAnchorIndex = -1;
 
+
 function extensionOf(fileName: string): string {
   const dot = fileName.lastIndexOf(".");
   return dot < 0 ? "" : fileName.slice(dot + 1).toLowerCase();
@@ -139,7 +140,10 @@ export async function addDragAndDropFiles(): Promise<void> {
 
     let added = 0;
     for (const file of picked) {
-      if (!file.nativePath) continue;
+      if (!file.nativePath) 
+        {
+          continue;
+        }
       const contentType = contentTypeOf(file.name);
       if (!contentType) {
         log(`Skipping "${file.name}": unsupported media type`, "orange");
@@ -177,10 +181,11 @@ export function renderDragAndDropList(): void {
   if (!container) return;
 
   container.innerHTML = "";
+
   if (dragFiles.length === 0) {
     const empty = document.createElement("em");
+    empty.className = "dnd-empty";
     empty.textContent = "No files added yet.";
-    empty.style.color = "#8f8f8f";
     container.appendChild(empty);
     return;
   }
@@ -193,9 +198,8 @@ export function renderDragAndDropList(): void {
       item.classList.add("selected");
     }
 
-    // pointer-events:none on the child so drag events fire on the item itself.
+    // Drag events fire on the row itself (the span has pointer-events:none via CSS).
     const label = document.createElement("span");
-    label.style.pointerEvents = "none";
     label.textContent = file.name;
     item.appendChild(label);
 
@@ -225,11 +229,33 @@ export function renderDragAndDropList(): void {
       renderDragAndDropList();
     });
 
-    // dragstart attaches the JSON payload as plain text and drags the current
-    // selection. If the grabbed item isn't in the selection, make it the
-    // selection first so what's dragged always matches what's highlighted. The
-    // highlight is updated in place — a full re-render here would remove the
-    // drag-source node and cancel the drag.
+    
+    item.addEventListener("mousedown", () => {
+      const rect = item.getBoundingClientRect();
+      const cover = item.cloneNode(true) as HTMLElement;
+      cover.setAttribute("draggable", "false");
+      cover.classList.add("dnd-drag-cover");
+      cover.style.left = `${rect.left}px`;
+      cover.style.top = `${rect.top}px`;
+      cover.style.width = `${rect.width}px`;
+      cover.style.height = `${rect.height}px`;
+      document.body.appendChild(cover);
+      // Relabel the row to the count so UXP's default drag snapshot shows
+      // "N items". The cover hides the change from the user.
+      label.textContent = `${selectedIndices.size} items`;
+      const restore = () => {
+        label.textContent = file.name;
+        cover.remove();
+        item.removeEventListener("drag", restore);
+        item.removeEventListener("dragend", restore);
+        document.removeEventListener("mouseup", restore);
+      };
+
+      item.addEventListener("drag", restore);
+      item.addEventListener("dragend", restore);
+      document.addEventListener("mouseup", restore);
+    });
+
     item.addEventListener("dragstart", (event) => {
       if (!selectedIndices.has(index)) {
         selectedIndices.clear();
@@ -253,47 +279,8 @@ export function renderDragAndDropList(): void {
       dataTransfer.effectAllowed = "copyMove";
       dataTransfer.dropEffect = "copy";
 
+
       
-      if (filesToDrag.length > 1) {
-        // Clear any stray badge left behind by a drag that never fired dragend.
-        document
-          .querySelectorAll(".dnd-count-badge")
-          .forEach((el) => el.remove());
-
-        const badge = document.createElement("div");
-        badge.className = "dnd-count-badge";
-        badge.textContent = `${filesToDrag.length}`;
-        badge.style.cssText =
-          "position:fixed;z-index:1;pointer-events:none;box-sizing:border-box;" +
-          "display:flex;align-items:center;justify-content:center;" +
-          "min-width:18px;height:18px;padding:0 5px;border-radius:9px;" +
-          "background:#e34850;color:#fff;font:11px sans-serif;" +
-          "box-shadow:0 1px 3px rgba(0,0,0,0.4);";
-        document.body.appendChild(badge);
-
-        const moveBadge = (e: any) => {
-          if (e.clientX === 0 && e.clientY === 0) return; // ignore stray (0,0)
-          badge.style.left = `${e.clientX + 12}px`;
-          badge.style.top = `${e.clientY + 12}px`;
-        };
-        // UXP doesn't reliably fire dragend (e.g. a drag that fizzles without
-        // moving), so also tear down on drop and on mouse release.
-        const cleanup = () => {
-          item.removeEventListener("drag", moveBadge);
-          document.removeEventListener("dragover", moveBadge);
-          item.removeEventListener("dragend", cleanup);
-          document.removeEventListener("drop", cleanup);
-          document.removeEventListener("mouseup", cleanup);
-          badge.remove();
-        };
-
-        moveBadge(event);
-        item.addEventListener("drag", moveBadge);
-        document.addEventListener("dragover", moveBadge);
-        item.addEventListener("dragend", cleanup);
-        document.addEventListener("drop", cleanup);
-        document.addEventListener("mouseup", cleanup);
-      }
 
       log(`Dragging ${filesToDrag.length} item(s)…`);
     });
