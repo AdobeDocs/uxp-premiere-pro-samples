@@ -73,6 +73,8 @@ let lastAnchorIndex = -1;
 
 
 function extensionOf(fileName: string): string {
+  // Parse manually instead of path.extname(): UXP's require("path") has no working
+  // extname at runtime in Premiere ("path.extname is not a function").
   const dot = fileName.lastIndexOf(".");
   return dot < 0 ? "" : fileName.slice(dot + 1).toLowerCase();
 }
@@ -136,8 +138,7 @@ export async function addDragAndDropFiles(): Promise<void> {
 
     let added = 0;
     for (const file of picked) {
-      if (!file.nativePath) 
-        {
+      if (!file.nativePath)  {
           continue;
         }
       const contentType = contentTypeOf(file.name);
@@ -174,7 +175,9 @@ export function clearDragAndDropFiles(): void {
 // Render the draggable items into the #dnd-items container.
 export function renderDragAndDropList(): void {
   const container = document.getElementById("dnd-items");
-  if (!container) return;
+  if (!container) {
+    return;
+  }
 
   container.innerHTML = "";
 
@@ -227,6 +230,11 @@ export function renderDragAndDropList(): void {
 
     
     item.addEventListener("mousedown", () => {
+      // Only when dragging an existing multi-selection. A plain click to select must not
+      // relabel or cover the row — doing so on every mousedown caused the text overlap.
+      if (selectedIndices.size <= 1 || !selectedIndices.has(index)) {
+        return;
+      }
       const rect = item.getBoundingClientRect();
       const cover = item.cloneNode(true) as HTMLElement;
       cover.setAttribute("draggable", "false");
@@ -269,13 +277,13 @@ export function renderDragAndDropList(): void {
         .map((i) => dragFiles[i]);
       const payload = JSON.stringify(buildDragPayload(filesToDrag));
       const dataTransfer = event.dataTransfer;
-      if (!dataTransfer) return;
+      if (!dataTransfer) {
+        return;
+      }
       dataTransfer.setData("text/plain", payload);
       dataTransfer.effectAllowed = "copyMove";
       dataTransfer.dropEffect = "copy";
 
-
-      
 
       log(`Dragging ${filesToDrag.length} item(s)…`);
     });

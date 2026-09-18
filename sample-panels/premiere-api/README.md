@@ -51,7 +51,7 @@ Each file covers one part of the API. If you're looking for a specific feature, 
 | :--- | :--- |
 | `appPreference.ts` | Read and write application preferences |
 | `c2pa.ts` | Content Authenticity functionality |
-| `dragAndDrop.ts` | Drag local media from the panel into the Project panel or Timeline (3rd-party drag and drop) |
+| `dragAndDrop.ts` | Drag local media from the panel into the Project panel or Timeline |
 | `effects.ts` | Add, apply, and remove effects |
 | `encoderManager.ts` | Encode files and project items; toggle embedded/sidecar XMP; launch encoder |
 | `eventManager.ts` | Listen to project and encoder events |
