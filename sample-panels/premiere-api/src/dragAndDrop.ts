@@ -227,10 +227,10 @@ export function renderDragAndDropList(): void {
     });
 
     
-    item.addEventListener("mousedown", () => {
+    item.addEventListener("mousedown", (event) => {
       // Only when dragging an existing multi-selection. A plain click to select must not
       // relabel or cover the row — doing so on every mousedown caused the text overlap.
-      if (selectedIndices.size <= 1 || !selectedIndices.has(index)) {
+      if (event.button !== 0 ||selectedIndices.size <= 1 || !selectedIndices.has(index)) {
         return;
       }
       const rect = item.getBoundingClientRect();
