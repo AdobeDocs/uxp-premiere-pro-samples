@@ -73,8 +73,6 @@ let lastAnchorIndex = -1;
 
 
 function extensionOf(fileName: string): string {
-  // Parse manually instead of path.extname(): UXP's require("path") has no working
-  // extname at runtime in Premiere ("path.extname is not a function").
   const dot = fileName.lastIndexOf(".");
   return dot < 0 ? "" : fileName.slice(dot + 1).toLowerCase();
 }
