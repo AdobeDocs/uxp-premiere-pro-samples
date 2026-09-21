@@ -71,14 +71,8 @@ const dragFiles: DragFile[] = [];
 const selectedIndices = new Set<number>();
 let lastAnchorIndex = -1;
 
-
-function extensionOf(fileName: string): string {
-  const dot = fileName.lastIndexOf(".");
-  return dot < 0 ? "" : fileName.slice(dot + 1).toLowerCase();
-}
-
 function contentTypeOf(fileName: string): string | undefined {
-  return CONTENT_TYPE_BY_EXTENSION[extensionOf(fileName)];
+   return CONTENT_TYPE_BY_EXTENSION[path.extname(fileName).slice(1).toLowerCase()];
 }
 
 // Convert a local filesystem path to a percent-encoded file:// URI.
