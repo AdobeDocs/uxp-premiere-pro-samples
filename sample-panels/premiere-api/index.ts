@@ -320,12 +320,20 @@ entrypoints.setup({
     // for panels and commands.
     // See: https://github.com/adobe/cc-ext-uxp-types/issues/5
     samplepanel: {
-      show() {
-        // Add custom initialization logic here when the panel is shown.
-        log("Ready");
+      create(this: UxpPanelInfo, _rootNode: HTMLElement) {
+        console.log(`Panel ${this.id} created!`);
       },
-      hide() {
+      destroy(this: UxpPanelInfo, _rootNode: HTMLElement, _data: string | undefined) {
+        // `data` is not currently used (undefined)
+      },
+      hide(this: UxpPanelInfo, _rootNode: HTMLElement, _data: string | undefined) {
         // Add custom cleanup logic here when the panel is hidden.
+        // `data` is not currently used (undefined)
+      },
+      show(this: UxpPanelInfo, _rootNode: HTMLElement, _data: string | undefined) {
+        // Add custom initialization logic here when the panel is shown.
+        // `data` is not currently used (undefined)
+        log("Ready");
       },
       menuItems: [
         {
