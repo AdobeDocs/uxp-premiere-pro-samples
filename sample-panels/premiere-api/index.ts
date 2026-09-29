@@ -307,6 +307,14 @@ const PREMIERE_MEDIA_EXTENSIONS = [
 // Configure entrypoints for use by UXP during different lifecycle events
 // for each of the panels or commands defined in the manifest.json file.
 entrypoints.setup({
+  plugin: {
+    create(this: UxpPluginInfo) {
+      console.log("Plugin created!");
+    },
+    destroy(this: UxpPluginInfo) {
+      console.log("Plugin destroyed!");
+    },
+  },
   panels: {
     // @ts-expect-error - entrypoints.setup is, unfortunately, incorrectly typed
     // for panels and commands.
