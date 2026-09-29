@@ -378,8 +378,7 @@ entrypoints.setup({
           checked: false,
         },
       ],
-      /** @this {UxpPanelInfo} */
-      invokeMenu(id: string) {
+      invokeMenu(this: UxpPanelInfo, id: string) {
         switch (id) {
           case "open-project":
             openProjectClicked();
@@ -390,10 +389,7 @@ entrypoints.setup({
             break;
 
           case "toggle-checked":
-            // "this" refers to the (UxpPanelInfo) panel itself, allowing
-            // access the panel's menu items and other properties.
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (this.menuItems as any).getItem(id).checked = !(this.menuItems as any).getItem(id).checked;
+            this.menuItems.getItem(id).checked = !this.menuItems.getItem(id).checked;
             break;
 
           case "submenu-item1":
