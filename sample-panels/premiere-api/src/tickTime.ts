@@ -26,10 +26,7 @@ const ppro = require("premierepro") as premierepro;
 export async function logActiveSequenceTimecode(sequence: Sequence): Promise<void> {
   try {
     const playerPosition = await sequence.getPlayerPosition();
-    const timebase: string = await sequence.getTimebase();
-    const frameRate = ppro.FrameRate.createWithValue(
-      ppro.TickTime.TIME_ONE_SECOND.ticksNumber / Number(timebase)
-    );
+    const frameRate = (await sequence.getSettings()).getVideoFrameRate();
     const timeDisplay = await sequence.getSequenceVideoTimeDisplayFormat();
 
     const timecode = ppro.TickTime.timeToTimecode(
@@ -56,10 +53,7 @@ export async function logTimecodeAsTickTime(
   timecode: string
 ): Promise<void> {
   try {
-    const timebase: string = await sequence.getTimebase();
-    const frameRate = ppro.FrameRate.createWithValue(
-      ppro.TickTime.TIME_ONE_SECOND.ticksNumber / Number(timebase)
-    );
+    const frameRate = (await sequence.getSettings()).getVideoFrameRate();
     const timeDisplay = await sequence.getSequenceVideoTimeDisplayFormat();
 
     const tickTime: TickTime = ppro.TickTime.timecodeToTime(
