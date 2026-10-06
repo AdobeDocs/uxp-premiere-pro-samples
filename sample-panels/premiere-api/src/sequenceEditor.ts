@@ -13,14 +13,20 @@
  **************************************************************************/
 
 import type {
+  Action,
   AudioClipTrackItem,
   premierepro,
   Project,
   ProjectItem,
+  Sequence,
+  TickTime,
   VideoClipTrackItem,
 } from "@adobe/premierepro";
+
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const ppro = require("premierepro") as premierepro;
+
+import { getCurrentVideoClipTrackItemsSelected } from "./effects";
 import { getSelectedProjectItems } from "./projectPanel";
 import { log } from "./utils";
 
@@ -205,4 +211,129 @@ export async function insertMogrt(project: Project, mogrtPath: string) {
     log("No sequence available for edits", "red");
   }
   return mogrtItems.length > 0;
+}
+
+/**
+ * Timeline midpoint of the first selected video clip, or undefined if nothing
+ * is selected.
+ */
+async function getSelectedClipMidpoint(sequence: Sequence): Promise<TickTime | undefined> {
+  const [trackItem] = await getCurrentVideoClipTrackItemsSelected(sequence);
+  if (!trackItem) {
+    return undefined;
+  }
+  const start = await trackItem.getStartTime();
+  const end = await trackItem.getEndTime();
+  return start.add(end.subtract(start).divide(2));
+}
+
+/**
+ * Razor every video and audio track at the midpoint of the selected clip, as
+ * a single undo step.
+ *
+ * Each track gets its own createRazorTrackAction; razorLinkedTrackItems keeps
+ * A/V links intact, and the repeat cut it causes on an already-razored linked
+ * track is a no-op.
+ *
+ * @param project - The project to perform razor actions against
+ * @return
+ * @since 27.1
+ */
+export async function razorAllTracksAtSelection(project: Project): Promise<boolean> {
+  const sequence = await project.getActiveSequence();
+  if (!sequence) {
+    log("No sequence available for edits", "red");
+    return false;
+  }
+
+  const razorPosition = await getSelectedClipMidpoint(sequence);
+  if (!razorPosition) {
+    log("Select a video clip to razor at its midpoint", "red");
+    return false;
+  }
+
+  const videoTrackCount = await sequence.getVideoTrackCount();
+  const audioTrackCount = await sequence.getAudioTrackCount();
+  const editor = ppro.SequenceEditor.getEditor(sequence);
+
+  let success = false;
+  try {
+    project.lockedAccess(() => {
+      const actions: Action[] = [];
+      for (let i = 0; i < videoTrackCount; i++) {
+        actions.push(
+          // @ts-expect-error - not typed yet!
+          editor.createRazorTrackAction(
+            ppro.Constants.MediaType.VIDEO,
+            i,
+            razorPosition,
+            true, // razorLinkedTrackItems
+            ppro.Constants.MediaType.VIDEO // alignToMediaType
+          )
+        );
+      }
+      for (let i = 0; i < audioTrackCount; i++) {
+        actions.push(
+          // @ts-expect-error - not typed yet!
+          editor.createRazorTrackAction(
+            ppro.Constants.MediaType.AUDIO,
+            i,
+            razorPosition,
+            true,
+            ppro.Constants.MediaType.VIDEO // keep audio cuts on video frame boundaries
+          )
+        );
+      }
+
+      success = project.executeTransaction((compoundAction) => {
+        actions.forEach((action) => compoundAction.addAction(action));
+      }, "Razor All Tracks");
+    });
+  } catch (err) {
+    log(`${err}`, "red");
+  }
+  return success;
+}
+
+/**
+ * Razor every video track at the midpoint of the selected clip with one action.
+ *
+ * Audio is left untouched, so linked audio stays whole beneath the cut.
+ *
+ * @param project - The project to perform razor actions against
+ * @return
+ * @since 27.1
+ */
+export async function razorVideoTracksAtSelection(project: Project): Promise<boolean> {
+  const sequence = await project.getActiveSequence();
+  if (!sequence) {
+    log("No sequence available for edits", "red");
+    return false;
+  }
+
+  const razorPosition = await getSelectedClipMidpoint(sequence);
+  if (!razorPosition) {
+    log("Select a video clip to razor at its midpoint", "red");
+    return false;
+  }
+
+  const editor = ppro.SequenceEditor.getEditor(sequence);
+
+  let success = false;
+  try {
+    project.lockedAccess(() => {
+      // @ts-expect-error - not typed yet!
+      const action = editor.createRazorAllTracksAction(
+        ppro.Constants.MediaType.VIDEO,
+        razorPosition,
+        ppro.Constants.MediaType.VIDEO
+      );
+      success = project.executeTransaction((compoundAction) => {
+        compoundAction.addAction(action);
+      }, "Razor All Video Tracks");
+    });
+  } catch (err) {
+    log(`${err}`, "red");
+  }
+  return success;
 }

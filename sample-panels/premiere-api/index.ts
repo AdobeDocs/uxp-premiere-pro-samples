@@ -186,6 +186,8 @@ import {
   insertMogrt,
   insertTrackItem,
   overwriteTrackItem,
+  razorAllTracksAtSelection,
+  razorVideoTracksAtSelection,
   removeSelectedTrackItems,
 } from "./src/sequenceEditor";
 import {
@@ -408,6 +410,40 @@ entrypoints.setup({
     },
   },
 });
+
+/* 27.1.0 button events */
+
+// SequenceEditor
+
+async function razorAllTracksClicked() {
+  const project = await ppro.Project.getActiveProject();
+  if (!project) {
+    log(`Failed to get project`, "red");
+    return;
+  }
+
+  const result = await razorAllTracksAtSelection(project);
+  if (result) {
+    log("Successfully razored all audio/video tracks at the selected track item's midpoint")
+  } else {
+    log("Failed to razor the selected track item and tracks", "red");
+  }
+}
+
+async function razorVideoTracksClicked() {
+  const project = await ppro.Project.getActiveProject();
+  if (!project) {
+    log(`Failed to get project`, "red");
+    return;
+  }
+
+  const result = await razorVideoTracksAtSelection(project);
+  if (result) {
+    log("Successfully razored all video tracks at the selected track item's midpoint")
+  } else {
+    log("Failed to razor the selected track item and tracks", "red");
+  }
+}
 
 /* 27.0.0 button events */
 
@@ -3006,6 +3042,10 @@ window.addEventListener("load", async () => {
   registerClick("dnd-add-files", addDragAndDropFilesClicked);
   registerClick("dnd-clear", clearDragAndDropFilesClicked);
   renderDragAndDropList();
+
+  /* 27.1.0 button event registration */
+  registerClick("sequenceeditor-razor-all-tracks", razorAllTracksClicked);
+  registerClick("sequenceeditor-razor-video-tracks", razorVideoTracksClicked);
 
   /* 27.0.0 button events registering */
   registerClick("keyframe-print-mogrtcomment-details", printMogrtCommentParamDetailsClicked)
