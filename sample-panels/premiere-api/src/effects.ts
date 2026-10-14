@@ -257,3 +257,82 @@ export async function removeEffects(project: Project, sequence: Sequence): Promi
     return false;
   }
 }
+
+/**
+ * Prints the display name and instance name for each component in the given
+ * Project and Sequence's selected video track item.
+ *
+ * Most components by default do not have an instance name set, so the printed
+ * log information may be an empty string and display as an empty set of
+ * parenthesis (e.g., "Motion ()"). When set the instance name is printed
+ * after the display name in the UI ("Motion (Super Motion Effect!)").
+ *
+ * @param project
+ * @param sequence
+ * @returns
+ */
+export async function getComponentInstanceName(
+  _project: Project,
+  sequence: Sequence,
+): Promise<void> {
+  const selection = await getCurrentVideoClipTrackItemsSelected(sequence);
+  if (selection == null || selection.length != 1) {
+    log("Please select one video clip to get the instance name of", "red");
+    return;
+  }
+
+  try {
+    const videoComponentChain = await selection[0].getComponentChain();
+    const initialComponentCount = videoComponentChain.getComponentCount();
+    for (let i = 0; i < initialComponentCount; i += 1) {
+      const component = videoComponentChain.getComponentAtIndex(i);
+      const displayName = await component.getDisplayName();
+      // @ts-expect-error - Component.getInstanceName() is not typed yet!
+      const instanceName = await component.getInstanceName();
+
+      log(`${displayName} (${instanceName})`);
+    }
+  } catch (err) {
+    log(`Failed to : ${err}`, "red");
+  }
+}
+
+/**
+ * Updates the instance name of the first component of the selected video
+ * track item of the given Project/Sequence combination.
+ *
+ * @param project
+ * @param sequence
+ * @param name
+ * @returns true if the update is successful
+ */
+export async function setComponentInstanceName(
+  project: Project,
+  sequence: Sequence,
+  name: string,
+): Promise<boolean> {
+  const selection = await getCurrentVideoClipTrackItemsSelected(sequence);
+  if (selection == null || selection.length != 1) {
+    log("Please select one video clip to get the instance name of", "red");
+    return false;
+  }
+
+  let success = false;
+  try {
+    const videoComponentChain = await selection[0].getComponentChain();
+
+    project.lockedAccess(() => {
+      const component = videoComponentChain.getComponentAtIndex(0);
+      // @ts-expect-error - Component.createSetInstanceNameAction() is not typed yet!
+      const action = component.createSetInstanceNameAction(name);
+
+      success = project.executeTransaction((compoundAction) => {
+        compoundAction.addAction(action);
+      });
+    });
+  } catch (err) {
+    log(`Failed to : ${err}`, "red");
+  }
+
+  return success;
+}
