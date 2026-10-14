@@ -125,6 +125,7 @@ import {
 import {
   attachProxy,
   changeMediaFilePath,
+  checkIfSelectedProjectItemsAreStills,
   clearInOutPoint,
   createBin,
   createSmartBin,
@@ -460,6 +461,18 @@ async function setComponentInstanceNameClicked() {
   } else {
     log(`Failed to set component instance name`, "red");
   }
+}
+
+// Project Panel
+
+async function checkClipIsStillClicked() {
+  const project = await ppro.Project.getActiveProject();
+  if (!project) {
+    log(`Failed to get project`, "red");
+    return;
+  }
+
+  await checkIfSelectedProjectItemsAreStills(project);
 }
 
 // SequenceEditor
@@ -3095,6 +3108,7 @@ window.addEventListener("load", async () => {
   /* 27.1.0 button event registration */
   registerClick("component-getinstancename", getComponentInstanceNameClicked);
   registerClick("component-createsetinstancenameaction", setComponentInstanceNameClicked);
+  registerClick("projectpanel-isstill", checkClipIsStillClicked);
   registerClick("sequenceeditor-razor-all-tracks", razorAllTracksClicked);
   registerClick("sequenceeditor-razor-video-tracks", razorVideoTracksClicked);
 

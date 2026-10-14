@@ -835,3 +835,32 @@ export async function printSelectedProjectItemComponentChains(project: Project):
     log(`Error printing has component chains: ${error}`, "red");
   }
 }
+
+/**
+ * Gets the selected entries in the Project Panel and, for each ClipProjectItem,
+ * prints whether or not the clip represents still imagery.
+ *
+ * @param project - The project to print still imagery info for
+ */
+export async function checkIfSelectedProjectItemsAreStills(project: Project): Promise<void> {
+  try {
+    const projectItems = await getSelectedProjectItems(project);
+    if (projectItems.length === 0) {
+      log("No project items selected", "red");
+      return;
+    }
+
+    for (const projectItem of projectItems) {
+      const clipProjectItem = ppro.ClipProjectItem.cast(projectItem);
+      if (!clipProjectItem) {
+        continue;
+      }
+
+      // @ts-expect-error - ClipProjectItem.isStill is not typed yet!
+      const result = clipProjectItem.isStill() ? "is" : "is not";
+      log(`${clipProjectItem.name} ${result} a still`);
+    }
+  } catch (error) {
+    log(`Error checking if project items are stils: ${error}`, "red");
+  }
+}
