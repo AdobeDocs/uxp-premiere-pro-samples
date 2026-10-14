@@ -35,8 +35,10 @@ import {
   addEffects,
   addMultipleEffects,
   addVocalEnhancerEffect,
+  getComponentInstanceName,
   getEffectsName,
   removeEffects,
+  setComponentInstanceName,
 } from "./src/effects";
 import {
   encodeFile,
@@ -412,6 +414,53 @@ entrypoints.setup({
 });
 
 /* 27.1.0 button events */
+
+// Effects
+
+async function getComponentInstanceNameClicked() {
+  const project = await ppro.Project.getActiveProject();
+  if (!project) {
+    log(`Failed to get project`, "red");
+    return;
+  }
+
+  const sequence = await project.getActiveSequence();
+  if (!sequence) {
+    log(`Failed to get active sequence`, "red");
+    return;
+  }
+
+  await getComponentInstanceName(project, sequence);
+}
+
+async function setComponentInstanceNameClicked() {
+  const project = await ppro.Project.getActiveProject();
+  if (!project) {
+    log(`Failed to get project`, "red");
+    return;
+  }
+
+  const sequence = await project.getActiveSequence();
+  if (!sequence) {
+    log(`Failed to get active sequence`, "red");
+    return;
+  }
+
+  const name = (
+    document.getElementById("component-createsetinstancenameaction-value") as HTMLInputElement
+  )?.value;
+  if (!name) {
+    log("No instance name value provided", "red");
+    return;
+  }
+
+  const success = await setComponentInstanceName(project, sequence, name);
+  if (success) {
+    log(`Successfully set component instance name to "${name}"`);
+  } else {
+    log(`Failed to set component instance name`, "red");
+  }
+}
 
 // SequenceEditor
 
@@ -3044,6 +3093,8 @@ window.addEventListener("load", async () => {
   renderDragAndDropList();
 
   /* 27.1.0 button event registration */
+  registerClick("component-getinstancename", getComponentInstanceNameClicked);
+  registerClick("component-createsetinstancenameaction", setComponentInstanceNameClicked);
   registerClick("sequenceeditor-razor-all-tracks", razorAllTracksClicked);
   registerClick("sequenceeditor-razor-video-tracks", razorVideoTracksClicked);
 
