@@ -17,10 +17,12 @@ import type {
   Application,
   AudioClipTrackItem,
   AudioTrack,
+  CaptionTrack,
   OperationCompleteEvent,
   ProjectClosedEvent,
   ProjectEvent,
   ProjectItem,
+  Sequence,
   VideoClipTrackItem,
   VideoTrack,
   TickTime,
@@ -37,10 +39,10 @@ import {
 } from "./sourceMonitor";
 
 /**
- * Fired on a {@link VideoTrack} or {@link AudioTrack} whenever any property
- * of the track changes in a way that requires the UI to update, including
- * everything that fires `TRACK_CHANGED`/`LOCK_CHANGED`, plus purely visual or
- * metadata changes, e.g.:
+ * Fired on an {@link AudioTrack}, {@link CaptionTrack}, or {@link VideoTrack}
+ * whenever any property of the track changes in a way that requires the UI to
+ * update, including everything that fires `TRACK_CHANGED`/`LOCK_CHANGED`,
+ * plus purely visual or metadata changes, e.g.:
  *
  * - A clip's **display label, color, or name** changes without moving
  * - **Preview renders** for the track are invalidated (e.g. after media reconnect).
@@ -56,12 +58,15 @@ import {
 interface TrackInfoChangedEvent {
   readonly end: TickTime;
   readonly start: TickTime;
-  readonly track: VideoTrack | AudioTrack;
+  readonly track: {
+    id: number;
+    name: string;
+  };
 }
 
 /**
- * Fired on a {@link VideoTrack} or {@link AudioTrack} specifically when the
- * track's **lock state** is toggled:
+ * Fired on an {@link AudioTrack}, {@link CaptionTrack}, or {@link VideoTrack}
+ * specifically when the track's **lock state** is toggled:
  *
  * - User clicks the **lock icon** in the track header to lock a track.
  * - User clicks again to **unlock** the track.
@@ -75,12 +80,16 @@ interface TrackInfoChangedEvent {
  * without being triggered by every other track change.
  */
 interface TrackLockChangedEvent {
-  readonly track: VideoTrack | AudioTrack;
+  readonly track: {
+    id: number;
+    name: string;
+  };
 }
 
 /**
- * Fired on a {@link VideoTrack} or {@link AudioTrack} when the **structural
- * content** of the track changes. This event fires for changes like:
+ * Fired on an {@link AudioTrack}, {@link CaptionTrack}, or {@link VideoTrack}
+ * when the **structural content** of the track changes. This event fires for
+ * changes like:
  *
  * - A clip is **added** to the track (drag from Project panel, paste, overwrite edit)
  * - A clip is **removed** from the track (delete, lift, extract)
@@ -91,8 +100,7 @@ interface TrackLockChangedEvent {
  *
  * `TRACK_CHANGED` **always fires alongside `INFO_CHANGED`** for the same
  * operation. If you are already listening to `INFO_CHANGED`, you do not need
- * to additionally listen to `TRACK_CHANGED` unless you specifically need the
- * `changes` or time-range fields to scope your work.
+ * to additionally listen to `TRACK_CHANGED`.
  *
  * `start` and `end` indicate the portion of the sequence timeline that was
  * affected:
@@ -102,29 +110,39 @@ interface TrackLockChangedEvent {
 interface TrackChangedEvent {
   readonly end: TickTime;
   readonly start: TickTime;
-  readonly track: VideoTrack | AudioTrack;
+  readonly track: {
+    id: number;
+    name: string;
+  };
 }
 
-function onTrackInfoChanged(event?: object) {
+function onTrackInfoChanged(
+  this: AudioTrack | CaptionTrack | VideoTrack,
+  event?: object
+) {
   const e = event as TrackInfoChangedEvent;
-  console.log("Track info changed", e);
+  console.log("Track info changed for track", this, e);
 }
 
-function onTrackLockChanged(event?: object) {
+function onTrackLockChanged(
+  this: AudioTrack | CaptionTrack | VideoTrack,
+  event?: object
+) {
   const e = event as TrackLockChangedEvent;
-  console.log("Track lock changed", e);
+  console.log("Track lock changed for track", this, e);
 }
 
-function onTrackChanged(event?: object) {
+function onTrackChanged(
+  this: AudioTrack | CaptionTrack | VideoTrack,
+  event?: object
+) {
   const e = event as TrackChangedEvent;
-  console.log("Track changed", e);
+  console.log("Track changed for track", this, e);
 }
 
 interface SequenceEvent {
-  readonly currentTarget: Application;
   readonly id: string;
   readonly name: string;
-  readonly target: Application;
 }
 
 /**
@@ -134,7 +152,7 @@ interface SequenceEvent {
  * The closed sequence is logged to the UI, and the active sequence name is
  * updated to "No Active Sequence" if there are no more active sequences.
  */
-async function onSequenceClosed(event?: object) {
+async function onSequenceClosed(this: Sequence, event?: object) {
   const e = event as SequenceEvent;
   log(`Sequence ${e.name} closed`);
   console.log(`Sequence ${e.name} closed`, e);
@@ -155,7 +173,7 @@ async function onSequenceClosed(event?: object) {
  * The activated sequence is logged to the UI, and the active sequence name is
  * updated to the name of the activated sequence.
  */
-async function onSequenceActivated(event?: object) {
+async function onSequenceActivated(this: Application, event?: object) {
   const e = event as SequenceEvent;
   log(`Sequence ${e.name} activated`);
   console.log(`Sequence ${e.name} activated`, e);
@@ -196,6 +214,37 @@ async function onSequenceActivated(event?: object) {
         ppro.Constants.VideoTrackEvent.TRACK_CHANGED,
         onTrackChanged
       );
+    }
+
+    // Avoid errors when accessing Constants.CaptionTrackEvent on older
+    // Premiere versions before these constants were added in 27.1.
+    // @ts-expect-error - Constants.CaptionTrackEvent is not typed yet!
+    if (ppro.Constants.CaptionTrackEvent != null) {
+      const captionTrackCount = await sequence.getCaptionTrackCount();
+      for (let i = 0; i < captionTrackCount; i++) {
+        const captionTrack = await sequence.getCaptionTrack(i);
+
+        ppro.EventManager.addEventListener(
+          captionTrack,
+          // @ts-expect-error - EventManager typing is incomplete for CaptionTrack
+          ppro.Constants.CaptionTrackEvent.INFO_CHANGED,
+          onTrackInfoChanged
+        );
+
+        ppro.EventManager.addEventListener(
+          captionTrack,
+          // @ts-expect-error - EventManager typing is incomplete for CaptionTrack
+          ppro.Constants.CaptionTrackEvent.LOCK_CHANGED,
+          onTrackLockChanged
+        );
+
+        ppro.EventManager.addEventListener(
+          captionTrack,
+          // @ts-expect-error - EventManager typing is incomplete for CaptionTrack
+          ppro.Constants.CaptionTrackEvent.TRACK_CHANGED,
+          onTrackChanged
+        );
+      }
     }
 
     const audioTrackCount = await sequence.getAudioTrackCount();
