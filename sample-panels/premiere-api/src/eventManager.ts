@@ -22,6 +22,7 @@ import type {
   ProjectClosedEvent,
   ProjectEvent,
   ProjectItem,
+  Sequence,
   VideoClipTrackItem,
   VideoTrack,
   TickTime,
@@ -140,10 +141,8 @@ function onTrackChanged(
 }
 
 interface SequenceEvent {
-  readonly currentTarget: Application;
   readonly id: string;
   readonly name: string;
-  readonly target: Application;
 }
 
 /**
@@ -153,7 +152,7 @@ interface SequenceEvent {
  * The closed sequence is logged to the UI, and the active sequence name is
  * updated to "No Active Sequence" if there are no more active sequences.
  */
-async function onSequenceClosed(event?: object) {
+async function onSequenceClosed(this: Sequence, event?: object) {
   const e = event as SequenceEvent;
   log(`Sequence ${e.name} closed`);
   console.log(`Sequence ${e.name} closed`, e);
@@ -174,7 +173,7 @@ async function onSequenceClosed(event?: object) {
  * The activated sequence is logged to the UI, and the active sequence name is
  * updated to the name of the activated sequence.
  */
-async function onSequenceActivated(event?: object) {
+async function onSequenceActivated(this: Application, event?: object) {
   const e = event as SequenceEvent;
   log(`Sequence ${e.name} activated`);
   console.log(`Sequence ${e.name} activated`, e);
