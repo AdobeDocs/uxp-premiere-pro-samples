@@ -96,6 +96,7 @@ import {
   setProjectPanelMetadata,
   setXMPMetadata,
 } from "./src/metadata";
+import { setSDKEventMessage } from "./src/pluginSupport";
 import {
   getActiveProduction,
   getScratchDiskSettings,
@@ -460,6 +461,17 @@ async function setComponentInstanceNameClicked() {
     log(`Successfully set component instance name to "${name}"`);
   } else {
     log(`Failed to set component instance name`, "red");
+  }
+}
+
+// PluginSupport
+
+async function setSdkEventMessageClicked() {
+  const success = await setSDKEventMessage("Sending an event!");
+  if (success) {
+    log(`Successfully sent a message to the Event Panel!`);
+  } else {
+    log(`Failed to send an event message`, "red");
   }
 }
 
@@ -3108,6 +3120,7 @@ window.addEventListener("load", async () => {
   /* 27.1.0 button event registration */
   registerClick("component-getinstancename", getComponentInstanceNameClicked);
   registerClick("component-createsetinstancenameaction", setComponentInstanceNameClicked);
+  registerClick("pluginsupport-setsdkeventmessage", setSdkEventMessageClicked);
   registerClick("projectpanel-isstill", checkClipIsStillClicked);
   registerClick("sequenceeditor-razor-all-tracks", razorAllTracksClicked);
   registerClick("sequenceeditor-razor-video-tracks", razorVideoTracksClicked);
