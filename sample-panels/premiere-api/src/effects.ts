@@ -328,7 +328,7 @@ export async function setComponentInstanceName(
 
       success = project.executeTransaction((compoundAction) => {
         compoundAction.addAction(action);
-      });
+      }, "Set Component Instance Name");
     });
   } catch (err) {
     log(`Failed to : ${err}`, "red");

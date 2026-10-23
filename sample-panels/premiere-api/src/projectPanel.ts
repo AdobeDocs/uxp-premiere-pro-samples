@@ -864,3 +864,53 @@ export async function checkIfSelectedProjectItemsAreStills(project: Project): Pr
     log(`Error checking if project items are stils: ${error}`, "red");
   }
 }
+
+/**
+ * Gets the selected entries in the Project Panel and, for each ClipProjectItem,
+ * detaches any proxies from them.
+ *
+ * @param project - The project to detach proxies from
+ */
+export async function detachProxiesFromClipProjectItems(project: Project): Promise<boolean> {
+  try {
+    const projectItems = await getSelectedProjectItems(project);
+    if (projectItems.length === 0) {
+      log("No project items selected", "red");
+      return false;
+    }
+
+    const clipProjectItems: ClipProjectItem[] = [];
+    for (const projectItem of projectItems) {
+      const clipProjectItem = ppro.ClipProjectItem.cast(projectItem);
+      if (!clipProjectItem) {
+        continue;
+      }
+
+      if (!(await clipProjectItem.hasProxy())) {
+        continue;
+      }
+
+      clipProjectItems.push(clipProjectItem);
+    }
+
+    if (clipProjectItems.length === 0) {
+      log("No selected clip items with proxies")
+      return false;
+    }
+
+    let success = false;
+    project.lockedAccess(() => {
+      success = project.executeTransaction((compoundAction) => {
+        for (const clipProjectItem of clipProjectItems) {
+          // @ts-expect-error - createDetachProxyAction is not typed yet!
+          compoundAction.addAction(clipProjectItem.createDetachProxyAction());
+        }
+      }, "Detach selected proxies");
+    });
+
+    return success;
+  } catch (error) {
+    log(`Error detaching proxies from selection: ${error}`, "red");
+    return false;
+  }
+}
