@@ -131,6 +131,7 @@ import {
   createBin,
   createSmartBin,
   createSubClips,
+  detachProxiesFromClipProjectItems,
   getFirstProjectItemColorLabel,
   getFirstProjectItemId,
   getFirstProjectItemType,
@@ -476,6 +477,21 @@ async function setSdkEventMessageClicked() {
 }
 
 // Project Panel
+
+async function createDetachProxyActionClicked() {
+  const project = await ppro.Project.getActiveProject();
+  if (!project) {
+    log(`Failed to get project`, "red");
+    return;
+  }
+
+  const result = await detachProxiesFromClipProjectItems(project);
+  if (result) {
+    log("Successfully removed all proxies from the selected ClipProjectItems")
+  } else {
+    log("Failed to remove all proxies", "red");
+  }
+}
 
 async function checkClipIsStillClicked() {
   const project = await ppro.Project.getActiveProject();
@@ -3122,6 +3138,7 @@ window.addEventListener("load", async () => {
   registerClick("component-createsetinstancenameaction", setComponentInstanceNameClicked);
   registerClick("pluginsupport-setsdkeventmessage", setSdkEventMessageClicked);
   registerClick("projectpanel-isstill", checkClipIsStillClicked);
+  registerClick("projectpanel-createdetachproxyaction", createDetachProxyActionClicked);
   registerClick("sequenceeditor-razor-all-tracks", razorAllTracksClicked);
   registerClick("sequenceeditor-razor-video-tracks", razorVideoTracksClicked);
 
