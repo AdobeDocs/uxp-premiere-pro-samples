@@ -611,8 +611,21 @@ function onSnapTrackItem(/* event?: object */) {
  * potentially generating a lot of noise in the console, especially for
  * sequences with many clips or captions.
  */
-function onSnapTrackItemPlayhead(/* event?: object */) {
+function onSnapPlayheadToTrackItem(/* event?: object */) {
   console.log("Playhead snapped to trackItem edges");
+}
+
+/**
+ * Callback function for marker playhead snap event. This fires when
+ * dragging the playhead in the Timeline until it snaps to a sequence
+ * or clip marker.
+ *
+ * Log the event occurred; we don't print the event itself due to it
+ * potentially generating a lot of noise in the console, especially for
+ * sequences with many markers.
+ */
+function onSnapPlayheadToMarker(/* event?: object */) {
+  console.log("Playhead snapped to marker");
 }
 
 /**
@@ -704,8 +717,13 @@ export async function addProjSeqListeners() {
     onSnapKeyframe
   );
   ppro.EventManager.addGlobalEventListener(
+    // @ts-expect-error - This constant is not typed yet!
+    ppro.Constants.SnapEvent.PLAYHEAD_MARKER,
+    onSnapPlayheadToMarker
+  );
+  ppro.EventManager.addGlobalEventListener(
     ppro.Constants.SnapEvent.PLAYHEAD_TRACKITEM,
-    onSnapTrackItemPlayhead
+    onSnapPlayheadToTrackItem
   );
   ppro.EventManager.addGlobalEventListener(
     ppro.Constants.SnapEvent.RAZOR_PLAYHEAD,
