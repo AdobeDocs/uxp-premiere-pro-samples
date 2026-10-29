@@ -628,6 +628,20 @@ function onSnapPlayheadToMarker(/* event?: object */) {
   console.log("Playhead snapped to marker");
 }
 
+interface WorkspaceChangedEvent {
+  workspaceName: string;
+}
+
+/**
+ * Callback function for a workspace changed event. This fires when the
+ * current workspace has changed; the event includes the name of the new
+ * workspace.
+ */
+function onWorkspaceChanged(event?: object) {
+  const e = event as WorkspaceChangedEvent;
+  console.log(`Switched to new workspace "${e.workspaceName}"`);
+}
+
 /**
  * Add project and sequence event listeners
  */
@@ -737,4 +751,16 @@ export async function addProjSeqListeners() {
     ppro.Constants.SnapEvent.TRACKITEM,
     onSnapTrackItem
   );
+
+  // Guard to prevent the plugin from failing to load if the constant isn't
+  // present in the current build of Premiere.
+  // @ts-expect-error - This constant is not typed yet!
+  if (ppro.Constants.WorkspaceEvent?.CHANGED) {
+    // add workspace changed event listeners
+    ppro.EventManager.addGlobalEventListener(
+      // @ts-expect-error - This constant is not typed yet!
+      ppro.Constants.WorkspaceEvent.CHANGED,
+      onWorkspaceChanged,
+    );
+  }
 }
