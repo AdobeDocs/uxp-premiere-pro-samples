@@ -129,7 +129,8 @@ function onTrackLockChanged(
   event?: object
 ) {
   const e = event as TrackLockChangedEvent;
-  console.log("Track lock changed for track", this, e);
+  // @ts-expect-error - locked property is not typed yet
+  console.log(`Track lock changed for track (is locked: ${this.locked})`, this, e);
 }
 
 function onTrackChanged(

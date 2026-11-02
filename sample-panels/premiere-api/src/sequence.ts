@@ -566,3 +566,67 @@ export async function closeSequence(project: Project, sequence: Sequence): Promi
     return false;
   }
 }
+
+/**
+ * Returns whether the first video track in the sequence is locked.
+ * @param _project - The project containing the sequence
+ * @param sequence - The sequence to check
+ * @returns true if the track is locked
+ */
+export async function checkTrackIsLocked(
+  _project: Project,
+  sequence: Sequence,
+): Promise<boolean> {
+  const count = await sequence.getVideoTrackCount();
+  if (count === 0) {
+    log(`Sequence ${sequence.name} does not have any video tracks.`, "red");
+    return false;
+  }
+
+  const track = await sequence.getVideoTrack(0);
+  // @ts-expect-error - locked property is not typed yet
+  return track.locked;
+}
+
+/**
+ * Toggles the first video track's lock state in the given sequence.
+ *
+ * While the example here applies to a VideoTrack, AudioTracks and
+ * CaptionTracks can also be locked as well.
+ *
+ * Setting the track lock also fires a `TrackLockChangedEvent` that
+ * can be listened for; see the `eventManager.ts` file for examples.
+ *
+ * @param project - The project containing the sequence
+ * @param sequence - The sequence to update
+ * @returns true if the lock state was successfully applied
+ */
+export async function toggleTrackLocked(
+  project: Project,
+  sequence: Sequence,
+): Promise<boolean> {
+  let success = false;
+
+  const count = await sequence.getVideoTrackCount();
+  if (count === 0) {
+    log(`Sequence ${sequence.name} does not have any video tracks.`, "red");
+    return success;
+  }
+
+  try {
+    const track = await sequence.getVideoTrack(0);
+
+    project.lockedAccess(() => {
+      // @ts-expect-error - locked, createSetLockedAction not typed yet
+      const action = track.createSetLockedAction(!track.locked);
+
+      success = project.executeTransaction((compoundAction) => {
+        compoundAction.addAction(action);
+      }, "Lock First Video Track");
+    });
+  } catch (err) {
+    log(`Failed to toggle track lock state: ${err}`, "red");
+  }
+
+  return success;
+}

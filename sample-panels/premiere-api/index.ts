@@ -167,6 +167,7 @@ import {
 import {
   addHandlesToTrackItem,
   checkIsDoneAnalyzingForVideoEffects,
+  checkTrackIsLocked,
   closeSequence,
   createSequence,
   createSequenceFromMedia,
@@ -184,6 +185,7 @@ import {
   setSequenceSelection,
   setSequenceSettings,
   setVideoFrameRate,
+  toggleTrackLocked,
   trimSelectedItem,
 } from "./src/sequence";
 import {
@@ -501,6 +503,50 @@ async function checkClipIsStillClicked() {
   }
 
   await checkIfSelectedProjectItemsAreStills(project);
+}
+
+// Sequence
+
+async function getTrackLockStateClicked() {
+  const project = await ppro.Project.getActiveProject();
+  if (!project) {
+    log("Failed to get project", "red");
+    return;
+  }
+
+  const sequence = await project.getActiveSequence();
+  if (!sequence) {
+    log("Failed to get active sequence", "red");
+    return;
+  }
+
+  try {
+    const isLocked = await checkTrackIsLocked(project, sequence);
+    log(`The sequence's first video track ${isLocked ? "is" : "is not"} locked`);
+  } catch (err) {
+    log(`Failed to lock track: ${err}`, "red");
+  }
+}
+
+async function setTrackLockStateClicked() {
+  const project = await ppro.Project.getActiveProject();
+  if (!project) {
+    log("Failed to get project", "red");
+    return;
+  }
+
+  const sequence = await project.getActiveSequence();
+  if (!sequence) {
+    log("Failed to get active sequence", "red");
+    return;
+  }
+
+  const success = await toggleTrackLocked(project, sequence);
+  if (success) {
+    log("Successfully toggled the sequence's first video track lock");
+  } else {
+    log("Failed to lock track", "red");
+  }
 }
 
 // SequenceEditor
@@ -3139,6 +3185,8 @@ window.addEventListener("load", async () => {
   registerClick("pluginsupport-setsdkeventmessage", setSdkEventMessageClicked);
   registerClick("projectpanel-isstill", checkClipIsStillClicked);
   registerClick("projectpanel-createdetachproxyaction", createDetachProxyActionClicked);
+  registerClick("track-getlockstate", getTrackLockStateClicked);
+  registerClick("track-setlockstate", setTrackLockStateClicked);
   registerClick("sequenceeditor-razor-all-tracks", razorAllTracksClicked);
   registerClick("sequenceeditor-razor-video-tracks", razorVideoTracksClicked);
 
