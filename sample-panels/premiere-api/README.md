@@ -76,6 +76,7 @@ Each file covers one part of the API. If you're looking for a specific feature, 
 | `utils.ts` | Shared logging helper used across all modules |
 | `uxpHost.ts` | Features related to UXP host properties available in Premiere |
 | `workAreaUtils.ts` | Managing in and out points for the work area |
+| `workspacesManager.ts` | Viewing and switching between available workspaces |
 
 ---
 
