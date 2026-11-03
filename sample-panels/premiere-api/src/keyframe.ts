@@ -16,6 +16,7 @@ import type {
   Color,
   Component,
   ComponentParam,
+  Constants,
   Keyframe,
   MogrtComment,
   MogrtText,
@@ -244,6 +245,56 @@ export async function setInterpolation() {
   }
 
   return success;
+}
+
+/**
+ * Prints the interpolation mode for each parameter of the selected video
+ * track's first component.
+ *
+ * Use with {@link setInterpolation} to read back the updated interpolation
+ * mode from that function.
+ *
+ * @param project - The project containing the sequence
+ * @param sequence - The sequence to view
+ * @return true if the parameters were printed
+ * @see {@link setInterpolation}
+ */
+export async function getInterpolation(_project: Project, sequence: Sequence) {
+  const selection = await getCurrentVideoClipTrackItemsSelected(sequence);
+  if (selection == null || selection.length !== 1) {
+    log("Please select one video clip to print interpolation details for.", "red");
+    return false;
+  }
+
+  const INTERPOLATION_MODE_MAP = {
+    [ppro.Constants.InterpolationMode.BEZIER]: "Bezier",
+    [ppro.Constants.InterpolationMode.HOLD]: "Hold",
+    [ppro.Constants.InterpolationMode.LINEAR]: "Linear",
+    [ppro.Constants.InterpolationMode.TIME]: "Time",
+    [ppro.Constants.InterpolationMode.TIME_TRANSITION_END]: "Time (Transition End)",
+    [ppro.Constants.InterpolationMode.TIME_TRANSITION_START]: "Time (Transition Start)",
+  } as const;
+
+  const componentChain = await selection[0].getComponentChain();
+  const component = componentChain.getComponentAtIndex(1);
+  const count = component.getParamCount();
+
+  for (let i = 0; i < count; i += 1) {
+    const param = component.getParam(i);
+    if (!param.isTimeVarying()) {
+      continue;
+    }
+
+    // Just print the interpolation mode for the first time
+    const [time] = param.getKeyframeListAsTickTimes();
+
+    // @ts-expect-error - getInterpolationAtKeyframe is not typed!
+    const interpolationMode: Constants.InterpolationMode = param.getInterpolationAtKeyframe(time);
+
+    log(`ComponentParam "${param.displayName}" has interpolation mode "${INTERPOLATION_MODE_MAP[interpolationMode]}" at time ${time.seconds} seconds`);
+  }
+
+  return true;
 }
 
 // Loop through and find all MoGRT-based Components using the component's
