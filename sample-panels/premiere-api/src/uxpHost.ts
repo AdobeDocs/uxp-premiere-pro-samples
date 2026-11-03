@@ -45,7 +45,7 @@ declare module "uxp" {
 
     /**
      * Gets the current background color of the Premiere host.
-     * 
+     *
      * The color information is returned as a stringified JSON object with the following structure:
      * ```json
      * {
@@ -103,7 +103,7 @@ export function logFullHostNameAndVersion() {
 
 /**
  * Logs the host application path to the console.
- * 
+ *
  * @since 26.5
  */
 export function logHostApplicationPath() {
@@ -114,7 +114,7 @@ export function logHostApplicationPath() {
 
 /**
  * Logs the host background color to the console.
- * 
+ *
  * @since 26.5
  */
 export async function logHostBackgroundColor() {

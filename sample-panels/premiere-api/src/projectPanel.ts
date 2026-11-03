@@ -154,7 +154,7 @@ export async function createSubClips(project: Project): Promise<ProjectItem[]> {
     log(`No project found.`, "red");
     return [];
   }
-  
+
   const selectedItems = await getSelectedProjectItems(project);
   const subClipsToCreate = selectedItems
     .reduce((acc, projectItem) => {
@@ -197,7 +197,7 @@ export async function createSubClips(project: Project): Promise<ProjectItem[]> {
     }, "Create Sub Clips");
   });
 
-  // Collect the sub clips from the 
+  // Collect the sub clips from each parent bin
   const subClips: ProjectItem[] = [];
   for (const entry of subClipsToCreate) {
     const items = await entry.parentBin.getItems();
@@ -785,13 +785,13 @@ export async function getOriginatingProjectPath(project: Project): Promise<strin
       log("No clip project item found or selected", "red");
       return null;
     }
-    
+
     const path = await clipProjectItem.getOriginatingProjectPath();
-    
+
     if (path === "") {
       return "No originating project found";
     }
-    
+
     return path;
   } catch (e) {
     log(`Error getting originating project path: ${e}`, "red");

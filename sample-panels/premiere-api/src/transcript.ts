@@ -19,7 +19,7 @@ import { log } from "./utils";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const ppro = require("premierepro") as premierepro;
 
-// To ensure successful import/export, please ensure your JSON follow 
+// To ensure successful import/export, please ensure your JSON follow
 // sample Adobe Transcript JSON file spec we provided.
 export async function importTranscript(
   transcriptContent: string,
@@ -70,17 +70,17 @@ export async function hasTranscript(project: Project): Promise<void> {
 
 /**
  * Attempt to transcribe all selected (Clip) Project Items for the given `project`.
- * 
+ *
  * Only `ClipProjectItem`s which are _not_ themselves `Sequence`s can be
  * processed here and will be skipped. Multiple selected clips may be queued
  * before being transcribed. Larger clips may take longer to transcribe.
- * 
+ *
  * NOTE: Because large clips may take seconds to minutes to process, this
  * function does not await on
- * 
+ *
  * Log messages are printed to the UI console to cover various scenarios and
  * provide details as far as clip detection and transcription processing goes.
- * 
+ *
  * @param project The project to get the current selection from
  * @returns A Promise which resolves after processing all
  */

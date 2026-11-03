@@ -129,7 +129,7 @@ export async function getPosition() {
 
 /**
  * Set the position of source monitor.
- * 
+ *
  * If no project item is opened at source monitor, this function will return
  * false. Use {@link openProjectItem} to open a project item first.
  *
