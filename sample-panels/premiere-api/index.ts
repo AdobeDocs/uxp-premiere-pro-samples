@@ -62,6 +62,7 @@ import {
 } from "./src/import";
 import {
   addKeyframe,
+  getInterpolation,
   getKeyframe,
   getKeyframes,
   getStartValue,
@@ -464,6 +465,26 @@ async function setComponentInstanceNameClicked() {
     log(`Successfully set component instance name to "${name}"`);
   } else {
     log(`Failed to set component instance name`, "red");
+  }
+}
+
+async function getComponentInterpolationModeClicked() {
+  const project = await ppro.Project.getActiveProject();
+  if (!project) {
+    log(`Failed to get project`, "red");
+    return;
+  }
+
+  const sequence = await project.getActiveSequence();
+  if (!sequence) {
+    log(`Failed to get active sequence`, "red");
+    return;
+  }
+
+  try {
+    await getInterpolation(project, sequence);
+  } catch (err) {
+    log(`Failed to retrieve component interpolation mode: ${err}`, "red");
   }
 }
 
@@ -3182,6 +3203,7 @@ window.addEventListener("load", async () => {
   /* 27.1.0 button event registration */
   registerClick("component-getinstancename", getComponentInstanceNameClicked);
   registerClick("component-createsetinstancenameaction", setComponentInstanceNameClicked);
+  registerClick("componentparam-getinterpolationatkeyframe", getComponentParamInterpolationModeClicked);
   registerClick("pluginsupport-setsdkeventmessage", setSdkEventMessageClicked);
   registerClick("projectpanel-isstill", checkClipIsStillClicked);
   registerClick("projectpanel-createdetachproxyaction", createDetachProxyActionClicked);
