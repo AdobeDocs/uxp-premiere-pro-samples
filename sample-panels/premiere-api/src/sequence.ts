@@ -514,7 +514,7 @@ export async function setVideoFrameRate(
     const settings = await sequence.getSettings();
     const newFrameRate = ppro.FrameRate.createWithValue(frameRate);
     const frameRateSuccess = settings.setVideoFrameRate(newFrameRate);
-    
+
     let success = false;
     project.lockedAccess(() => {
       success = project.executeTransaction((compoundAction) => {
@@ -522,7 +522,7 @@ export async function setVideoFrameRate(
         compoundAction.addAction(setSettingsAction);
       }, `set video frame rate to ${frameRate}`);
     });
-    
+
     return success && frameRateSuccess;
   } catch (e) {
     log(`Error setting video frame rate: ${e}`, "red");

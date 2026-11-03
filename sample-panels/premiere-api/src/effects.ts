@@ -28,8 +28,8 @@ const ppro = require("premierepro") as premierepro;
 /**
  * Retrieves a list of currently selected VideoClipTrackItems in the given sequence.
  *
- * @param sequence 
- * @returns 
+ * @param sequence
+ * @returns
  */
 export async function getCurrentVideoClipTrackItemsSelected(
   sequence: Sequence
@@ -41,8 +41,8 @@ export async function getCurrentVideoClipTrackItemsSelected(
 
 /**
  * Retrieves a list of currently selected AudioCLipTrackItems in the given sequence.
- * @param sequence 
- * @returns 
+ * @param sequence
+ * @returns
  */
 export async function getCurrentAudioClipTrackItemsSelected(
   sequence: Sequence
@@ -72,11 +72,11 @@ function isAudioClipTrackItem(
 
 /**
  * Returns a list of the available video filter effect match names.
- * 
+ *
  * Match names align with specific video effects Premiere uses to find and
  * create, whereas display name values vary depending on current language.
  *
- * @returns 
+ * @returns
  */
 export async function getEffectsName(): Promise<string[]> {
   return await ppro.VideoFilterFactory.getMatchNames();
@@ -86,9 +86,9 @@ export async function getEffectsName(): Promise<string[]> {
  * Adds a Gamma Correction effect to the currently selected video track
  * for the given project and sequence.
  *
- * @param project 
+ * @param project
  * @param sequence
- * @returns 
+ * @returns
  */
 export async function addEffects(project: Project, sequence: Sequence): Promise<boolean> {
   const selection = await getCurrentVideoClipTrackItemsSelected(sequence);
@@ -126,9 +126,9 @@ export async function addEffects(project: Project, sequence: Sequence): Promise<
  * Adds Gamma Correction and Extract effects to the currently selected video track
  * item for the given project and sequence.
  *
- * @param project 
- * @param sequence 
- * @returns 
+ * @param project
+ * @param sequence
+ * @returns
  */
 export async function addMultipleEffects(project: Project, sequence: Sequence): Promise<boolean> {
   const selection = await getCurrentVideoClipTrackItemsSelected(sequence);
@@ -174,9 +174,9 @@ export async function addMultipleEffects(project: Project, sequence: Sequence): 
  * Adds a Vocal Enhancer effect to the currently selected audio track item
  * for the given project and sequence.
  *
- * @param project 
- * @param sequence 
- * @returns 
+ * @param project
+ * @param sequence
+ * @returns
  */
 export async function addVocalEnhancerEffect(project: Project, sequence: Sequence): Promise<boolean> {
   const selection = await getCurrentAudioClipTrackItemsSelected(sequence);
@@ -216,9 +216,9 @@ export async function addVocalEnhancerEffect(project: Project, sequence: Sequenc
  * Removes the last effect from the end of the component chain for the currently
  * selected video track item of the given project and sequence.
  *
- * @param project 
- * @param sequence 
- * @returns 
+ * @param project
+ * @param sequence
+ * @returns
  */
 export async function removeEffects(project: Project, sequence: Sequence): Promise<boolean> {
   const selection = await getCurrentVideoClipTrackItemsSelected(sequence);

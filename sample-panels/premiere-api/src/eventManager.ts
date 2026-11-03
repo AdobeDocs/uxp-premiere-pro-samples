@@ -149,7 +149,7 @@ interface SequenceEvent {
 /**
  * callback function for sequence close event. This fires when a sequence
  * is closed.
- * 
+ *
  * The closed sequence is logged to the UI, and the active sequence name is
  * updated to "No Active Sequence" if there are no more active sequences.
  */
@@ -170,7 +170,7 @@ async function onSequenceClosed(this: Sequence, event?: object) {
 /**
  * callback function for sequence activated event. This fires when a sequence
  * is opened or activated.
- * 
+ *
  * The activated sequence is logged to the UI, and the active sequence name is
  * updated to the name of the activated sequence.
  */
@@ -441,7 +441,7 @@ function onEncoderQueue(event?: object) {
 
 /**
  * Add Encoder event listeners.
- * 
+ *
  * These events are used when encoding a project via AME.
  */
 export function addEncoderListeners() {
@@ -504,7 +504,7 @@ function onEffectDraggedOver(event?: object) {
  * Callback function for export media complete event. This fires when an
  * in-app export operation completes; exporting media via AME is instead
  * handled by the EncoderManager event listeners.
- * 
+ *
  * Currently this only fires on successful exports.
  */
 function onExportMediaComplete(event?: object) {
@@ -514,7 +514,7 @@ function onExportMediaComplete(event?: object) {
 /**
  * Callback function for generative extend complete event. Fires when a
  * Generative Extend (AI fill) background job completes.
- * 
+ *
  * Check `event.state` for success, cancellation, or failure. For example:
  * ```
  * if (event.state === ppro.Constants.OperationCompleteState.SUCCESS) {
@@ -531,7 +531,7 @@ function onGenerativeExtendComplete(event?: object) {
 /**
  * Callback function for import media complete event. This fires when an
  * import media operation completes.
- * 
+ *
  * Check `event.state` for success, cancellation, or failure. For example:
  * ```
  * if (event.state === ppro.Constants.OperationCompleteState.SUCCESS) {
@@ -549,7 +549,7 @@ function onImportMediaComplete(event?: object) {
  * Callback function for guides snap event. This fires when snapping
  * motion/transform effects in the Program Monitor to manually-set
  * guides (View > Show Guides).
- * 
+ *
  * Log the event occurred; we don't print the event itself due to it
  * potentially generating a lot of noise in the console.
  */
@@ -562,7 +562,7 @@ function onSnapGuides(/* event?: object */) {
  * the track head to a keyframe, for example when holding down Shift
  * while dragging the track head in the Effect Controls panel between
  * keyframes.
- * 
+ *
  * Log the event occurred; we don't print the event itself due to it
  * potentially generating a lot of noise in the console.
  */
@@ -595,7 +595,7 @@ function onSnapRazorMarker(/* event?: object */) {
 /**
  * Callback function for track item snap event. This fires when dragging
  * a clip in the Timeline until it snaps into the edge of another clip.
- * 
+ *
  * Log the event occurred; we don't print the event itself due to it
  * potentially generating a lot of noise in the console.
  */
@@ -607,7 +607,7 @@ function onSnapTrackItem(/* event?: object */) {
  * Callback function for track item playhead snap event. This fires when
  * dragging the playhead in the Timeline until it snaps to the edge of a
  * track item.
- * 
+ *
  * Log the event occurred; we don't print the event itself due to it
  * potentially generating a lot of noise in the console, especially for
  * sequences with many clips or captions.
