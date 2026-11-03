@@ -241,6 +241,7 @@ import {
   setWorkAreaInPoint,
   setWorkAreaOutPoint
 } from "./src/workAreaUtils";
+import { setupWorkspaces, setWorkspace } from "./src/workspacesManager";
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const ppro = require("premierepro") as premierepro;
@@ -468,7 +469,7 @@ async function setComponentInstanceNameClicked() {
   }
 }
 
-async function getComponentInterpolationModeClicked() {
+async function getComponentParamInterpolationModeClicked() {
   const project = await ppro.Project.getActiveProject();
   if (!project) {
     log(`Failed to get project`, "red");
@@ -599,6 +600,24 @@ async function razorVideoTracksClicked() {
     log("Successfully razored all video tracks at the selected track item's midpoint")
   } else {
     log("Failed to razor the selected track item and tracks", "red");
+  }
+}
+
+// WorkspacesManager
+
+async function setWorkspaceClicked() {
+  const selected = (document.getElementById("workspaces") as HTMLSelectElement)?.value;
+
+  if (!selected) {
+    log("Please select a workspace to load");
+    return;
+  }
+
+  const success = await setWorkspace(selected);
+  if (success) {
+    log(`Switched to workspace "${selected}"`);
+  } else {
+    log("Failed to switch workspaces", "red");
   }
 }
 
@@ -3211,6 +3230,9 @@ window.addEventListener("load", async () => {
   registerClick("track-setlockstate", setTrackLockStateClicked);
   registerClick("sequenceeditor-razor-all-tracks", razorAllTracksClicked);
   registerClick("sequenceeditor-razor-video-tracks", razorVideoTracksClicked);
+
+  setupWorkspaces();
+  registerClick("workspacesmanager-setworkspace", setWorkspaceClicked);
 
   /* 27.0.0 button events registering */
   registerClick("keyframe-print-mogrtcomment-details", printMogrtCommentParamDetailsClicked)
