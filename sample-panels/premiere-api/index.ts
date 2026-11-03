@@ -469,7 +469,7 @@ async function setComponentInstanceNameClicked() {
   }
 }
 
-async function getComponentInterpolationModeClicked() {
+async function getComponentParamInterpolationModeClicked() {
   const project = await ppro.Project.getActiveProject();
   if (!project) {
     log(`Failed to get project`, "red");
