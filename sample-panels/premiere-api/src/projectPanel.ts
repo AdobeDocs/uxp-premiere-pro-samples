@@ -19,6 +19,7 @@ import type {
   premierepro,
   Project,
   ProjectItem,
+  RectF,
 } from "@adobe/premierepro";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const ppro = require("premierepro") as premierepro;
@@ -912,5 +913,121 @@ export async function detachProxiesFromClipProjectItems(project: Project): Promi
   } catch (error) {
     log(`Error detaching proxies from selection: ${error}`, "red");
     return false;
+  }
+}
+
+/**
+ * Prints the frame rect (width x height) of all selected ClipProjectItems.
+ *
+ * @param project - The project to get the current selection's details from
+ * @returns
+ */
+export async function printSelectedVideoFrameRect(project: Project): Promise<void> {
+  const projectItems = await getSelectedProjectItems(project);
+  if (projectItems.length === 0) {
+    log("No project items selected", "red");
+    return;
+  }
+
+  let count = 0;
+  for (const projectItem of projectItems) {
+    const clipProjectItem = ppro.ClipProjectItem.cast(projectItem);
+    if (!clipProjectItem) {
+      continue;
+    }
+
+    // @ts-expect-error - getVideoFrameRect is not typed yet!
+    const frameRect: RectF | null = clipProjectItem.getVideoFrameRect();
+    if (frameRect) {
+      log(`${clipProjectItem.name} has a frame rect of ${frameRect.width}x${frameRect.height}`);
+    } else {
+      log(`${clipProjectItem.name} does not have a video stream`);
+    }
+    count += 1;
+  }
+
+  if (count === 0) {
+    log("None of the currently selected ProjectItems are clips", "red");
+  }
+}
+
+/**
+ * Prints the audio channel count of all selected ClipProjectItems.
+ *
+ * @param project - The project to get the current selection's details from
+ * @returns
+ */
+export async function printSelectedAudioChannelCount(project: Project): Promise<void> {
+  const projectItems = await getSelectedProjectItems(project);
+  if (projectItems.length === 0) {
+    log("No project items selected", "red");
+    return;
+  }
+
+  let count = 0;
+  for (const projectItem of projectItems) {
+    const clipProjectItem = ppro.ClipProjectItem.cast(projectItem);
+    if (!clipProjectItem) {
+      continue;
+    }
+
+    // @ts-expect-error - getAudioChannelCount is not typed yet!
+    const channelCount: number | null = clipProjectItem.getAudioChannelCount();
+    if (channelCount != null) {
+      log(`${clipProjectItem.name} has an audio channel count of ${channelCount}`);
+    } else {
+      log(`${clipProjectItem.name} does not have an audio stream`);
+    }
+    count += 1;
+  }
+
+  if (count === 0) {
+    log("None of the currently selected ProjectItems are clips", "red");
+  }
+}
+
+/**
+ * Prints the audio channel type of all selected ClipProjectItems.
+ *
+ * @param project - The project to get the current selection's details from
+ * @returns
+ */
+export async function printSelectedAudioChannelType(project: Project): Promise<void> {
+  const projectItems = await getSelectedProjectItems(project);
+  if (projectItems.length === 0) {
+    log("No project items selected", "red");
+    return;
+  }
+
+  const AUDIO_CHANNEL_TYPE_MAP = {
+    [ppro.Constants.AudioChannelType.MONO]: "Mono",
+    [ppro.Constants.AudioChannelType.MULTI]: "Multi Channel",
+    [ppro.Constants.AudioChannelType.STEREO]: "Stereo",
+    [ppro.Constants.AudioChannelType.SURROUND_51]: "5.1 Surround",
+    // @ts-expect-error - Constant not typed yet!
+    [ppro.Constants.AudioChannelType.FOUR_CHANNEL]: "Four Channel",
+    // @ts-expect-error - Constant not typed yet!
+    [ppro.Constants.AudioChannelType.EIGHT_CHANNEL]: "Eight Channel",
+  } as const;
+
+  let count = 0;
+  for (const projectItem of projectItems) {
+    const clipProjectItem = ppro.ClipProjectItem.cast(projectItem);
+    if (!clipProjectItem) {
+      continue;
+    }
+
+    // @ts-expect-error - getAudioChannelType is not typed yet!
+    const channelType: Constants.AudioChannelType | null = clipProjectItem.getAudioChannelType();
+    if (channelType != null) {
+      log(`${clipProjectItem.name} has audio channel type: ${AUDIO_CHANNEL_TYPE_MAP[channelType]}`);
+    } else {
+      log(`${clipProjectItem.name} does not have an audio stream`);
+    }
+    count += 1;
+  }
+
+  if (count === 0) {
+    log("None of the currently selected ProjectItems are clips", "red");
   }
 }
