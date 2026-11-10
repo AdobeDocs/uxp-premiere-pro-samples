@@ -145,7 +145,10 @@ import {
   getSelectedProjectItems,
   getSelectedProjectItemsFromViewId,
   moveItem,
+  printSelectedAudioChannelCount,
+  printSelectedAudioChannelType,
   printSelectedProjectItemComponentChains,
+  printSelectedVideoFrameRect,
   refreshMedia,
   removeItem,
   renameBin,
@@ -525,6 +528,36 @@ async function checkClipIsStillClicked() {
   }
 
   await checkIfSelectedProjectItemsAreStills(project);
+}
+
+async function printSelectedAudioChannelCountClicked() {
+  const project = await ppro.Project.getActiveProject();
+  if (!project) {
+    log(`Failed to get project`, "red");
+    return;
+  }
+
+  await printSelectedAudioChannelCount(project);
+}
+
+async function printSelectedAudioChannelTypeClicked() {
+  const project = await ppro.Project.getActiveProject();
+  if (!project) {
+    log(`Failed to get project`, "red");
+    return;
+  }
+
+  await printSelectedAudioChannelType(project);
+}
+
+async function printSelectedVideoFrameRectClicked() {
+  const project = await ppro.Project.getActiveProject();
+  if (!project) {
+    log(`Failed to get project`, "red");
+    return;
+  }
+
+  await printSelectedVideoFrameRect(project);
 }
 
 // Sequence
@@ -3224,6 +3257,9 @@ window.addEventListener("load", async () => {
   registerClick("component-createsetinstancenameaction", setComponentInstanceNameClicked);
   registerClick("componentparam-getinterpolationatkeyframe", getComponentParamInterpolationModeClicked);
   registerClick("pluginsupport-setsdkeventmessage", setSdkEventMessageClicked);
+  registerClick("projectpanel-getaudiochannelcount", printSelectedAudioChannelCountClicked);
+  registerClick("projectpanel-getaudiochanneltype", printSelectedAudioChannelTypeClicked);
+  registerClick("projectpanel-getvideoframerect", printSelectedVideoFrameRectClicked);
   registerClick("projectpanel-isstill", checkClipIsStillClicked);
   registerClick("projectpanel-createdetachproxyaction", createDetachProxyActionClicked);
   registerClick("track-getlockstate", getTrackLockStateClicked);
