@@ -352,13 +352,141 @@ export async function printMogrtTextParamDetails(
         log(` - Has uniform styling? ${value.isUniformStyling()}`);
         log(` - Has editable font name? ${value.isFontNameEditable()}`);
         log(` - Has editable font size? ${value.isFontSizeEditable()}`);
-        log(` - Has editable faux styles? ${value.isFauxStylesEditable()}`)
+        log(` - Has editable faux styles? ${value.isFauxStylesEditable()}`);
         log(` - Text content: "${value.getText()}"`);
       }
     }
   }
 
   return true;
+}
+
+/**
+ * Updates a MOGRT source text parameter's available text and styling properties.
+ *
+ * This currently collapses multi-run text to a single run before applying any
+ * other styles.
+ *
+ * @param project - The project being edited
+ * @param sequence - The active sequence being edited
+ * @param text - The text to set the source text to
+ * @param textDetails - Optional settings to apply to the selected source text,
+ * if applicable. These are skipped when not set, or if the particular property
+ * isn't editable.
+ * @returns true if the update is successful
+ */
+export async function setMogrtTextParamDetails(
+  project: Project,
+  sequence: Sequence,
+  text: string,
+  textDetails: {
+    toggleAllCaps?: boolean,
+    toggleFauxBold?: boolean,
+    toggleFauxItalic?: boolean,
+    fontName?: string,
+    fontSize?: number,
+  } = {},
+): Promise<boolean> {
+  const selection = await getCurrentVideoClipTrackItemsSelected(sequence);
+  if (selection == null || selection.length !== 1) {
+    log("Please select one video clip to update MOGRT details for.", "red");
+    return false;
+  }
+
+  const mogrtComponents = await getMogrtComponentParams(selection[0]);
+  if (!mogrtComponents.length) {
+    log(`There are no MOGRT effects for the selected track item.`, "red");
+    return false;
+  }
+
+  // Find the first source text param (MogrtText)
+  let component: Component | null = null;
+  let param: ComponentParam | null = null;
+  let value: MogrtText | null = null;
+  for (const mogrtComponent of mogrtComponents) {
+    const paramCount = mogrtComponent.getParamCount();
+    for (let i = 0; i < paramCount; i += 1) {
+      const componentParam = mogrtComponent.getParam(i);
+      const startValue = await componentParam.getStartValue();
+      if (isMogrtText(startValue)) {
+        component = mogrtComponent;
+        param = componentParam;
+        value = startValue;
+        break;
+      }
+    }
+
+    if (param) {
+      break;
+    }
+  }
+
+  if (component == null || param == null || value == null) {
+    log("Did not find a source text parameter for the selected video clip", "red");
+    return false;
+  }
+
+  const displayName = await component.getDisplayName();
+  // @ts-expect-error - getInstanceName is not yet typed
+  const instanceName = await component.getInstanceName();
+  if (instanceName) {
+    log(`Updating component "${displayName} (${instanceName})" parameter "${param.displayName}"...`);
+  } else {
+    log(`Updating component "${displayName}" parameter "${param.displayName}"...`);
+  }
+
+  let success = false;
+  try {
+    // NOTE: Calling this first immediately collapses the selected source
+    // text from a multi-run sequence to a single-run. This has the side
+    // effect of making the source text have uniform styling so we don't
+    // need to perform a `value.isUniformStyling()` check before updating
+    // any other properties.
+    //
+    // For cases where the text should remain the same, perform the
+    // `isUniformStyling()` check first to avoid any thrown errors from
+    // the various setter functions on the MogrtText object.
+    log(`Setting text value (may collapse to a single run!)`);
+    value.setText(text);
+
+    if (value.isFauxStylesEditable()) {
+      if (textDetails.toggleAllCaps != null) {
+        log(`Setting 'All Caps' from ${value.getAllCaps()} -> ${textDetails.toggleAllCaps}`);
+        value.setAllCaps(textDetails.toggleAllCaps);
+      }
+      if (textDetails.toggleFauxBold != null) {
+        log(`Setting 'Faux Bold' from ${value.getFauxBold()} -> ${textDetails.toggleFauxBold}`);
+        value.setFauxBold(textDetails.toggleFauxBold);
+      }
+      if (textDetails.toggleFauxItalic != null) {
+        log(`Setting 'Faux Italic' from ${value.getFauxItalic()} -> ${textDetails.toggleFauxItalic}`);
+        value.setFauxItalic(textDetails.toggleFauxItalic);
+      }
+    }
+
+    if (value.isFontNameEditable() && textDetails.fontName != null) {
+      log(`Setting 'Font Name' from ${value.getFontName()} -> ${textDetails.fontName}`);
+      value.setFontName(textDetails.fontName);
+    }
+
+    if (value.isFontSizeEditable() && textDetails.fontSize != null) {
+      log(`Setting 'Font Size' from ${value.getFontSize()} -> ${textDetails.fontSize}`);
+      value.setFontSize(textDetails.fontSize);
+    }
+
+    project.lockedAccess(() => {
+      const keyframe = param.createKeyframe(value);
+      const action = param.createSetValueAction(keyframe);
+
+      success = project.executeTransaction((compoundAction) => {
+        compoundAction.addAction(action);
+      }, `Update parameter ${param.displayName} text settings`);
+    });
+  } catch (err) {
+    log(`Failed to update : ${err}`, "red");
+  }
+
+  return success;
 }
 
 /**

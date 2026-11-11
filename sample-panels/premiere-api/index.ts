@@ -74,6 +74,7 @@ import {
   printMogrtCommentParamDetails,
   printMogrtTextParamDetails,
   setInterpolation,
+  setMogrtTextParamDetails,
   setValue,
 } from "./src/keyframe";
 import {
@@ -490,6 +491,30 @@ async function getComponentParamInterpolationModeClicked() {
   } catch (err) {
     log(`Failed to retrieve component interpolation mode: ${err}`, "red");
   }
+}
+
+// Keyframe
+
+async function setMogrtTextParamDetailsClicked() {
+  const project = await ppro.Project.getActiveProject();
+  if (!project) {
+    log(`Failed to get project`, "red");
+    return;
+  }
+
+  const sequence = await project.getActiveSequence();
+  if (!sequence) {
+    log(`Failed to get active sequence`, "red");
+    return;
+  }
+
+  await setMogrtTextParamDetails(project, sequence, "Hello, World!", {
+    fontName: "ComicSansMS",
+    fontSize: 36,
+    toggleAllCaps: true,
+    toggleFauxBold: true,
+    toggleFauxItalic: true,
+  });
 }
 
 // PluginSupport
@@ -3256,6 +3281,7 @@ window.addEventListener("load", async () => {
   registerClick("component-getinstancename", getComponentInstanceNameClicked);
   registerClick("component-createsetinstancenameaction", setComponentInstanceNameClicked);
   registerClick("componentparam-getinterpolationatkeyframe", getComponentParamInterpolationModeClicked);
+  registerClick("keyframe-set-mogrttext-details", setMogrtTextParamDetailsClicked);
   registerClick("pluginsupport-setsdkeventmessage", setSdkEventMessageClicked);
   registerClick("projectpanel-getaudiochannelcount", printSelectedAudioChannelCountClicked);
   registerClick("projectpanel-getaudiochanneltype", printSelectedAudioChannelTypeClicked);
