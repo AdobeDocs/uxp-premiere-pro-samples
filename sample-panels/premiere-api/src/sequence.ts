@@ -23,6 +23,7 @@ import type {
   ProjectItem,
   Sequence,
   SequenceSettings,
+  TickTime,
   VideoClipTrackItem,
   VideoTrack,
 } from "@adobe/premierepro";
@@ -629,4 +630,55 @@ export async function toggleTrackLocked(
   }
 
   return success;
+}
+
+/**
+ * Prints the details of the first caption track item found on the first
+ * caption track of the given sequence.
+ *
+ * @param sequence - The sequence to view caption track item detials of
+ */
+export async function getCaptionTrackDetails(
+  sequence: Sequence,
+): Promise<void> {
+  const count = await sequence.getCaptionTrackCount();
+  if (count === 0) {
+    log(`Sequence ${sequence.name} does not have any caption tracks.`, "red");
+    return;
+  }
+
+  // Manually typing the new return type for CaptionTrack track items
+  // until it's present in @adobe/premierepro TypeScript declarations
+  interface CaptionDataClipTrackItem {
+    getStartTime(): Promise<TickTime>;
+    getEndTime(): Promise<TickTime>;
+    getInPoint(): Promise<TickTime>;
+    getOutPoint(): Promise<TickTime>;
+    getDuration(): Promise<TickTime>;
+  }
+
+  const index = 0;
+  const track = await sequence.getCaptionTrack(index);
+
+  const trackItems: CaptionDataClipTrackItem[] = track.getTrackItems(
+    ppro.Constants.TrackItemType.CLIP,
+    false,
+  );
+  log(`Found ${trackItems.length} track items on caption track ${index + 1}`);
+
+  if (trackItems.length > 0) {
+    const [trackItem] = trackItems;
+    const startTime = await trackItem.getStartTime();
+    const endTime = await trackItem.getEndTime();
+    const inPoint = await trackItem.getInPoint();
+    const outPoint = await trackItem.getOutPoint();
+    const duration = await trackItem.getDuration();
+
+    log("Details of the first found track item:");
+    log(`- Start time: ${startTime.seconds}s`);
+    log(`- End time: ${endTime.seconds}s`);
+    log(`- In Point: ${inPoint.seconds}s`);
+    log(`- Out Point: ${outPoint.seconds}s`);
+    log(`- Duration: ${duration.seconds}s`);
+  }
 }
