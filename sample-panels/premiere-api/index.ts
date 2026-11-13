@@ -178,6 +178,7 @@ import {
   createSequenceFromMedia,
   createSubsequence,
   getCaptionTrackCount,
+  getCaptionTrackDetails,
   getSequence,
   getSequenceSelection,
   getVideoFrameRate,
@@ -626,6 +627,26 @@ async function setTrackLockStateClicked() {
     log("Successfully toggled the sequence's first video track lock");
   } else {
     log("Failed to lock track", "red");
+  }
+}
+
+async function getCaptionTrackDetailsClicked() {
+  const project = await ppro.Project.getActiveProject();
+  if (!project) {
+    log("Failed to get project", "red");
+    return;
+  }
+
+  const sequence = await project.getActiveSequence();
+  if (!sequence) {
+    log("Failed to get active sequence", "red");
+    return;
+  }
+
+  try {
+    await getCaptionTrackDetails(sequence);
+  } catch (err) {
+    log(`Failed to read caption track item details: ${err}`, "red");
   }
 }
 
@@ -3290,6 +3311,7 @@ window.addEventListener("load", async () => {
   registerClick("projectpanel-createdetachproxyaction", createDetachProxyActionClicked);
   registerClick("track-getlockstate", getTrackLockStateClicked);
   registerClick("track-setlockstate", setTrackLockStateClicked);
+  registerClick("sequence-gettrackitems-captiontrackitems", getCaptionTrackDetailsClicked);
   registerClick("sequenceeditor-razor-all-tracks", razorAllTracksClicked);
   registerClick("sequenceeditor-razor-video-tracks", razorVideoTracksClicked);
 
