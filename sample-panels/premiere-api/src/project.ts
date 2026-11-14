@@ -173,3 +173,16 @@ export async function isProjectFile(projectPath: string): Promise<boolean> {
     return false;
   }
 }
+
+/**
+ * Prints a count of the current open projects and their names.
+ */
+export function printOpenProjectDetails(): void {
+  // @ts-expect-error - getOpenProjects is not typed yet!
+  const projects = ppro.Project.getOpenProjects();
+  log(`There are currently ${projects.length} project(s) open`);
+
+  for (const project of projects) {
+    log(`- ${project.name}`);
+  }
+}
