@@ -117,6 +117,7 @@ import {
   openProject,
   openSequence,
   pauseGrowing,
+  printOpenProjectDetails,
   saveAsProject,
   saveProject,
 } from "./src/project";
@@ -527,6 +528,12 @@ async function setSdkEventMessageClicked() {
   } else {
     log(`Failed to send an event message`, "red");
   }
+}
+
+// Project
+
+function printOpenProjectDetailsClicked() {
+  printOpenProjectDetails();
 }
 
 // Project Panel
@@ -3304,6 +3311,7 @@ window.addEventListener("load", async () => {
   registerClick("componentparam-getinterpolationatkeyframe", getComponentParamInterpolationModeClicked);
   registerClick("keyframe-set-mogrttext-details", setMogrtTextParamDetailsClicked);
   registerClick("pluginsupport-setsdkeventmessage", setSdkEventMessageClicked);
+  registerClick("project-getopenprojects", printOpenProjectDetailsClicked);
   registerClick("projectpanel-getaudiochannelcount", printSelectedAudioChannelCountClicked);
   registerClick("projectpanel-getaudiochanneltype", printSelectedAudioChannelTypeClicked);
   registerClick("projectpanel-getvideoframerect", printSelectedVideoFrameRectClicked);
