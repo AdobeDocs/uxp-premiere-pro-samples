@@ -18,17 +18,43 @@ const ppro = require("premierepro") as premierepro;
 const uxp = require("uxp") as typeof import("uxp");
 import { log } from "./utils";
 
-export async function openProject() {
+/**
+ * Opens a project in Premiere using the OS file picker to select the target
+ * project file.
+ *
+ * @returns
+ * @since 25.6
+ * @since 27.1 Extended example with setShowResolveFontsDialog option
+ */
+export async function openProject(): Promise<Project | null> {
   // @ts-expect-error - uxp.storage.localFileSystem is not typed correctly
   const file = await uxp.storage.localFileSystem.getFileForOpening({
     types: ["prproj"],
   });
-  if (file?.isFile && file.nativePath) {
-    try {
-      return await ppro.Project.open(file.nativePath, ppro.OpenProjectOptions());
-    } catch (e) {
-      log(`Error: ${e}`);
-    }
+
+  if (!file || !file.isFile || !file.nativePath) {
+    log("Please select an existing project file to open.", "red");
+    return null;
+  }
+
+  let openOptions = new ppro.OpenProjectOptions()
+    .setAddToMRUList(false)
+    .setShowConvertProjectDialog(false)
+    .setShowLocateFileDialog(false)
+    .setShowWarningDialog(false);
+
+  // Check if this method exists before accessing to prevent errors in earlier
+  // versions of Premiere. showResolveFontsDialog defaults to false.
+  if ("setShowResolveFontsDialog" in openOptions) {
+    // @ts-expect-error - setShowResolveFontsDialog is not typed yet!
+    openOptions = openOptions.setShowResolveFontsDialog(false);
+  }
+
+  try {
+    return ppro.Project.open(file.nativePath, openOptions);
+  } catch (e) {
+    log(`Error: ${e}`);
+    return null;
   }
 }
 
